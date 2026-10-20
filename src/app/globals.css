@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+/*
+  EnglishU colour palette.
+  Change these values in one place to update the whole site.
+*/
+:root {
+  --background: #fbf8f1; /* warm off-white */
+  --foreground: #1f1d1a; /* dark, slightly warm text */
+  --accent: #f2c94c; /* subtle yellow */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
