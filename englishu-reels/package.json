@@ -1,7 +1,7 @@
 {
   "name": "englishu-reels",
   "version": "1.0.0",
-  "description": "My Remotion video",
+  "description": "EnglishU Vox-style Instagram Reels (Remotion)",
   "repository": {},
   "license": "UNLICENSED",
   "engines": {
@@ -10,6 +10,15 @@
   "private": true,
   "dependencies": {
     "@remotion/cli": "4.0.538",
+    "@remotion/effects": "4.0.538",
+    "@remotion/fonts": "4.0.538",
+    "@remotion/google-fonts": "4.0.538",
+    "@remotion/media": "4.0.538",
+    "@remotion/noise": "4.0.538",
+    "@remotion/paths": "4.0.538",
+    "@remotion/rough-notation": "4.0.538",
+    "@remotion/shapes": "4.0.538",
+    "@remotion/transitions": "4.0.538",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remotion": "4.0.538"
@@ -26,7 +35,11 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "render": "remotion render",
+    "still": "remotion still",
+    "fonts": "node scripts/fetch-fonts.mjs",
+    "sfx": "node scripts/fetch-sfx.mjs"
   },
   "allowScripts": {
     "esbuild": false

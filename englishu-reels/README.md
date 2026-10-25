@@ -1,54 +1,36 @@
-# Remotion video
+# EnglishU Reels
 
-<p align="center">
-  <a href="https://github.com/remotion-dev/logo">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/remotion-dev/logo/raw/main/animated-logo-banner-dark.apng">
-      <img alt="Animated Remotion Logo" src="https://github.com/remotion-dev/logo/raw/main/animated-logo-banner-light.gif">
-    </picture>
-  </a>
-</p>
-
-Welcome to your Remotion project!
+Vox-style educational Instagram Reels (1080 × 1920, 30 fps), built with
+[Remotion](https://www.remotion.dev). Hebrew narration, English vocabulary,
+code-generated motion graphics, no paid video APIs.
 
 ## Commands
 
-**Install Dependencies**
-
 ```console
-npm i --loglevel=error
+npm i                              # install (once)
+npm run dev                        # preview in Remotion Studio (http://localhost:3000)
+npx remotion render <ReelId>       # render the final MP4 into out/
+npx remotion still <ReelId> out/cover.png --frame=45   # cover image
+npm run lint                       # check the code
+npm run fonts                      # re-download the local fonts (public/fonts)
+npm run sfx                        # optional: download extra free sound effects
 ```
 
-**Start Preview**
+## How it's organized
 
-```console
-npm run dev
-```
+| Path | What |
+|---|---|
+| `.claude/skills/vox-remotion/` | The **vox-remotion** skill: the full Reel workflow for Claude Code |
+| `.claude/skills/remotion-*` | Official Remotion skills |
+| `src/vox/` | The Vox kit: timeline, scene shell, cutouts, markers, Hebrew text, vocab cards, captions |
+| `src/reels/<slug>/` | One folder per Reel: `spec.ts` (voice + visuals + timing), `scenes.tsx`, `SOURCES.md` |
+| `src/reels/demo/` | `VoxKitDemo`: a short demo of every kit block |
+| `public/reels/<slug>/` | That Reel's images, cutouts, props and voiceover files |
+| `public/fonts`, `public/sfx` | Local fonts and sound effects |
 
-**Render video**
-
-```console
-npx remotion render
-```
-
-**Upgrade Remotion**
-
-```console
-npx remotion upgrade
-```
-
-## Docs
-
-Get started with Remotion by reading the [fundamentals page](https://www.remotion.dev/docs/the-fundamentals).
-
-## Help
-
-We provide help on our [Discord server](https://discord.gg/6VzzNDwUwV).
-
-## Issues
-
-Found an issue with Remotion? [File an issue here](https://github.com/remotion-dev/remotion/issues/new).
+To make a Reel, ask Claude Code (in this folder) to "make a Vox Reel about …".
 
 ## License
 
-Note that for some entities a company license is needed. [Read the terms here](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md).
+Remotion is free for individuals and companies of up to 3 people.
+[Read the terms here](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md).

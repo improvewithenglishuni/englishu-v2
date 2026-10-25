@@ -8,6 +8,14 @@
 import { Config } from "@remotion/cli/config";
 
 Config.setRspack(true);
-Config.setVideoImageFormat("jpeg");
+// PNG frames: lossless text edges and a standard (TV-range) yuv420p output
+Config.setVideoImageFormat("png");
 Config.setOverwriteOutput(true);
 Config.setDefaultPremountInSeconds(2);
+
+// Instagram Reels export: H.264 + AAC, broad-compatibility pixel format, high quality
+Config.setCodec("h264");
+Config.setCrf(20);
+Config.setPixelFormat("yuv420p");
+Config.setAudioCodec("aac");
+Config.setAudioBitrate("320k");
