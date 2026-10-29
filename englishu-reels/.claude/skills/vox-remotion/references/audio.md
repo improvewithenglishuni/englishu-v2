@@ -51,9 +51,11 @@ can be eyeballed.
 
 ## Sound effects
 
-Local files in `public/sfx/` (generated with ffmpeg, safe to use):
-`whoosh.wav` (whips), `pop.wav` (cutout pops), `paper.wav` (paper
-rustle/rip), `tick.wav` (bar steps, list items), `stamp.wav` (slams, stamps).
+Local files in `public/sfx/` (generated with ffmpeg, peak-normalized to −3 dB,
+safe to use): `whoosh.wav` (whips), `pop.wav` (cutout pops), `paper.wav`
+(paper rustle/rip), `tick.wav` (bar steps, list items), `stamp.wav` (slams,
+stamps). Normalize any new SFX the same way, or quiet sounds vanish:
+`ffmpeg -i in.wav -af "volume=<−3 minus measured max_volume>dB" out.wav`.
 
 Richer free options:
 - `node scripts/fetch-sfx.mjs` downloads Remotion's free SFX

@@ -295,8 +295,11 @@ npx remotion render <ReelId>            # → out/<spec.id>.mp4, settings from r
 npx remotion still <ReelId> out/<spec.id>-cover.png --frame=<hook frame>
 ```
 
-Then verify with ffprobe (1080×1920, 30 fps, h264 + aac, expected duration).
-Details, cover image and upload tips: `references/render-instagram.md`.
+Render in this cloud environment — the user never installs or runs
+anything. Then verify with ffprobe (1080×1920, 30 fps, h264 + aac, expected
+duration), a full decode, audio levels at cues and a frame contact sheet, and
+deliver the MP4 with SendUserFile. Details, long-render splitting, cover
+image and upload tips: `references/render-instagram.md`.
 
 ## Delivery
 

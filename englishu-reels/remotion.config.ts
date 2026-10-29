@@ -6,6 +6,17 @@
  */
 
 import { Config } from "@remotion/cli/config";
+import { existsSync } from "node:fs";
+
+// Cloud sandbox: remotion.media (Remotion's browser download) is blocked by the network
+// policy, but Playwright's Chrome Headless Shell is preinstalled. Use it when present;
+// on any other computer this path doesn't exist and Remotion downloads its own browser.
+const SANDBOX_HEADLESS_SHELL =
+  "/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell";
+if (existsSync(SANDBOX_HEADLESS_SHELL)) {
+  Config.setBrowserExecutable(SANDBOX_HEADLESS_SHELL);
+  Config.setConcurrency("100%");
+}
 
 Config.setRspack(true);
 // PNG frames: lossless text edges and a standard (TV-range) yuv420p output

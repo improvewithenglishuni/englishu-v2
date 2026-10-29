@@ -1,6 +1,7 @@
 import { Composition, Folder } from "remotion";
 import { demoScenes } from "./reels/demo/scenes";
 import { demoSpec } from "./reels/demo/spec";
+import { RenderTest } from "./tests/RenderTest";
 import { calculateReelMetadata, VoxReel } from "./vox/Reel";
 import { REEL } from "./vox/theme";
 import type { ReelProps } from "./vox/timeline";
@@ -20,6 +21,16 @@ export const RemotionRoot: React.FC = () => {
           height={REEL.height}
           defaultProps={{ spec: demoSpec, showSafeZones: false } satisfies ReelProps}
           calculateMetadata={calculateReelMetadata}
+        />
+      </Folder>
+      <Folder name="Tests">
+        <Composition
+          id="RenderTest"
+          component={RenderTest}
+          durationInFrames={REEL.fps * 3}
+          fps={REEL.fps}
+          width={REEL.width}
+          height={REEL.height}
         />
       </Folder>
     </>
