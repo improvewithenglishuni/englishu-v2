@@ -1,4 +1,4 @@
-import { AbsoluteFill, random, staticFile, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Img, random, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 
 /** Flat editorial color field with halftone dots and paper grain. */
 export const PaperBackground: React.FC<{
@@ -35,30 +35,42 @@ export const PaperBackground: React.FC<{
   );
 };
 
+const GRAIN_TILE = 768;
+
 /**
  * Animated paper/film grain: a pre-made noise tile (public/textures/grain.png)
- * jumped to a new offset every 2 frames for a subtle print flicker.
- * Much cheaper to render than full-frame SVG turbulence (~30% faster Reel renders).
+ * laid out as <Img> tiles (so rendering waits for it) and jumped to a new
+ * offset every 2 frames for a subtle print flicker. Much cheaper to render
+ * than full-frame SVG turbulence.
  */
 export const PaperGrain: React.FC<{ opacity?: number; animated?: boolean }> = ({
   opacity = 0.3,
   animated = true,
 }) => {
   const frame = useCurrentFrame();
+  const { width, height } = useVideoConfig();
   const step = animated ? Math.floor(frame / 2) : 0;
-  const x = Math.round(random(`gx${step}`) * 768);
-  const y = Math.round(random(`gy${step}`) * 768);
+  const ox = -Math.round(random(`gx${step}`) * GRAIN_TILE);
+  const oy = -Math.round(random(`gy${step}`) * GRAIN_TILE);
+  const cols = Math.ceil(width / GRAIN_TILE) + 1;
+  const rows = Math.ceil(height / GRAIN_TILE) + 1;
+  const src = staticFile("textures/grain.png");
   return (
-    <AbsoluteFill
-      style={{
-        opacity,
-        mixBlendMode: "multiply",
-        pointerEvents: "none",
-        backgroundImage: `url(${staticFile("textures/grain.png")})`,
-        backgroundSize: "768px 768px",
-        backgroundPosition: `${x}px ${y}px`,
-      }}
-    />
+    <AbsoluteFill style={{ opacity, mixBlendMode: "multiply", pointerEvents: "none", overflow: "hidden" }}>
+      {Array.from({ length: rows * cols }).map((_, i) => (
+        <Img
+          key={i}
+          src={src}
+          style={{
+            position: "absolute",
+            width: GRAIN_TILE,
+            height: GRAIN_TILE,
+            left: ox + (i % cols) * GRAIN_TILE,
+            top: oy + Math.floor(i / cols) * GRAIN_TILE,
+          }}
+        />
+      ))}
+    </AbsoluteFill>
   );
 };
 

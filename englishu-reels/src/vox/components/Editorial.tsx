@@ -83,7 +83,9 @@ export const Stamp: React.FC<{
   color?: string;
   /** "multiply" looks inked-in on light paper; use "normal" on dark fields */
   blend?: "multiply" | "normal";
-}> = ({ text, at, x, y, rotate = -8, fontSize = 130, color, blend = "multiply" }) => {
+  /** Optional paper backing behind the stamp, for busy backgrounds */
+  fill?: string;
+}> = ({ text, at, x, y, rotate = -8, fontSize = 130, color, blend = "multiply", fill }) => {
   const frame = useCurrentFrame();
   const palette = usePalette();
   const c = color ?? palette.accent;
@@ -103,6 +105,7 @@ export const Stamp: React.FC<{
         border: `10px solid ${c}`,
         color: c,
         padding: "6px 30px",
+        background: fill,
         fontFamily: isHebrew ? fonts.heStamp : fonts.en,
         fontSize,
         lineHeight: 1.1,

@@ -85,7 +85,8 @@ export const RtlText: React.FC<{
             lang={t.english ? "en" : undefined}
             style={{
               display: "inline-block",
-              marginInlineEnd: t.glued ? 0 : "0.25em",
+              // Physical left = end side of the RTL line (an LTR token would flip "inline-end")
+              marginLeft: t.glued ? 0 : "0.25em",
               opacity: Math.min(1, p * 1.5),
               translate: `0 ${(1 - p) * 0.5}em`,
               scale: String(0.85 + 0.15 * p),

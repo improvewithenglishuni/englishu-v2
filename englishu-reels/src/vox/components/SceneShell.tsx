@@ -18,21 +18,25 @@ export const SceneShell: React.FC<{
   whipFrames?: number;
   push?: number; // total scale gained across the scene (0.06 = slow push-in)
   grain?: number;
+  /** Static color behind the moving layer; set it to the scene's field color so cut frames never flash empty */
+  backdrop?: string;
   style?: React.CSSProperties;
-}> = ({ children, enter = "up", exit = "up", whipFrames = 7, push = 0.06, grain = 0.22, style }) => {
+}> = ({ children, enter = "up", exit = "up", whipFrames = 7, push = 0.06, grain = 0.22, backdrop, style }) => {
   const frame = useCurrentFrame();
   const { durationInFrames, width, height } = useVideoConfig();
 
   const inP = enter === "none" ? 1 : interpolate(frame, [0, whipFrames], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
   const outP = exit === "none" ? 0 : interpolate(frame, [durationInFrames - whipFrames, durationInFrames], [0, 1], { ...clamp, easing: Easing.in(Easing.cubic) });
 
-  // Entering comes FROM the opposite side of the travel direction
+  // Entering comes FROM the opposite side of the travel direction. Content travels
+  // 70% of the frame, so the cut frames still show it smeared by motion blur.
+  const TRAVEL = 0.7;
   const vector = (w: Whip, amount: number) => {
     switch (w) {
-      case "up": return [0, height * amount];
-      case "down": return [0, -height * amount];
-      case "left": return [width * amount, 0];
-      case "right": return [-width * amount, 0];
+      case "up": return [0, height * amount * TRAVEL];
+      case "down": return [0, -height * amount * TRAVEL];
+      case "left": return [width * amount * TRAVEL, 0];
+      case "right": return [-width * amount * TRAVEL, 0];
       default: return [0, 0];
     }
   };
@@ -44,7 +48,7 @@ export const SceneShell: React.FC<{
   const pushScale = 1 + interpolate(frame, [0, durationInFrames], [0, push]);
 
   return (
-    <AbsoluteFill style={{ overflow: "hidden", ...style }}>
+    <AbsoluteFill style={{ overflow: "hidden", backgroundColor: backdrop, ...style }}>
       <AbsoluteFill
         style={{
           translate: `${ix + ox}px ${iy + oy}px`,
