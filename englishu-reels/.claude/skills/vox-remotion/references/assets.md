@@ -33,6 +33,21 @@ CC-BY / CC-BY-SA require attribution: put a credit line in the Instagram
 caption. Avoid images of identifiable private people, brand logos as the main
 subject, and anything from a Google image search without a license page.
 
+## Getting Commons images from the cloud environment
+
+The `englishu-v2` cloud environment allows `commons.wikimedia.org` and
+`upload.wikimedia.org`. Wikimedia throttles full-size originals (429 with a
+10-minute wait), so download **standard 1280px thumbnails** one at a time:
+
+```bash
+python3 -I scripts/commons-thumbs.py <out-dir> "virus=Smallpox virus virions TEM PHIL 1849.JPG" ...
+python3 -I scripts/archival-print.py in.jpg public/reels/<slug>/archival/out.jpg "l,t,r,b"   # optional crop fractions
+```
+
+`archival-print.py` gives the Vox treatment: B&W, contrast, halftone dots,
+ink-on-cream duotone. Keep posters in color; crop off scan borders. Check
+each file's license on its Commons page and record it in `SOURCES.md`.
+
 ## Making cutouts (background removal) — free options
 
 1. **Mac (easiest):** in Finder, right-click an image → Quick Actions →

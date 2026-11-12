@@ -77,6 +77,17 @@ Grain overlay (`opacity`, `animated`); masking tape strip (`style`, `width`).
 Returns a CSS `translate` string; put it on the scene's content wrapper for
 slams and stamps.
 
+### Collage (`components/Collage.tsx`): the core Vox look
+- `TornPaper`: colored paper scrap with torn edges (background collage layer); `x, y, width, height, color, rotate, seed, enterAt, from, drift`, optional children (e.g. a diagram card).
+- `PhotoPrint`: archival photo on a torn white border, taped, with a Ken Burns push; `src, x, y, width, height, rotate, enterAt, from ("slap" default), zoom, focus, caption`.
+- `NewsClipping`: torn newsprint with dateline, serif headline (wrap words in `Highlight`), grey body columns. Never invent a real-looking masthead.
+- `Highlight`: yellow highlighter sweep behind inline text (`rtl` sweeps right→left).
+- `TextStrip`: Hebrew/mixed text on a torn white strip; `highlight` lists words to sweep.
+- `LabelBox`: black (or colored) label with white type, unfurls from the left.
+- `MapDot`: pulsing red location dot for maps.
+
+Warm cream paper (`#efe4cb`, vignette ≈0.12) reads as Vox; the default palette paper looks grey under grain.
+
 ### `CaptionChunk`, `SafeZones`
 Used by `VoxReel`; captions come from `SceneSpec.captions`. Toggle
 `showSafeZones` in Studio's props panel while laying out.
