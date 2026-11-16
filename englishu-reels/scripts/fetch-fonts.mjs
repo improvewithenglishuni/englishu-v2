@@ -10,6 +10,7 @@ const FONTS = [
   { module: "FrankRuhlLibre", weights: ["500", "900"] },
   { module: "RubikDirt", weights: ["400"] },
   { module: "SpecialElite", weights: ["400"] },
+  { module: "Rubik", weights: ["500", "800", "900"] },
 ];
 const SUBSETS = ["hebrew", "latin", "latin-ext"];
 
