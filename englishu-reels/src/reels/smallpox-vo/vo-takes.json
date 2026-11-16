@@ -1,0 +1,15 @@
+{"room": [0.3, 1.9],
+ "lines": [
+  {"id": "l1-2-scar-300m", "from": 1.9,   "to": 13.45, "gap_after": 0.35},
+  {"id": "l3-today",       "from": 20.3,  "to": 23.95, "gap_after": 0.45},
+  {"id": "l4a-name",       "from": 29.0,  "to": 33.0,  "gap_after": 0.32},
+  {"id": "l4b-1796",       "from": 83.3,  "to": 91.2,  "gap_after": 0.3},
+  {"id": "l4c-l5a-vaccine","from": 93.5,  "to": 98.85, "gap_after": 0.25},
+  {"id": "l5b-1967",       "from": 108.6, "to": 112.4, "gap_after": 0.3},
+  {"id": "en-eradicate",   "from": 112.45,"to": 116.2, "gap_after": 0.4},
+  {"id": "l6a-how",        "from": 116.3, "to": 121.6, "gap_after": 0.3},
+  {"id": "l6b-ring",       "from": 158.4, "to": 166.8, "gap_after": 0.4},
+  {"id": "l7-somalia-1980","from": 174.9, "to": 188.6, "gap_after": 0.35},
+  {"id": "l8-only",        "from": 188.65,"to": 193.0, "gap_after": 0.8},
+  {"id": "l9-ending",      "from": 198.0, "to": 205.5, "gap_after": 0.5}
+ ]}

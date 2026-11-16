@@ -3,6 +3,7 @@ import { demoScenes } from "./reels/demo/scenes";
 import { demoSpec } from "./reels/demo/spec";
 import { smallpoxScenes } from "./reels/smallpox/scenes";
 import { smallpoxSpec } from "./reels/smallpox/spec";
+import { SmallpoxVoReel, TOTAL_FRAMES as SMALLPOX_VO_FRAMES } from "./reels/smallpox-vo/SmallpoxVoReel";
 import { RenderTest } from "./tests/RenderTest";
 import { calculateReelMetadata, VoxReel } from "./vox/Reel";
 import { REEL } from "./vox/theme";
@@ -15,6 +16,14 @@ export const RemotionRoot: React.FC = () => {
   return (
     <>
       <Folder name="Reels">
+        <Composition
+          id="SmallpoxReelVO"
+          component={SmallpoxVoReel}
+          durationInFrames={SMALLPOX_VO_FRAMES}
+          fps={REEL.fps}
+          width={REEL.width}
+          height={REEL.height}
+        />
         <Composition
           id="SmallpoxReel"
           component={SmallpoxReel}

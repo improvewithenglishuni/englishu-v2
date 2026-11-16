@@ -1,0 +1,21 @@
+{
+  "total": 75.42,
+  "sfx": [
+    {"kind": "pop", "at": 9.06, "gain_db": -2},
+    {"kind": "pop", "at": 18.24, "gain_db": -2},
+    {"kind": "pop", "at": 25.78, "gain_db": -2},
+    {"kind": "pop", "at": 30.56, "gain_db": -2},
+    {"kind": "whoosh", "at": 33.25, "gain_db": -6},
+    {"kind": "thump", "at": 34.68, "gain_db": 0},
+    {"kind": "sparkle", "at": 34.72, "gain_db": -6},
+    {"kind": "pop", "at": 43.0, "gain_db": -4},
+    {"kind": "pop", "at": 54.22, "gain_db": -2},
+    {"kind": "pop", "at": 56.04, "gain_db": -2},
+    {"kind": "thump", "at": 57.98, "gain_db": -3},
+    {"kind": "pop", "at": 62.66, "gain_db": -2},
+    {"kind": "tear", "at": 64.2, "gain_db": -4},
+    {"kind": "sparkle", "at": 70.9, "gain_db": -8},
+    {"kind": "whoosh", "at": 72.62, "gain_db": -6},
+    {"kind": "chime", "at": 74.2, "gain_db": -4}
+  ]
+}

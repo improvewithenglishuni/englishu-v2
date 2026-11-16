@@ -13,7 +13,8 @@ export const useScene = () => {
   return ctx;
 };
 
-export const usePalette = (): Palette => palettes[useScene().style];
+/** Palette of the current scene; outside a VoxReel scene, the default style's palette. */
+export const usePalette = (): Palette => palettes[useContext(SceneContext)?.style ?? "mixed-media"];
 
 /** Frame (relative to scene start) of a named cue. Falls back to `fallbackSeconds`. */
 export const useCue = (name: string, fallbackSeconds = 0) => {
