@@ -1,0 +1,7 @@
+numpy
+pillow
+opencv-python-headless
+scipy
+# optional, better background removal for make_cutout.py (falls back to GrabCut without it)
+rembg
+onnxruntime

@@ -1,0 +1,14 @@
+{
+  "name": "plane",
+  "lightBase": "#5E8CA8",
+  "lightDots": "#4A7894",
+  "darkBase": "#1D2A3C",
+  "darkSecondary": "#2D384B",
+  "paleLayer": "#ACD4ED",
+  "paper": "#E4E2DC",
+  "cream": "#F3EFE4",
+  "ink": "#172A40",
+  "crystalFace": "#CDD5DA",
+  "crystalLine": "#7F97A6",
+  "accent": "#E8A04B"
+}

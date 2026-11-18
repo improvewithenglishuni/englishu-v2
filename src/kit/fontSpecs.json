@@ -1,0 +1,6 @@
+[
+  {"module": "Anton", "weights": ["400"], "subsets": ["latin"]},
+  {"module": "Rubik", "weights": ["700", "800", "900"], "subsets": ["hebrew", "latin"]},
+  {"module": "Heebo", "weights": ["700", "800", "900"], "subsets": ["hebrew", "latin"]},
+  {"module": "FrankRuhlLibre", "weights": ["700", "900"], "subsets": ["hebrew", "latin"]}
+]

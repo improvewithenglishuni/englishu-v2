@@ -1,0 +1,20 @@
+/** All beats of TestLook in frames (30 fps, 7 s = 210 frames). Entrances 4-6 frames apart. */
+export const T = {
+  clouds: 0,
+  planeIn: 4,
+  planeArrive: 46,
+  label: 16,
+  labelOut: 50,
+  keyword: 56,
+  split: 72,
+  swoosh: 80,
+  subtitleIn: 30,
+  subtitleOut: 104,
+  wipe: 104,
+  wipeDur: 26,
+  arrows: 134,
+  scatter: 140,
+  disperse: 152,
+  disperseScatter: 170,
+  end: 210,
+} as const;

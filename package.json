@@ -1,0 +1,26 @@
+{
+  "name": "englishu-reel-kit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Remotion kit that reproduces the EnglishU paper-collage Reel style",
+  "scripts": {
+    "studio": "remotion studio",
+    "render:test": "remotion render TestLook out/TestLook.mp4",
+    "still": "remotion still",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.545",
+    "@remotion/fonts": "^4.0.545",
+    "@remotion/google-fonts": "4.0.545",
+    "@remotion/zod-types": "4.0.545",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.545",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}
