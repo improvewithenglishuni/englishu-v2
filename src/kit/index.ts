@@ -8,6 +8,8 @@ export * from './random';
 export {Place} from './Place';
 export {World, WorldLayer, TornWipe} from './World';
 export {Cutout} from './Cutout';
+export {ColorBlock} from './ColorBlock';
+export {BigNumber} from './BigNumber';
 export {TornStrip} from './TornStrip';
 export {PaperCloud} from './PaperCloud';
 export {Crystal} from './Crystal';

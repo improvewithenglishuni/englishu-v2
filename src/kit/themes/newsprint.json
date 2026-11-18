@@ -1,0 +1,15 @@
+{
+  "name": "newsprint",
+  "lightBase": "#E8DDC6",
+  "lightDots": "#D6C8A8",
+  "darkBase": "#17140F",
+  "darkSecondary": "#2B251B",
+  "paleLayer": "#EFE6D2",
+  "paper": "#F7F2E4",
+  "cream": "#F7F2E4",
+  "ink": "#17140F",
+  "crystalFace": "#D9D0BA",
+  "crystalLine": "#8E836B",
+  "accent": "#E5412D",
+  "spot": "#F2B632"
+}

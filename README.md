@@ -115,3 +115,8 @@ REMOTION_LOCAL_FONTS=1 npx remotion render Smallpox out/Smallpox.mp4 --concurren
 retiming steps are in `src/reels/Smallpox/SCRIPT.md`. Its world is `src/kit/themes/smallpox.json`
 (sage paper, bottle-green dark paper, cream, one coral accent); assets were built with
 `make_plate.py` / `make_props.py --palette smallpox`.
+
+
+## Blueprint for new Reels
+
+Start from `reference/VOX_BLUEPRINT.md`. The smallpox Reel (`src/reels/Smallpox`) is the worked example: newsprint palette, photo cutouts from `tools/make_photo_cutout.py`, `ColorBlock` and `BigNumber`.

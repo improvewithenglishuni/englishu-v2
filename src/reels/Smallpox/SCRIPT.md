@@ -1,51 +1,15 @@
-# Smallpox Reel: script, words, timing
+# Smallpox Reel v2: script, scene table, timing
 
-Target words: **ERADICATE** (verb, C1, למגר / לשרש) and **OUTBREAK** (noun, B2, התפרצות).
-About 87 spoken words, 8 beats, ~34.6 s + 2.7 s end card. One fact: the scar on grandparents' arms
-is the mark of the only human disease the world erased.
+Target words: **ERADICATE** (C1, למגר / לשרש) and **OUTBREAK** (B2, התפרצות). Check both in the word bank before recording (levels are my estimate).
+One fact: the small scar on grandparents' arms marks the only human disease the world erased. 34.9 s including the end card.
 
-The levels are my estimate (the word bank was not reachable): check both words in
-`Master_Word_Bank_Difficulty.csv` before recording.
+| Beat | s | Narration | Visual |
+|---|---|---|---|
+| 1 | 0-4.3 | הצלקת הקטנה על הזרוע של סבתא סימנה מחלה שהרגה 300 מיליון | CDC virus photo on mustard card, label, `300,000,000` |
+| 2 | 4.4-7.3 | והיום? אפס חולים בעולם | giant `0` on vermilion card, virus photo shrinks away |
+| 3 | 7.4-12.9 | ב-1796 הרופא ג'נר שם לב: מי שנדבק מפרות לא חלה | `1796`, Jenner engraving, Gillray "Cow-Pock" cartoon, label "החיסון הראשון" |
+| 4 | 13-18.8 | ב-1967 העולם החליט: They set out to eradicate smallpox, for good. | wipe to dark, `1967`, Ota Chou vaccination painting, ERADICATE splits, label למגר / לשרש |
+| 5 | 18.9-26.8 | לא מחסנים את כולם. כשפרץ outbreak, מחסנים את כל מי שסביב, מעגל אחרי מעגל | OUTBREAK, התפרצות, vermilion card ringed by 3 rings of CDC vial cutouts |
+| 6 | 27-32.2 | ב-1980 הוכרז: נגמר. בפעם הבאה שתראו צלקת כזו, זה סימן לניצחון | wipe to light, `1980`, SMALLPOX struck out, "סימן לניצחון" |
 
-## Script (for recording)
-
-1. תסתכלו על הזרוע של סבא או סבתא. רואים צלקת קטנה ועגולה?
-2. זה הסימן של מחלה שהרגה כשלוש מאות מיליון איש במאה ה-20.
-3. והיום? אפס חולים בעולם.
-4. ב-1796 רופא שם לב שחולבות שנדבקו מפרות, לא חלו בה. ככה נולד החיסון הראשון.
-5. ב-1967 העולם החליט: **They set out to eradicate smallpox, for good.**
-6. לא מחסנים את כולם. כשהתפרץ **outbreak**, צוות חיסן את כל מי שסביב החולים. מעגל אחרי מעגל.
-7. ב-1980 הוכרז: נגמר. המחלה היחידה שהעולם מחק לגמרי.
-8. אז בפעם הבאה שתראו צלקת כזו... תזכרו: זה סימן לניצחון.
-
-Facts checked earlier against WHO: Jenner 1796, intensified eradication programme 1967, last natural case
-Somalia 1977 (not shown on screen in this cut), declared eradicated 1980, ~300 million deaths in the
-20th century (a commonly cited estimate, say "כשלוש מאות מיליון").
-
-## Beat map (seconds are ESTIMATES; retime to the recording)
-
-| Beat | Start | On screen |
-|---|---|---|
-| 1 | 0.0 | arm with the scar, hook label, arrow to the scar |
-| 2 | 3.4 | 300M, "במאה ה-20", paper people |
-| 3 | 6.6 | "והיום?", giant 0, the people vanish |
-| 4 | 8.4 | 1796, paper cow, "החיסון הראשון" |
-| 5 | 13.0 | torn wipe to the dark world, 1967, ERADICATE, `eradicate = למגר / לשרש` |
-| 6 | 17.6 | `outbreak = התפרצות`, coral outbreak, three rings of people close around it |
-| 7 | 25.0 | rings vanish, 1980, "הוכרז: נגמר", the disease name crossed out |
-| 8 | 29.8 | torn wipe back to the light world, the arm returns, "סימן לניצחון" |
-| end | 34.6 | end card (public/endcard.png, 2.7 s) |
-
-The English sentence starts at 15.0 s, about 43% in; to get nearer one third, shorten beats 1-4 when recording.
-
-## When the voiceover exists
-
-1. Put it in `public/smallpox-voiceover.mp3` and set `voiceover` in the Studio props.
-2. Edit only the `SEC` seconds in `timing.ts` (and the subtitle `from`/`to` in `src/Root.tsx`).
-3. Real end card: replace `public/endcard.png`, then `endCard: true` and render all frames.
-
-## Recording tips
-
-- Talk to one curious friend; stress one word per sentence.
-- Line 5: slow down on *eradicate*. Line 8: a real pause at the "..." and a falling tone.
-- Record two full takes; the edit uses only complete ones.
+Sources (all public domain): see `tools/sources/SOURCES.md`. Retime only `SEC` in `timing.ts` when the voiceover exists.

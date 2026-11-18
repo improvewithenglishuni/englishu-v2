@@ -102,3 +102,7 @@ dark world. No orange fills elsewhere except the one story prop (engine exhaust)
   clear (Instagram UI). Subtitles sit just above that line.
 * Cutouts are always bordered by thin white paper (8–12 px, a bit irregular) and softly
   shadowed; never bare rectangles. Rotations stay within ±4° for labels/photos.
+
+
+---
+See `reference/VOX_BLUEPRINT.md` for the self-contained blueprint (photo-first, newsprint palette, no ornament unless on-topic). It supersedes any plane-specific motifs here for new topics.
