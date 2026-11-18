@@ -6,6 +6,7 @@
 import React, {createContext, useContext} from 'react';
 import {staticFile} from 'remotion';
 import plane from './themes/plane.json';
+import smallpox from './themes/smallpox.json';
 
 export type Theme = {
   name: string;
@@ -29,7 +30,7 @@ export type Theme = {
   accent: string;
 };
 
-export const themes: Record<string, Theme> = {plane};
+export const themes: Record<string, Theme> = {plane, smallpox};
 export const themeNames = Object.keys(themes) as [string, ...string[]];
 export const defaultTheme: Theme = plane;
 

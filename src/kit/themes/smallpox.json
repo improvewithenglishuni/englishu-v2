@@ -1,0 +1,14 @@
+{
+  "name": "smallpox",
+  "lightBase": "#7FA597",
+  "lightDots": "#6A917F",
+  "darkBase": "#1A2A28",
+  "darkSecondary": "#2A3D3A",
+  "paleLayer": "#CBE0D2",
+  "paper": "#E6E2D6",
+  "cream": "#F4EFE3",
+  "ink": "#14231F",
+  "crystalFace": "#D3DDD6",
+  "crystalLine": "#86A092",
+  "accent": "#E4694B"
+}

@@ -101,4 +101,17 @@ src/kit/            the kit: World, WorldLayer, TornWipe, Cutout, TornStrip, Pap
                     theme.ts + themes/*.json, torn.ts (SVG clip-path generator), paths.ts
 src/reels/TestLook/ the 7 s look test (one file per scene)
 src/reels/_Template copy this to start a Reel
+src/reels/Smallpox/ the smallpox Reel (ERADICATE + OUTBREAK): SCRIPT.md, timing.ts, one file per scene,
+                    paper.tsx = paper-craft pieces drawn in code (arm, cow, outbreak blob, rings)
 ```
+
+## Smallpox Reel
+
+```bash
+REMOTION_LOCAL_FONTS=1 npx remotion render Smallpox out/Smallpox.mp4 --concurrency=1
+```
+
+`--concurrency=1` matters on small machines (the SVG paper filters are heavy). Script, beat map and the
+retiming steps are in `src/reels/Smallpox/SCRIPT.md`. Its world is `src/kit/themes/smallpox.json`
+(sage paper, bottle-green dark paper, cream, one coral accent); assets were built with
+`make_plate.py` / `make_props.py --palette smallpox`.
