@@ -39,7 +39,7 @@ const milkmaid = staticFile('assets/vox/milkmaid_new.jpg');
 
 const cover: React.CSSProperties = {width: '100%', height: '100%', objectFit: 'cover', display: 'block'};
 
-/** 1. HOOK: the REAL scar photo enlarged ~300% so the scars sit in the centre, circled with a red marker. */
+/** 1. HOOK: the arm photo first appears whole; then the camera zooms (~330%) into the scars while a red marker circles them. */
 const Hook = () => (
   <ScarSticker
     src={arm}
@@ -49,13 +49,14 @@ const Hook = () => (
     aspect={1153 / 1364}
     rotate={-4}
     at={2}
-    scarAt={0}
-    zoomFrom={2.9}
+    scarAt={s(0.75)}
+    zoomFrom={1}
     zoomTo={3.3}
+    zoomDur={s(1.35)}
     scar={{x: 0.336, y: 0.5}}
     scarTarget={{x: 540, y: 720}}
     scars={[]}
-    marker={{cx: 0.336, cy: 0.5, rx: 66, ry: 104, rot: -19, at: s(0.45)}}
+    marker={{cx: 0.336, cy: 0.5, rx: 66, ry: 104, rot: -19, at: s(0.8), dur: s(1.3)}}
   />
 );
 
@@ -176,7 +177,7 @@ const Outbreak = () => {
 
 const CASES: [number, number][] = [
   [1967, 122098], [1968, 80020], [1969, 45291], [1970, 33219], [1971, 51993], [1972, 65153],
-  [1973, 135853], [1974, 218326], [1975, 19278], [1976, 954], [1977, 3234], [1978, 0], [1979, 0], [1980, 0],
+  [1973, 135853], [1974, 218326], [1975, 19278], [1976, 954], [1977, 3234], [1978, 2], [1979, 0], [1980, 0],
 ];
 
 /** 9. Reported smallpox cases worldwide fall to zero in 1980 (WHO via Our World in Data). */
@@ -210,9 +211,6 @@ const Victory = () => {
   const z = 1 + 2.5 * m;
   return (
     <>
-      <Place x={540} y={470} opacity={Math.min(1, Math.max(0, (frame - 2) / 10))}>
-        <div dir="ltr" style={{fontFamily: 'var(--kit-font)', fontWeight: 700, fontSize: 40, color: '#B9BCCB', letterSpacing: 0.5}}>Source: WHO</div>
-      </Place>
       <div style={{position: 'absolute', inset: 0, transformOrigin: '0 0', transform: `translate(${S.x + (C.x - S.x) * m}px, ${S.y + (C.y - S.y) * m}px) scale(${z}) translate(${-S.x}px, ${-S.y}px)`}}>
         <WorldMap
           box={{x: 0, y: 520, w: 1080}}
@@ -225,6 +223,15 @@ const Victory = () => {
           at={4}
         />
       </div>
+      <Place x={540} y={440} opacity={Math.min(1, Math.max(0, (frame - 2) / 10)) * (1 - Math.min(1, Math.max(0, (frame - s(1.5)) / 8)))}>
+        <div dir="ltr" style={{fontFamily: 'var(--kit-font)', fontWeight: 700, fontSize: 46, color: '#E6E8F4', letterSpacing: 0.5, whiteSpace: 'nowrap'}}>Endemic smallpox, 1967</div>
+      </Place>
+      <Place x={540} y={440} opacity={Math.min(1, Math.max(0, (frame - s(1.7)) / 8)) * (1 - Math.min(1, Math.max(0, (frame - s(2.8)) / 8)))}>
+        <div dir="ltr" style={{fontFamily: 'var(--kit-font)', fontWeight: 700, fontSize: 46, color: '#E6E8F4', letterSpacing: 0.5, whiteSpace: 'nowrap', background: '#1B1E2B', padding: '6px 22px', borderRadius: 6}}>Last natural case: Somalia, 1977</div>
+      </Place>
+      <Place x={540} y={490} opacity={Math.min(1, Math.max(0, (frame - 2) / 10)) * (1 - Math.min(1, Math.max(0, (frame - s(1.5)) / 8))) + Math.min(1, Math.max(0, (frame - s(3.6)) / 8))}>
+        <div dir="ltr" style={{fontFamily: 'var(--kit-font)', fontWeight: 700, fontSize: 34, color: '#B9BCCB', letterSpacing: 0.5}}>Source: WHO</div>
+      </Place>
       <Stamp text="ERADICATED" x={540} y={800} fontSize={124} rotate={-8} heavy at={s(3.8)} />
       <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(4.3)} />
     </>

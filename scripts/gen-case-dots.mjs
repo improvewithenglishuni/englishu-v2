@@ -6,8 +6,12 @@ import {feature} from 'topojson-client';
 const require = createRequire(import.meta.url);
 const world = JSON.parse(fs.readFileSync(require.resolve('world-atlas/countries-110m.json')));
 const feats = feature(world, world.objects.countries).features.filter((f) => f.properties.name !== 'Antarctica' && f.properties.name !== 'Fiji');
+// The 31 countries/territories with endemic smallpox in January 1967 (Fenner et al., WHO 1988, ch. 10), modern names.
+const ENDEMIC_1967 = new Set(['Burundi','Dem. Rep. Congo','Ethiopia','Kenya','Malawi','Mozambique','Rwanda','South Africa','Zimbabwe','Uganda','Tanzania','Zambia','Cameroon','Benin','Ghana','Guinea','Liberia','Mali','Niger','Nigeria','Sierra Leone','Togo','Burkina Faso','Brazil','Afghanistan','Bangladesh','India','Indonesia','Nepal','Pakistan','Yemen']);
 const proj = geoNaturalEarth1().fitSize([1000, 520], {type: 'FeatureCollection', features: feats});
-const bounds = feats.map((f) => geoBounds(f));
+const endemic = feats.filter((f) => ENDEMIC_1967.has(f.properties.name));
+console.log('endemic polygons', endemic.length);
+const bounds = endemic.map((f) => geoBounds(f));
 let seed = 7;
 const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 const w = (lon, lat) => {
@@ -19,16 +23,15 @@ const w = (lon, lat) => {
 };
 const out = [];
 let tries = 0;
-while (out.length < 1900 && tries < 400000) {
+while (out.length < 1900 && tries < 900000) {
   tries++;
   const lon = -180 + rnd() * 360;
   const lat = -58 + rnd() * 130;
-  if (rnd() > w(lon, lat)) continue;
   let hit = false;
-  for (let i = 0; i < feats.length && !hit; i++) {
+  for (let i = 0; i < endemic.length && !hit; i++) {
     const [[a, b], [c, d]] = bounds[i];
     if (c < a ? false : lon < a || lon > c || lat < b || lat > d) continue;
-    if (geoContains(feats[i], [lon, lat])) hit = true;
+    if (geoContains(endemic[i], [lon, lat])) hit = true;
   }
   if (!hit) continue;
   const p = proj([lon, lat]);

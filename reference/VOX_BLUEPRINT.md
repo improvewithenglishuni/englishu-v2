@@ -62,3 +62,6 @@ Rules: <= ~90 Hebrew words, <= 8 beats, ONE surprising fact, two target words, t
 - Cut-out stickers: let cut ends fall off-frame; never show a severed limb.
 - Big numbers sit on a crowd that disappears as the number falls.
 - No coloured disc behind portraits.
+
+## Accuracy rule (Sharon, 2026-11-19): 100% accurate, no exceptions
+Literally every piece of information in a reel must be true and verified against a named source before it ships: narration, subtitles, labels, numbers, dates, captions, chart values, map graphics and what each image is or shows. Visuals must never imply a false fact (example: a vaccination scar is a sign of the SOLUTION, the vaccine, never of the disease; map dots only on countries where the disease really was endemic). If a fact cannot be verified, change the line or cut it. Qualify honestly ("reported cases", "natural case", "in the 20th century"). Flag any image whose identity or provenance is unverified, and log sources in `tools/sources/SOURCES.md`.

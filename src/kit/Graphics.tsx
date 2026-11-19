@@ -152,16 +152,19 @@ export const ScarSticker: React.FC<{
   scars?: number[][];
   zoomFrom?: number;
   zoomTo?: number;
-  /** frame point where the `scar` point of the sticker should sit (overrides x,y) */
+  zoomDur?: number;
+  /** the camera pans while zooming so the `scar` point of the sticker ends up at this frame point */
   scarTarget?: {x: number; y: number};
   /** hand-drawn red marker loop: centre as fractions of the sticker, radii in sticker px, rot in degrees */
-  marker?: {cx: number; cy: number; rx: number; ry: number; rot?: number; at: number};
+  marker?: {cx: number; cy: number; rx: number; ry: number; rot?: number; at: number; dur?: number};
   exitAt?: number;
-}> = ({src, x, y, width, rotate = -5, at = 0, scarAt = 12, zoomFrom = 1, zoomTo = 1.28, scar = {x: 0.5, y: 0.5}, aspect = 1202 / 960, scars = [[0.469, 0.408], [0.504, 0.491], [0.529, 0.552]], scarTarget, marker, exitAt}) => {
+}> = ({src, x, y, width, rotate = -5, at = 0, scarAt = 12, zoomFrom = 1, zoomTo = 1.28, zoomDur = 60, scar = {x: 0.5, y: 0.5}, aspect = 1202 / 960, scars = [[0.469, 0.408], [0.504, 0.491], [0.529, 0.552]], scarTarget, marker, exitAt}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const glow = clamp01((frame - scarAt) / 10) * (0.55 + 0.25 * Math.sin((frame - scarAt) * 0.28));
-  const zoom = interpolate(frame, [scarAt, scarAt + 60], [zoomFrom, zoomTo], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const zp0 = clamp01((frame - scarAt) / zoomDur);
+  const zp = scarTarget ? (zp0 < 0.5 ? 2 * zp0 * zp0 : 1 - Math.pow(-2 * zp0 + 2, 2) / 2) : zp0;
+  const zoom = zoomFrom + (zoomTo - zoomFrom) * zp;
   const e = exitFactor(frame, exitAt, fps);
   const s = clamp01(pop(frame, at, fps, SETTLE));
   if (s * e <= 0.001) return null;
@@ -172,8 +175,9 @@ export const ScarSticker: React.FC<{
     const vx = (scar.x - 0.5) * width;
     const vy = (scar.y - 0.5) * h;
     const r = (rotate * Math.PI) / 180;
-    px = scarTarget.x - (vx * Math.cos(r) - vy * Math.sin(r));
-    py = scarTarget.y - (vx * Math.sin(r) + vy * Math.cos(r));
+    const s0 = {x: x + (vx * Math.cos(r) - vy * Math.sin(r)), y: y + (vx * Math.sin(r) + vy * Math.cos(r))};
+    px = x + (scarTarget.x - s0.x) * zp;
+    py = y + (scarTarget.y - s0.y) * zp;
   }
   let markerPath = '';
   if (marker) {
@@ -187,7 +191,7 @@ export const ScarSticker: React.FC<{
     }
     markerPath = pts.join(' ');
   }
-  const mp = marker ? clamp01((frame - marker.at) / 16) : 0;
+  const mp = marker ? clamp01((frame - marker.at) / (marker.dur ?? 16)) : 0;
   return (
     <Place x={px} y={py + (1 - s) * 420} rotate={rotate} opacity={s * e}>
       <div style={{position: 'relative', width, height: h, transform: `scale(${zoom})`, transformOrigin: `${scar.x * 100}% ${scar.y * 100}%`, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.38))'}}>

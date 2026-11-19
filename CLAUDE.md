@@ -18,6 +18,8 @@ Sharon (teacher, solo founder of EnglishU) makes ~30-35 s Hebrew-narrated, Vox-s
 - Hebrew subtitles only below y=1480; keep content above it and the right 130 px clear. Keep timings in `timing.ts`; subtitles in `src/Root.tsx`.
 - Never pass credentials to any third-party sandbox.
 
+- **100% accuracy.** Every fact, number, date, label, caption, chart value, map graphic and image identification must be verified against a named source. Visuals must not imply anything false (a vaccine scar = sign of the vaccine, not of the disease). Cut or reword anything unverified; flag unverified images.
+
 ## Commands
 - Preview: `npx remotion studio`
 - Typecheck: `npx tsc --noEmit`

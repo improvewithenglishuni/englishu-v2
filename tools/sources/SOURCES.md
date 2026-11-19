@@ -32,3 +32,10 @@ Older newsprint-version files (`gillray.jpg`, `ota.jpg`, `tem.jpg`, `vial*.jpg`)
 | `public/fonts/amatic-sc-*-700-normal.woff2` | Amatic SC (Hebrew + Latin handwriting) via @fontsource/amatic-sc, used for the Jenner name tag | OFL |
 
 | `public/assets/vox/milkmaid_new.jpg` | Sharon-supplied photo of a woman milking a cow in a barn, upscaled 4x for full-frame (source not recorded) | unverified |
+
+## Smallpox facts used in v9 (verified 2026-11-19)
+- 300 million deaths in the 20th century: WHO.
+- Intensified Smallpox Eradication Programme began 1 Jan 1967 (WHA 1966): 10-15 million cases, 31 endemic countries/territories (Fenner et al., WHO 1988). Map dots are random points inside those countries (illustrative, not case locations).
+- Last natural case: Somalia, Oct 1977. 1978: 2 cases (lab accident, England). Certified 9 Dec 1979; WHA declared eradication 8 May 1980.
+- Chart series: WHO via Our World in Data (reported cases; understates true cases). 1967 value to be re-checked (OWID text: ~132,000; chart uses 122,098).
+- Arm, girl and milkmaid photos supplied by Sharon: provenance unverified.
