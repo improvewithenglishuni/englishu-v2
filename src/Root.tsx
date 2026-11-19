@@ -68,18 +68,19 @@ export const RemotionRoot: React.FC = () => (
       height={1920}
       schema={smallpoxSchema}
       defaultProps={{
-        theme: 'newsprint',
+        theme: 'vox',
         voiceover: '',
         subtitles: [
           {text: 'הצלקת הקטנה על הזרוע של סבתא', from: s(0), to: s(2.2)},
           {text: 'סימנה מחלה שהרגה 300 מיליון', from: s(2.2), to: s(4.3)},
           {text: 'והיום? אפס חולים בעולם', from: s(4.4), to: s(7.3)},
           {text: 'ב-1796 הרופא ג׳נר שם לב:', from: s(7.4), to: s(10)},
-          {text: 'מי שנדבק מפרות — לא חלה', from: s(10), to: s(12.9)},
-          {text: 'ב-1967 העולם החליט:', from: s(13), to: s(15)},
-          {text: 'They set out to eradicate smallpox, for good.', from: s(15), to: s(18.8)},
-          {text: 'לא מחסנים את כולם. כשפרץ outbreak —', from: s(18.9), to: s(22.5)},
-          {text: 'מחסנים את כל מי שסביב. מעגל אחרי מעגל', from: s(22.5), to: s(26.8)},
+          {text: 'מי שנדבק מפרות — לא חלה', from: s(10), to: s(12.2)},
+          {text: 'המילה vaccination — מהמילה הלטינית ל"פרה"', from: s(12.2), to: s(14)},
+          {text: 'ב-1967 העולם החליט:', from: s(14), to: s(16)},
+          {text: 'They set out to eradicate smallpox, for good.', from: s(16), to: s(19)},
+          {text: 'לא מחסנים את כולם. כשפרץ outbreak —', from: s(19.1), to: s(23)},
+          {text: 'מחסנים את כל מי שסביב. מעגל אחרי מעגל', from: s(23), to: s(27)},
           {text: 'ב-1980 הוכרז: נגמר', from: s(27), to: s(29.8)},
           {text: 'בפעם הבאה שתראו צלקת כזו — זה ניצחון', from: s(29.8), to: s(32.2)},
         ],

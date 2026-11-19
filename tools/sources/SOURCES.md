@@ -14,3 +14,8 @@
 | `vial.jpg`, `vial_mask.jpg` | CDC smallpox vaccine vial and bifurcated needle, via Wikimedia Commons | Public domain (US government work) |
 
 (Check each file page on Commons before publishing; exact titles and file names were not re-verified in this session.)
+
+| `hille.jpg`, `h800.jpg`, `public/assets/vox/hille_wide.jpg` | Hillemacher, painting of Jenner vaccinating (Wellcome Collection), via Wikimedia Commons | Public domain |
+| `public/assets/vox/jenner_cut.png` (from `jenner.jpg`) | Edward Jenner engraving, Wellcome Collection V0003071 | CC BY 4.0: credit "Wellcome Collection" if published |
+
+Older newsprint-version files (`gillray.jpg`, `ota.jpg`, `tem.jpg`, `vial*.jpg`) are unused in v3.

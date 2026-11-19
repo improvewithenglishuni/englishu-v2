@@ -30,7 +30,9 @@ export const Subtitles: React.FC<{
   fontSize?: number;
   /** y of the text baseline area bottom (default: top of the bottom fifth) */
   bottom?: number;
-}> = ({lines, font = 'rubik', fontSize = 50, bottom = SAFE.bottom - 24}) => {
+  /** 'box' = Vox-style dark caption box hugging each line (works on light and dark); 'outline' = white with dark outline */
+  variant?: 'box' | 'outline';
+}> = ({lines, font = 'rubik', fontSize = 50, bottom = SAFE.bottom - 24, variant = 'outline'}) => {
   const frame = useCurrentFrame();
   const {height, width} = useVideoConfig();
   const theme = useTheme();
@@ -52,17 +54,23 @@ export const Subtitles: React.FC<{
           width: width - SAFE.left - SAFE.right,
           bottom: height - bottom,
           textAlign: 'center',
-          fontFamily: FONTS[font],
+          fontFamily: variant === 'box' ? `var(--kit-font, ${FONTS[font]})` : FONTS[font],
           fontWeight: 800,
           fontSize,
           lineHeight: 1.18,
           color: '#FFFFFF',
-          textShadow: `${outline}, 0 4px 10px rgba(0,0,0,0.35)`,
+          textShadow: variant === 'box' ? undefined : `${outline}, 0 4px 10px rgba(0,0,0,0.35)`,
           opacity: Math.min(inP, outP),
           transform: `translateY(${(1 - inP) * 10}px)`,
         }}
       >
-        {bidi(line.text)}
+        {variant === 'box' ? (
+          <span style={{background: 'rgba(23,23,26,0.86)', color: '#FCFCFC', padding: '2px 22px', borderRadius: 4, boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone', lineHeight: 1.7, fontWeight: 600}}>
+            {bidi(line.text)}
+          </span>
+        ) : (
+          bidi(line.text)
+        )}
       </div>
     </AbsoluteFill>
   );

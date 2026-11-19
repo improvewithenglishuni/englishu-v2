@@ -106,3 +106,6 @@ dark world. No orange fills elsewhere except the one story prop (engine exhaust)
 
 ---
 See `reference/VOX_BLUEPRINT.md` for the self-contained blueprint (photo-first, newsprint palette, no ornament unless on-topic). It supersedes any plane-specific motifs here for new topics.
+
+---
+**Update (v2):** the palette, plates, typefaces, hook rules, push/pull rhythm, two target words, crisp-image rule and the ActionWord/Stamp animations are now defined in `reference/VOX_BLUEPRINT.md`. The plane sections above document the airplane video only (modern typeface: Rubik, `vox-modern`). Historic topics use David Libre with theme `vox`. One typeface per video.

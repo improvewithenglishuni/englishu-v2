@@ -21,3 +21,18 @@ export type {ArrowSpec} from './Arrows';
 export {Subtitles, SAFE} from './Subtitles';
 export type {SubtitleLine} from './Subtitles';
 export {EndCard, END_CARD_SECONDS} from './EndCard';
+// Vox-style kit (charts, maps, people, cards, full-frame pictures)
+export {Scene} from './Scene';
+export {FullFrameImage} from './FullFrameImage';
+export {SerifTitle, SansHeading, SERIF, SANS} from './SerifTitle';
+export {LineChart, RedX} from './LineChart';
+export type {Tick} from './LineChart';
+export {WorldMap, MapLegend} from './WorldMap';
+export {Person, Ring, Links, Syringe, ringPositions, gridPositions} from './People';
+export {FolderCards} from './FolderCards';
+export type {FolderSpec} from './FolderCards';
+export {Clipping} from './Highlight';
+export {SplitCompare} from './SplitCompare';
+export {QuoteCutout} from './QuoteCutout';
+export * from './ActionWord';
+export * from './Graphics';

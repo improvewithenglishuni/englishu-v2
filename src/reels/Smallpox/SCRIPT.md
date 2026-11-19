@@ -1,15 +1,16 @@
-# Smallpox Reel v2: script, scene table, timing
+# Smallpox Reel v3 (Vox look): script, scene table, timing
 
-Target words: **ERADICATE** (C1, למגר / לשרש) and **OUTBREAK** (B2, התפרצות). Check both in the word bank before recording (levels are my estimate).
-One fact: the small scar on grandparents' arms marks the only human disease the world erased. 34.9 s including the end card.
+Target words: **ERADICATE** (uproot animation, red stamp ERADICATED at the end) and **VACCINATION** (pop, vacca = פרה). Theme `vox` (historic, David Libre). Timings are estimates until the voiceover exists (retime `SEC` in `timing.ts`). 34.9 s including the end card slot; currently silent, `endCard: false`.
 
 | Beat | s | Narration | Visual |
 |---|---|---|---|
-| 1 | 0-4.3 | הצלקת הקטנה על הזרוע של סבתא סימנה מחלה שהרגה 300 מיליון | CDC virus photo on mustard card, label, `300,000,000` |
-| 2 | 4.4-7.3 | והיום? אפס חולים בעולם | giant `0` on vermilion card, virus photo shrinks away |
-| 3 | 7.4-12.9 | ב-1796 הרופא ג'נר שם לב: מי שנדבק מפרות לא חלה | `1796`, Jenner engraving, Gillray "Cow-Pock" cartoon, label "החיסון הראשון" |
-| 4 | 13-18.8 | ב-1967 העולם החליט: They set out to eradicate smallpox, for good. | wipe to dark, `1967`, Ota Chou vaccination painting, ERADICATE splits, label למגר / לשרש |
-| 5 | 18.9-26.8 | לא מחסנים את כולם. כשפרץ outbreak, מחסנים את כל מי שסביב, מעגל אחרי מעגל | OUTBREAK, התפרצות, vermilion card ringed by 3 rings of CDC vial cutouts |
-| 6 | 27-32.2 | ב-1980 הוכרז: נגמר. בפעם הבאה שתראו צלקת כזו, זה סימן לניצחון | wipe to light, `1980`, SMALLPOX struck out, "סימן לניצחון" |
+| Hook | 0-4.3 | הצלקת הקטנה על הזרוע של סבתא סימנה מחלה שהרגה 300 מיליון | animated `ScarArm` cutout, title, `CountUp` |
+| Zero | 4.4-7.3 | והיום? אפס חולים בעולם | people pictogram, giant `0` |
+| Jenner | 7.4-10 | ב-1796 הרופא ג'נר שם לב: | `1796`, Hillemacher painting full width (`PictureBand`) |
+| Quote | 10-12.2 | מי שנדבק מפרות — לא חלה | duotone Jenner cutout, quote card |
+| Word 2 | 12.2-14 | המילה vaccination — מהמילה הלטינית ל"פרה" | `ActionWord` VACCINATION pop, gloss, syringe |
+| Word 1 | 14-19 | ב-1967 העולם החליט: They set out to eradicate smallpox, for good. | `1967`, ERADICATE uprooted, gloss למגר = לעקור מהשורש |
+| Outbreak | 19.1-27 | לא מחסנים את כולם. כשפרץ outbreak — מחסנים את כל מי שסביב. מעגל אחרי מעגל | ring vaccination graphic |
+| Victory | 27-32.2 | ב-1980 הוכרז: נגמר. בפעם הבאה שתראו צלקת כזו — זה ניצחון | `WorldMap` (Brazil, Bangladesh, Somalia), 8.5.1980, red Stamp ERADICATED |
 
-Sources (all public domain): see `tools/sources/SOURCES.md`. Retime only `SEC` in `timing.ts` when the voiceover exists.
+Open items: Jenner portrait is a 260 px source (soft); the painting is crisp at full width only. Replace both with high-res files when available.

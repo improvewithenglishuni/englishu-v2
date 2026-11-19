@@ -1,5 +1,6 @@
 import React, {useMemo} from 'react';
 import {AbsoluteFill, Easing, Img, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {TYPEFACES} from './fonts';
 import {asset, Theme, ThemeProvider, useTheme, worldAsset} from './theme';
 import {tornBandPath, tornEdgePoints, tornHalfPlanePath} from './torn';
 
@@ -30,7 +31,7 @@ export const World: React.FC<{
   const s = push[0] + (push[1] - push[0]) * t;
   return (
     <ThemeProvider theme={theme}>
-      <AbsoluteFill style={{backgroundColor: theme.lightBase, overflow: 'hidden'}}>
+      <AbsoluteFill style={{backgroundColor: theme.lightBase, overflow: 'hidden', ['--kit-font' as string]: TYPEFACES[theme.typeface ?? 'modern']}}>
         <AbsoluteFill
           style={{
             transform: `translate(${pan[0] * t}px, ${pan[1] * t}px) scale(${s})`,
@@ -52,11 +53,14 @@ export const World: React.FC<{
 };
 
 /** One paper plate (light or dark) plus what is glued onto it. */
-export const WorldLayer: React.FC<{variant: 'light' | 'dark'; children?: React.ReactNode}> = ({variant, children}) => {
+export type PlateVariant = 'light' | 'dark' | 'peri' | 'charcoal';
+
+export const WorldLayer: React.FC<{variant: PlateVariant; children?: React.ReactNode}> = ({variant, children}) => {
   const theme = useTheme();
   const {width, height} = useVideoConfig();
+  const bg = variant === 'light' ? theme.lightBase : variant === 'dark' ? theme.darkBase : variant === 'peri' ? theme.spot : (theme.ui?.charcoal ?? theme.darkBase);
   return (
-    <AbsoluteFill style={{backgroundColor: variant === 'light' ? theme.lightBase : theme.darkBase}}>
+    <AbsoluteFill style={{backgroundColor: bg}}>
       <Img
         src={worldAsset(theme, `plate_${variant}.jpg`)}
         style={{

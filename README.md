@@ -113,10 +113,16 @@ REMOTION_LOCAL_FONTS=1 npx remotion render Smallpox out/Smallpox.mp4 --concurren
 
 `--concurrency=1` matters on small machines (the SVG paper filters are heavy). Script, beat map and the
 retiming steps are in `src/reels/Smallpox/SCRIPT.md`. Its world is `src/kit/themes/smallpox.json`
-(sage paper, bottle-green dark paper, cream, one coral accent); assets were built with
-`make_plate.py` / `make_props.py --palette smallpox`.
+(retired sage palette); the current Smallpox Reel uses theme `vox`.
 
 
 ## Blueprint for new Reels
 
-Start from `reference/VOX_BLUEPRINT.md`. The smallpox Reel (`src/reels/Smallpox`) is the worked example: newsprint palette, photo cutouts from `tools/make_photo_cutout.py`, `ColorBlock` and `BigNumber`.
+Start from `reference/VOX_BLUEPRINT.md` (v2, Vox look). The smallpox Reel (`src/reels/Smallpox`) is the worked example.
+Key rules: one typeface per video (`vox` = historic David Libre, `vox-modern` = Rubik); two target words per video
+(`ActionWord` uproot/pop, `Stamp`); a strong hook (real image or animated `ScarArm`-style cutout); push and pull between full-frame
+real images and animated magazine cutouts; only crisp images (`PictureBand` for small landscape sources, never blow up blurry ones).
+
+```bash
+REMOTION_LOCAL_FONTS=1 npx remotion render Smallpox out/smallpox-vox.mp4 --concurrency=1
+```

@@ -9,10 +9,12 @@ const f = (s: number) => Math.round(s * FPS);
 export const SEC = {
   hook: 0.0, // the scar on grandma's arm = the mark of a disease that killed 300M
   zero: 4.4, // "and today? zero"
-  jenner: 7.4, // 1796, cows
-  wipe1: 13.0, // -> dark world
-  eradicate: 13.0, // 1967 + the English sentence at 15.0
-  outbreak: 18.9, // rings of vaccinators
+  jenner: 7.4, // 1796: the painting (real picture, full width)
+  quote: 10.0, // Jenner cutout + 'cowpox, not smallpox'
+  vaccination: 12.2, // TARGET WORD 2: VACCINATION (vacca = cow)
+  wipe1: 14.0, // -> peri plate
+  eradicate: 14.0, // 1967 + TARGET WORD 1: ERADICATE (uprooted) + the English sentence
+  outbreak: 19.1, // rings of vaccinators
   wipe2: 27.0, // -> light world
   victory: 27.0, // 1980, nagmar, scar = victory
   end: 32.2, // end card
@@ -22,6 +24,8 @@ export const T = {
   hook: f(SEC.hook),
   zero: f(SEC.zero),
   jenner: f(SEC.jenner),
+  quote: f(SEC.quote),
+  vaccination: f(SEC.vaccination),
   wipe1: f(SEC.wipe1),
   era: f(SEC.eradicate),
   outbreak: f(SEC.outbreak),
