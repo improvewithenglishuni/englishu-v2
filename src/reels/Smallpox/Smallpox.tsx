@@ -2,16 +2,18 @@ import React from 'react';
 import {Audio, staticFile, useVideoConfig} from 'remotion';
 import {
   ActionWord,
-  CountUp,
+  Disc,
   END_CARD_SECONDS,
   EndCard,
   gridPositions,
+  NameLabel,
   Person,
-  PictureBand,
+  ScarSticker,
+  Sticker,
+  Tally,
   QuoteCutout,
   ringPositions,
   Ring,
-  ScarArm,
   Scene,
   SansHeading,
   SerifTitle,
@@ -30,39 +32,35 @@ const s = (sec: number) => Math.round(sec * 30);
 const painting = staticFile('assets/vox/hille_wide.jpg');
 const jenner = staticFile('assets/vox/jenner_cut.png');
 
-/** 1. HOOK: an animated magazine-cutout arm with the vaccination scar + the 300,000,000 count-up. */
-const Hook = () => (
+const arm = staticFile('assets/vox/arm_sticker.png');
+const jennerSticker = staticFile('assets/vox/jenner_sticker.png');
+const paintingFile = staticFile('assets/vox/hille_wide.jpg');
+
+/** 1. HOOK: the REAL scar photo as a die-cut sticker on a plain plate, with a glow/zoom effect. No text. */
+const Hook = () => <ScarSticker src={arm} x={560} y={800} width={780} rotate={-5} at={2} scarAt={s(0.6)} scar={{x: 0.5, y: 0.49}} />;
+
+/** 2. 300,000,000 counts up while narrated, then runs down to 0 on "zero". */
+const Tally300 = () => <Tally peak={300000000} x={540} y={760} fontSize={140} at={2} upAt={s(0.2)} upDur={s(1.9)} downAt={s(2.3)} downDur={s(1.5)} />;
+
+/** 3a. Jenner (named, on screen) as a die-cut portrait on a newspaper clipping + yellow disc. */
+const JennerPortrait = () => (
   <>
-    <SerifTitle text="הצלקת של סבא וסבתא" dir="rtl" x={540} y={200} width={1000} fontSize={88} color="slate" at={3} />
-    <CountUp to={300000000} x={540} y={350} fontSize={150} color="red" at={s(0.7)} duration={s(2.6)} />
-    <ScarArm x={600} y={1130} height={940} rotate={-6} at={2} scarAt={s(0.5)} />
+    <Disc x={540} y={800} r={420} at={2} />
+    <Sticker src={jennerSticker} x={540} y={780} width={760} aspect={1444 / 1120} rotate={-3} at={4} />
+    <NameLabel x={540} y={1250} line1="אדוארד ג׳נר" line2="רופא · 1796" fontSize={92} at={s(0.5)} />
   </>
 );
 
-/** 2. "And today? Zero." people grid, nobody left infected. */
-const Zero = () => {
-  const pts = gridPositions(190, 300, 5, 3, 175, 240);
-  return (
-    <>
-      {pts.map((p, i) => (
-        <Person key={i} x={p.x} y={p.y} size={190} tone="ink" at={4 + i * 2} />
-      ))}
-      <SansHeading text="0" x={540} y={1050} fontSize={560} color="white" dir="ltr" at={s(0.8)} />
-    </>
-  );
-};
-
-/** 3a. 1796: the real painting across the full width (full-frame real picture). */
-const JennerPainting = () => (
+/** 3b. The painting of the first vaccination, as a die-cut sticker on the clipping plate (no text). */
+const PaintingSticker = () => (
   <>
-    <SerifTitle text="1796" x={540} y={300} fontSize={150} color="white" at={2} />
-    <PictureBand src={painting} y={1010} aspect={850 / 1080} zoom={[1.0, 1.12]} focus={[52, 55]} at={0} />
+    <Disc x={540} y={800} r={400} at={2} color="#CBD2E6" />
+    <div style={{position: 'absolute', inset: 0}}>
+      <Sticker src={paintingFile} x={540} y={800} width={900} aspect={850 / 1080} rotate={3} at={4}>
+        <div style={{position: 'absolute', inset: -16, border: '16px solid #FAFAFA', borderRadius: 6, pointerEvents: 'none'}} />
+      </Sticker>
+    </div>
   </>
-);
-
-/** 3b. Jenner as a duotone cutout on the plain plate, quote with dim last words. */
-const JennerQuote = () => (
-  <QuoteCutout src={jenner} x={420} y={1560} width={840} quote="מי שנדבק מפרות — לא חלה" dir="rtl" dimFrom={3} textBox={{x: 90, y: 230, w: 900}} fontSize={86} at={2} />
 );
 
 /** 3c. TARGET WORD 2: VACCINATION. vacca = cow (Latin). */
@@ -78,7 +76,7 @@ const Vaccination = () => (
 const Eradicate = () => (
   <>
     <SansHeading text="1967" x={540} y={330} fontSize={260} color="white" dir="ltr" at={2} />
-    <ActionWord text="ERADICATE" mode="uproot" x={540} y={820} fontSize={150} at={s(0.5)} actAt={s(2.7)} />
+    <ActionWord text="ERADICATE" mode="vanish" x={540} y={820} fontSize={150} at={s(0.5)} actAt={s(2.7)} />
     <SansHeading text="למגר = לעקור מהשורש" x={540} y={1250} fontSize={84} color="white" dir="rtl" at={s(1.3)} />
   </>
 );
@@ -107,17 +105,18 @@ const Outbreak = () => {
   );
 };
 
-/** 6. 1980: last natural cases on the map, the date, and the ERADICATED stamp. */
+/** 6. Last natural cases light up, the whole map goes grey, a red classified-style stamp slams on, then only the year. */
 const Victory = () => (
   <>
     <SerifTitle text="Last natural cases" x={540} y={215} fontSize={92} color="white" source="Source: WHO" at={2} />
     <WorldMap
-      box={{x: 40, y: 500, w: 1000}}
-      highlight={{Brazil: {at: s(0.7)}, Bangladesh: {at: s(1.3)}, Somalia: {at: s(1.9)}}}
+      box={{x: 40, y: 560, w: 1000}}
+      highlight={{Brazil: {at: s(0.3)}, Bangladesh: {at: s(0.7)}, Somalia: {at: s(1.1)}}}
+      greyAt={s(1.6)}
       at={4}
     />
-    <SansHeading text="8.5.1980" x={540} y={1050} fontSize={150} color="white" dir="ltr" at={s(2.4)} />
-    <Stamp text="ERADICATED" x={540} y={1290} fontSize={104} rotate={-7} at={s(3.6)} />
+    <Stamp text="ERADICATED" x={540} y={800} fontSize={118} rotate={-8} at={s(2.0)} />
+    <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(2.7)} />
   </>
 );
 
@@ -129,9 +128,9 @@ export const Smallpox: React.FC<SmallpoxProps> = (props) => {
     <>
       <World theme={themes[props.theme]} push={[1, 1]} hud={<Subtitles lines={props.subtitles} variant="box" />}>
         <Scene from={T.hook} to={T.zero} variant="light"><Hook /></Scene>
-        <Scene from={T.zero} to={T.jenner} variant="charcoal"><Zero /></Scene>
-        <Scene from={T.jenner} to={T.quote} variant="charcoal"><JennerPainting /></Scene>
-        <Scene from={T.quote} to={T.vaccination} variant="dark"><JennerQuote /></Scene>
+        <Scene from={T.zero} to={T.jenner} variant="charcoal"><Tally300 /></Scene>
+        <Scene from={T.jenner} to={T.quote} variant="clip"><JennerPortrait /></Scene>
+        <Scene from={T.quote} to={T.vaccination} variant="clip"><PaintingSticker /></Scene>
         <Scene from={T.vaccination} to={T.era} variant="light"><Vaccination /></Scene>
         <Scene from={T.era} to={T.outbreak} variant="peri"><Eradicate /></Scene>
         <Scene from={T.outbreak} to={T.victory} variant="charcoal"><Outbreak /></Scene>

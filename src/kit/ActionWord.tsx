@@ -41,7 +41,7 @@ export const ActionWord: React.FC<{
   x: number;
   y: number;
   fontSize?: number;
-  mode?: 'uproot' | 'pop';
+  mode?: 'uproot' | 'pop' | 'vanish';
   color?: 'white' | 'slate';
   /** frame the word first appears */
   at?: number;
@@ -87,6 +87,15 @@ export const ActionWord: React.FC<{
                 </span>
               );
             }
+            if (mode === 'vanish') {
+              const t0 = actAt + i * 3;
+              const out = interpolate(frame, [t0, t0 + 14], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+              return (
+                <span key={i} style={{display: 'inline-block', width: cwOf(ch), textAlign: 'center', transform: `translateY(${(1 - enter) * 60 - out * 30}px) scale(${(0.4 + 0.6 * enter) * (1 - 0.5 * out)})`, opacity: enter * (1 - out), filter: `blur(${out * 14}px)`}}>
+                  {ch}
+                </span>
+              );
+            }
             const lit = i >= hiFrom && i < hiTo ? clamp01((frame - actAt - (i - hiFrom) * 3) / 6) : 0;
             return (
               <span key={i} style={{display: 'inline-block', transform: `translateY(${(1 - enter) * 60}px) scale(${0.4 + 0.6 * enter})`, opacity: enter, color: lit > 0.5 ? '#E0615E' : main, transition: 'none'}}>
@@ -116,7 +125,7 @@ export const Stamp: React.FC<{
   at?: number;
   exitAt?: number;
   color?: string;
-}> = ({text, x, y, fontSize = 150, rotate = -8, at = 0, exitAt, color = '#D6403B'}) => {
+}> = ({text, x, y, fontSize = 150, rotate = -8, at = 0, exitAt, color = '#E5483F'}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const id = useId().replace(/:/g, '');
@@ -131,8 +140,8 @@ export const Stamp: React.FC<{
     <Place x={x} y={y} rotate={rotate} scale={scale} opacity={inkA * e} style={{transform: `translate(-50%, -50%) translate(${shake}px, ${shake * 0.6}px) rotate(${rotate}deg) scale(${scale})`}}>
       <svg width={0} height={0} style={{position: 'absolute'}}>
         <filter id={id} x="-10%" y="-10%" width="120%" height="120%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="4" result="n" />
-          <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -7 4.1" result="m" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="4" result="n" />
+          <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -3.2 2.9" result="m" />
           <feComposite in="SourceGraphic" in2="m" operator="in" />
         </filter>
       </svg>

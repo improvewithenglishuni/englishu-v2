@@ -19,3 +19,6 @@
 | `public/assets/vox/jenner_cut.png` (from `jenner.jpg`) | Edward Jenner engraving, Wellcome Collection V0003071 | CC BY 4.0: credit "Wellcome Collection" if published |
 
 Older newsprint-version files (`gillray.jpg`, `ota.jpg`, `tem.jpg`, `vial*.jpg`) are unused in v3.
+
+| `arm.jpg` (from `VaccineScarsNL.jpg`), `public/assets/vox/arm_sticker.png` | "VaccineScarsNL.jpg", Wikimedia Commons (real photo of vaccine scars on an upper arm) | CC0 |
+| `public/assets/worlds/vox/plate_clip.jpg` | generated newspaper-clipping plate (greeked text, no real article) | own work |

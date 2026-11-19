@@ -112,3 +112,96 @@ export const PictureBand: React.FC<{src: string; y: number; aspect: number; zoom
     </div>
   );
 };
+
+/**
+ * A die-cut sticker (image with a white outline already baked in) on the plate: soft shadow,
+ * slight rotation, slides up and settles. x,y = centre. `width` in px (height follows `aspect`).
+ */
+export const Sticker: React.FC<{src: string; x: number; y: number; width: number; aspect: number; rotate?: number; at?: number; exitAt?: number; children?: React.ReactNode}> = ({src, x, y, width, aspect, rotate = -3, at = 0, exitAt, children}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const s = clamp01(pop(frame, at, fps, SETTLE));
+  const e = exitFactor(frame, exitAt, fps);
+  if (s * e <= 0.001) return null;
+  return (
+    <Place x={x} y={y + (1 - s) * 420} rotate={rotate} opacity={s * e}>
+      <div style={{position: 'relative', width, height: width * aspect, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.38))'}}>
+        <Img src={src} style={{width: '100%', height: '100%', display: 'block'}} />
+        {children}
+      </div>
+    </Place>
+  );
+};
+
+/**
+ * The real vaccination-scar photo as a die-cut sticker with a scar EFFECT: the sticker slowly
+ * pushes in on the scars while a soft coral glow pulses over them (no ring, no outline).
+ * Scar centre is given as fractions of the sticker (default for arm_sticker.png).
+ */
+export const ScarSticker: React.FC<{src: string; x: number; y: number; width: number; rotate?: number; at?: number; scarAt?: number; scar?: {x: number; y: number}; exitAt?: number}> = ({src, x, y, width, rotate = -5, at = 0, scarAt = 12, scar = {x: 0.5, y: 0.5}, exitAt}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const aspect = 1202 / 960;
+  const glow = clamp01((frame - scarAt) / 10) * (0.55 + 0.25 * Math.sin((frame - scarAt) * 0.28));
+  const zoom = interpolate(frame, [scarAt, scarAt + 60], [1, 1.28], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const e = exitFactor(frame, exitAt, fps);
+  const s = clamp01(pop(frame, at, fps, SETTLE));
+  if (s * e <= 0.001) return null;
+  const h = width * aspect;
+  return (
+    <Place x={x} y={y + (1 - s) * 420} rotate={rotate} opacity={s * e}>
+      <div style={{position: 'relative', width, height: h, transform: `scale(${zoom})`, transformOrigin: `${scar.x * 100}% ${scar.y * 100}%`, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.38))'}}>
+        <Img src={src} style={{width: '100%', height: '100%', display: 'block'}} />
+        {[[0.469, 0.408], [0.504, 0.491], [0.529, 0.552]].map(([a, b], i) => (
+          <div key={i} style={{position: 'absolute', left: `${(a as number) * 100}%`, top: `${(b as number) * 100}%`, width: width * 0.2, height: width * 0.2, transform: 'translate(-50%,-50%)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(224,97,94,0.95) 0%, rgba(224,97,94,0.45) 40%, rgba(224,97,94,0) 70%)', mixBlendMode: 'multiply', opacity: glow}} />
+        ))}
+      </div>
+    </Place>
+  );
+};
+
+/** One big number that counts UP to `peak` and later back DOWN to `end` (e.g. 300,000,000 -> 0). */
+export const Tally: React.FC<{peak: number; end?: number; x: number; y: number; fontSize?: number; upAt: number; upDur: number; downAt: number; downDur: number; at?: number; exitAt?: number}> = ({peak, end = 0, x, y, fontSize = 150, upAt, upDur, downAt, downDur, at = 0, exitAt}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const s = clamp01(pop(frame, at, fps, SETTLE)) * exitFactor(frame, exitAt, fps);
+  if (s <= 0.001) return null;
+  const up = interpolate(frame, [upAt, upAt + upDur], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const down = interpolate(frame, [downAt, downAt + downDur], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const v = Math.round(peak * (1 - Math.pow(1 - up, 3)) * (1 - down) + end * down);
+  const done = down >= 1;
+  return (
+    <Place x={x} y={y} opacity={s} scale={0.8 + 0.2 * s}>
+      <div dir="ltr" style={{fontFamily: SANS, fontWeight: 800, fontSize, color: done ? '#FCFCFC' : '#D6403B', fontVariantNumeric: 'tabular-nums', letterSpacing: -2, whiteSpace: 'nowrap'}}>{v.toLocaleString('en-US')}</div>
+    </Place>
+  );
+};
+
+/** Big flat disc (Vox yellow) behind a cutout person. */
+export const Disc: React.FC<{x: number; y: number; r: number; color?: string; at?: number; exitAt?: number}> = ({x, y, r, color = '#F5DD3C', at = 0, exitAt}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const s = clamp01(pop(frame, at, fps, SETTLE)) * exitFactor(frame, exitAt, fps);
+  if (s <= 0.001) return null;
+  return (
+    <Place x={x} y={y} scale={s} opacity={0.95}>
+      <div style={{width: r * 2, height: r * 2, borderRadius: '50%', background: color, mixBlendMode: 'multiply'}} />
+    </Place>
+  );
+};
+
+/** Black torn-slab label with white text: name on top line, title/year below (Vox name tag). */
+export const NameLabel: React.FC<{x: number; y: number; line1: string; line2?: string; dir?: 'rtl' | 'ltr'; fontSize?: number; rotate?: number; at?: number; exitAt?: number}> = ({x, y, line1, line2, dir = 'rtl', fontSize = 84, rotate = -2, at = 0, exitAt}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const s = clamp01(pop(frame, at, fps, SETTLE)) * exitFactor(frame, exitAt, fps);
+  if (s <= 0.001) return null;
+  return (
+    <Place x={x} y={y} rotate={rotate} scale={0.85 + 0.15 * s} opacity={s}>
+      <div dir={dir} style={{background: '#17171A', padding: `${fontSize * 0.22}px ${fontSize * 0.5}px`, boxShadow: '0 12px 18px rgba(0,0,0,0.35)', textAlign: 'center', fontFamily: SANS, color: '#FCFCFC', whiteSpace: 'nowrap'}}>
+        <div style={{fontWeight: 800, fontSize, lineHeight: 1.1}}>{line1}</div>
+        {line2 ? <div style={{fontWeight: 600, fontSize: fontSize * 0.6, lineHeight: 1.2, color: '#CDD0DE'}}>{line2}</div> : null}
+      </div>
+    </Place>
+  );
+};

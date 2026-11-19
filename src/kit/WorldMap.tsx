@@ -31,7 +31,9 @@ export const WorldMap: React.FC<{
   land?: string;
   at?: number;
   exitAt?: number;
-}> = ({box, highlight = {}, markers = [], light = false, land, at = 0, exitAt}) => {
+  /** frame when the WHOLE map fades to grey (e.g. after the last case) */
+  greyAt?: number;
+}> = ({box, highlight = {}, markers = [], light = false, land, at = 0, exitAt, greyAt}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const ui = useUi();
@@ -51,9 +53,11 @@ export const WorldMap: React.FC<{
         {paths.map((p) => {
           const h = highlight[p.name];
           const on = h ? clamp01(pop(frame, h.at ?? 0, fps, SETTLE)) : 0;
-          const fill = h && on > 0.02 ? mix(base, h.color ?? '#E0615E', on) : base;
+          let fill = h && on > 0.02 ? mix(base, h.color ?? '#E0615E', on) : base;
+          if (greyAt !== undefined) fill = mix(fill, '#85878F', clamp01((frame - greyAt) / 12));
           return <path key={p.name} d={p.d} fill={fill} stroke={sea} strokeWidth={0.6} strokeLinejoin="round" />;
         })}
+        {greyAt !== undefined && frame >= greyAt ? null : null}
         {markers.map((m, i) => {
           const pt = project([m.lon, m.lat]);
           if (!pt) return null;

@@ -53,12 +53,12 @@ export const World: React.FC<{
 };
 
 /** One paper plate (light or dark) plus what is glued onto it. */
-export type PlateVariant = 'light' | 'dark' | 'peri' | 'charcoal';
+export type PlateVariant = 'light' | 'dark' | 'peri' | 'charcoal' | 'clip';
 
 export const WorldLayer: React.FC<{variant: PlateVariant; children?: React.ReactNode}> = ({variant, children}) => {
   const theme = useTheme();
   const {width, height} = useVideoConfig();
-  const bg = variant === 'light' ? theme.lightBase : variant === 'dark' ? theme.darkBase : variant === 'peri' ? theme.spot : (theme.ui?.charcoal ?? theme.darkBase);
+  const bg = variant === 'clip' ? '#DAD9D6' : variant === 'light' ? theme.lightBase : variant === 'dark' ? theme.darkBase : variant === 'peri' ? theme.spot : (theme.ui?.charcoal ?? theme.darkBase);
   return (
     <AbsoluteFill style={{backgroundColor: bg}}>
       <Img

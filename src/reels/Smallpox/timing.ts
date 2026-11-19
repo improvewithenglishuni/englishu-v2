@@ -8,9 +8,9 @@ const f = (s: number) => Math.round(s * FPS);
 
 export const SEC = {
   hook: 0.0, // the scar on grandma's arm = the mark of a disease that killed 300M
-  zero: 4.4, // "and today? zero"
-  jenner: 7.4, // 1796: the painting (real picture, full width)
-  quote: 10.0, // Jenner cutout + 'cowpox, not smallpox'
+  zero: 2.2, // 300M up, then down to 0
+  jenner: 7.4, // 1796: Jenner portrait sticker + name label
+  quote: 10.0, // painting of the vaccination as a sticker
   vaccination: 12.2, // TARGET WORD 2: VACCINATION (vacca = cow)
   wipe1: 14.0, // -> peri plate
   eradicate: 14.0, // 1967 + TARGET WORD 1: ERADICATE (uprooted) + the English sentence
