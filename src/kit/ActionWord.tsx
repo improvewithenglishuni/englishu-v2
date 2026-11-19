@@ -57,7 +57,9 @@ export const ActionWord: React.FC<{
   hollow?: boolean;
   fillAt?: number;
   fillFromX?: number;
-}> = ({text, x, y, fontSize = 150, mode = 'uproot', color = 'white', at = 0, actAt = 40, hiFrom = 0, hiTo = 0, gloss, glossDir = 'rtl', exitAt, hollow = false, fillAt = 0, fillFromX = 540}) => {
+  /** bolder letters (weight 900 + thin stroke) */
+  heavy?: boolean;
+}> = ({text, x, y, fontSize = 150, mode = 'uproot', color = 'white', at = 0, actAt = 40, hiFrom = 0, hiTo = 0, gloss, glossDir = 'rtl', exitAt, hollow = false, fillAt = 0, fillFromX = 540, heavy = false}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const ui = useUi();
@@ -77,7 +79,7 @@ export const ActionWord: React.FC<{
         <div style={{position: 'absolute', left: x - totalW / 2 - 30, top: y + fontSize * 0.44, width: totalW + 60, height: 6, background: ground, opacity: clamp01(pop(frame, at, fps, SETTLE)) * e, borderRadius: 3}} />
       ) : null}
       <Place x={x} y={y} opacity={e}>
-        <div dir="ltr" style={{display: 'flex', fontFamily: SANS, fontWeight: 800, fontSize, lineHeight: 1, color: main, letterSpacing: fontSize * 0.01, textShadow: color === 'yellow' && !hollow ? '0 10px 0 rgba(0,0,0,0.4)' : undefined}}>
+        <div dir="ltr" style={{display: 'flex', fontFamily: SANS, fontWeight: heavy ? 900 : 800, fontSize, lineHeight: 1, color: main, letterSpacing: fontSize * 0.01, textShadow: color === 'yellow' && !hollow ? '0 10px 0 rgba(0,0,0,0.4)' : undefined}}>
           {letters.map((ch, i) => {
             const enter = clamp01(pop(frame, at + i * 2, fps, POP));
             if (mode === 'uproot') {
@@ -109,16 +111,42 @@ export const ActionWord: React.FC<{
                 for (let wx = -6; wx <= cwi + 6; wx += 6) wave.push(`L${wx} ${top + (lvl > 0 && lvl < 1 ? Math.sin((wx + frame * 1.6) * 0.16 + i) * 2.4 : 0)}`);
                 wave.push(`L${cwi + 6} ${fontSize + 6}`, 'Z');
                 const common = {x: cwi / 2, y: base, textAnchor: 'middle' as const, fontSize, style: {fontFamily: SANS, fontWeight: 800}};
+                // Disintegration: the letter stays put; a grid of grains switches off from the top of the word to the bottom.
+                const CELL = 6;
+                const cells: React.ReactNode[] = [];
+                const dis = frame >= actAt;
+                if (dis) {
+                  const cols = Math.ceil((cwi + 12) / CELL);
+                  const rows = Math.ceil((fontSize + 12) / CELL);
+                  for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                      const cy = r * CELL - 6;
+                      const tc = actAt + (cy / fontSize) * 26 + rnd(i * 7919 + r * 131 + c * 17 + 3) * 12;
+                      const sz = 1 - clamp01((frame - tc) / 7);
+                      if (sz <= 0.01) continue;
+                      const w = CELL * sz + (sz > 0.99 ? 0.8 : 0);
+                      cells.push(<rect key={`${r}-${c}`} x={c * CELL - 6 + (CELL - w) / 2} y={cy + (CELL - w) / 2} width={w} height={w} fill="#fff" />);
+                    }
+                  }
+                }
+                const mid = `dm${uid}${i}`;
                 return (
-                  <span key={i} style={{display: 'inline-block', width: cwi, height: fontSize, transform: tf, opacity: op, filter: `blur(${out * 22}px)`}}>
+                  <span key={i} style={{display: 'inline-block', width: cwi, height: fontSize, transform: `translateY(${(1 - enter) * 60}px) scale(${0.4 + 0.6 * enter})`, opacity: enter}}>
                     <svg width={cwi} height={fontSize} viewBox={`0 0 ${cwi} ${fontSize}`} style={{overflow: 'visible', display: 'block'}}>
                       <defs>
                         <clipPath id={`lq${uid}${i}`}>
                           <path d={wave.join(' ')} />
                         </clipPath>
+                        {dis ? (
+                          <mask id={mid} maskUnits="userSpaceOnUse" x={-12} y={-12} width={cwi + 24} height={fontSize + 24}>
+                            {cells}
+                          </mask>
+                        ) : null}
                       </defs>
-                      <text {...common} fill={main} clipPath={`url(#lq${uid}${i})`}>{ch}</text>
-                      <text {...common} fill="none" stroke={main} strokeWidth={Math.max(3, fontSize * 0.022)} strokeLinejoin="round">{ch}</text>
+                      <g mask={dis ? `url(#${mid})` : undefined}>
+                        <text {...common} fill={main} clipPath={`url(#lq${uid}${i})`}>{ch}</text>
+                        <text {...common} fill="none" stroke={main} strokeWidth={Math.max(3, fontSize * 0.022)} strokeLinejoin="round">{ch}</text>
+                      </g>
                     </svg>
                   </span>
                 );
@@ -131,7 +159,7 @@ export const ActionWord: React.FC<{
             }
             const lit = i >= hiFrom && i < hiTo ? clamp01((frame - actAt - (i - hiFrom) * 3) / 6) : 0;
             return (
-              <span key={i} style={{display: 'inline-block', transform: `translateY(${(1 - enter) * 60}px) scale(${0.4 + 0.6 * enter})`, opacity: enter, color: lit > 0.5 ? '#E0615E' : main, transition: 'none'}}>
+              <span key={i} style={{display: 'inline-block', transform: `translateY(${(1 - enter) * 60}px) scale(${0.4 + 0.6 * enter})`, opacity: enter, color: lit > 0.5 ? '#E0615E' : main, WebkitTextStroke: heavy ? `${fontSize * 0.04}px ${lit > 0.5 ? '#E0615E' : main}` : undefined, transition: 'none'}}>
                 {ch}
               </span>
             );

@@ -30,11 +30,13 @@ export const SerifTitle: React.FC<{
   exitAt?: number;
   /** soft shadow so white text reads on a busy picture */
   shadow?: boolean;
-}> = ({text, x, y, width = 900, fontSize = 92, color = 'slate', source, italic = false, dir = 'ltr', align = 'center', at = 0, exitAt, shadow = false}) => {
+  /** no entrance animation: on screen, in place, from the first frame */
+  fixed?: boolean;
+}> = ({text, x, y, width = 900, fontSize = 92, color = 'slate', source, italic = false, dir = 'ltr', align = 'center', at = 0, exitAt, shadow = false, fixed = false}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const ui = useUi();
-  const s = pop(frame, at, fps, SETTLE);
+  const s = fixed ? 1 : pop(frame, at, fps, SETTLE);
   const e = exitFactor(frame, exitAt, fps);
   const k = clamp01(s) * e;
   if (k <= 0.001) return null;

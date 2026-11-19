@@ -105,31 +105,34 @@ const Vaccination = () => {
   const PY = 1090;
   const SZ = 430;
   const off = {x: 0.411 * SZ, y: 0.2375 * SZ};
-  const jab = interpolate(frame, [s(0.7), s(1.0), s(1.4)], [0, 1, 0.6], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const jab = interpolate(frame, [s(0.7), s(1.0), s(1.55), s(1.95)], [0, 1, 1, 0.6], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const tip = {x: PX - 175 + jab * 100, y: PY - 80 + jab * 62};
+  const plungeV = interpolate(frame, [s(1.0), s(1.55)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
     <>
-      <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={118} at={2} actAt={s(1.0)} hiFrom={0} hiTo={5} gloss="vacca = פרה (לטינית)" />
-      <Person x={PX} y={PY} size={560} tone="ink" shield="#8F93A3" shieldAt={s(1.05)} at={4} />
-      <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#9A9DAA" at={s(0.2)} />
-      <Germs cx={PX} cy={PY + 10} rx={200} ry={330} n={12} at={s(1.35)} stagger={2} />
+      <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={118} heavy at={2} actAt={s(1.0)} hiFrom={0} hiTo={5} gloss="vacca = פרה (לטינית)" />
+      <Person x={PX} y={PY} size={560} tone="ink" shield="#FDF551" shieldAt={s(1.6)} at={4} />
+      <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#9A9DAA" liquid="#FDF551" plunge={plungeV} at={s(0.2)} />
+      <Germs cx={PX} cy={PY + 10} rx={200} ry={330} n={12} at={s(1.9)} stagger={2} />
     </>
   );
 };
 
 /** 7. WHO 1967 + TARGET WORD 1: ERADICATE (yellow), then the whole word vanishes. */
+// tip of the needle rests on the top-left corner of the D in ERADICATE (word centred at 540,820, 150 px)
+const DTIP = {x: 418, y: 783};
 const Eradicate = () => {
   const frame = useCurrentFrame();
   const SZ = 340;
   const off = {x: 0.411 * SZ, y: 0.2375 * SZ};
   const k = interpolate(frame, [s(1.4), s(1.9)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const ease = 1 - Math.pow(1 - k, 3);
-  const tip = {x: 470 - 260 * (1 - ease), y: 800 - 165 * (1 - ease)};
+  const tip = {x: DTIP.x - 260 * (1 - ease), y: DTIP.y - 165 * (1 - ease)};
   const plunge = interpolate(frame, [s(1.9), s(2.5)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
     <>
       <NameLabel x={540} y={330} line1="ארגון הבריאות העולמי" line2="1967" fontSize={80} at={2} />
-      <ActionWord text="ERADICATE" mode="vanish" color="yellow" hollow x={540} y={820} fontSize={150} at={s(0.5)} fillAt={s(1.9)} fillFromX={470} actAt={s(2.7)} />
+      <ActionWord text="ERADICATE" mode="vanish" color="yellow" hollow x={540} y={820} fontSize={150} at={s(0.5)} fillAt={s(1.9)} fillFromX={DTIP.x + 40} actAt={s(2.7)} />
       <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#C9CBD6" liquid="#FDF551" plunge={plunge} at={s(1.35)} exitAt={s(3.3)} />
       <SansHeading text="למגר = לעקור מהשורש" x={540} y={1150} fontSize={84} color="white" dir="rtl" at={s(1.3)} />
     </>
@@ -183,7 +186,7 @@ const CASES: [number, number][] = [
 /** 9. Reported smallpox cases worldwide fall to zero in 1980 (WHO via Our World in Data). */
 const Chart = () => (
   <>
-    <SerifTitle text="Reported smallpox cases worldwide" dir="ltr" x={540} y={250} width={980} fontSize={80} color="slate" source="Source: WHO via Our World in Data" at={2} />
+    <SerifTitle text="Reported Smallpox Cases Worldwide" dir="ltr" x={540} y={390} width={980} fontSize={72} color="slate" source="Source: WHO via Our World in Data" fixed />
     <LineChart
       box={{x: 190, y: 520, w: 740, h: 720}}
       points={CASES}
