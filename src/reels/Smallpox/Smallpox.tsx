@@ -39,20 +39,23 @@ const milkmaid = staticFile('assets/vox/milkmaid_new.jpg');
 
 const cover: React.CSSProperties = {width: '100%', height: '100%', objectFit: 'cover', display: 'block'};
 
-/** 1. HOOK: the REAL scar photo (arm + hand) as a die-cut sticker with a scar glow and slow push-in. */
+/** 1. HOOK: the REAL scar photo enlarged ~300% so the scars sit in the centre, circled with a red marker. */
 const Hook = () => (
   <ScarSticker
     src={arm}
     x={540}
     y={760}
     width={960}
-    zoomTo={1.06}
     aspect={1153 / 1364}
     rotate={-4}
     at={2}
-    scarAt={s(0.6)}
-    scar={{x: 0.34, y: 0.5}}
-    scars={[[0.312, 0.425], [0.339, 0.514], [0.357, 0.577]]}
+    scarAt={0}
+    zoomFrom={2.9}
+    zoomTo={3.3}
+    scar={{x: 0.336, y: 0.5}}
+    scarTarget={{x: 540, y: 720}}
+    scars={[]}
+    marker={{cx: 0.336, cy: 0.5, rx: 66, ry: 104, rot: -19, at: s(0.45)}}
   />
 );
 
@@ -195,25 +198,38 @@ const Chart = () => (
 );
 
 /** 10. Last natural cases light up, the whole map goes grey, a red classified-style stamp slams on, then only the year. */
-const Victory = () => (
-  <>
-    <Place x={540} y={470} opacity={Math.min(1, Math.max(0, (useCurrentFrame() - 2) / 10))}>
-      <div dir="ltr" style={{fontFamily: 'var(--kit-font)', fontWeight: 700, fontSize: 40, color: '#B9BCCB', letterSpacing: 0.5}}>Source: WHO</div>
-    </Place>
-    <WorldMap
-      box={{x: 0, y: 520, w: 1080}}
-      highlight={{Somalia: {at: s(1.5), off: s(2.9)}}}
-      dots={caseDots.dots}
-      dotsAt={s(0.15)}
-      dotsFade={[s(0.7), s(2.0)]}
-      lastCase={{x: caseDots.somalia[0], y: caseDots.somalia[1], at: s(1.5), off: s(2.9)}}
-      greyAt={s(3.0)}
-      at={4}
-    />
-    <Stamp text="ERADICATED" x={540} y={800} fontSize={124} rotate={-8} heavy at={s(3.4)} />
-    <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(3.5)} />
-  </>
-);
+const Victory = () => {
+  const frame = useCurrentFrame();
+  const K = 1.08;
+  const S = {x: caseDots.somalia[0] * K, y: 520 + caseDots.somalia[1] * K};
+  const C = {x: 540, y: 830};
+  const ez = (v: number) => (v < 0.5 ? 2 * v * v : 1 - Math.pow(-2 * v + 2, 2) / 2);
+  const zin = ez(Math.min(1, Math.max(0, (frame - s(1.7)) / s(0.75))));
+  const zout = ez(Math.min(1, Math.max(0, (frame - s(2.9)) / s(0.75))));
+  const m = zin * (1 - zout);
+  const z = 1 + 2.5 * m;
+  return (
+    <>
+      <Place x={540} y={470} opacity={Math.min(1, Math.max(0, (frame - 2) / 10))}>
+        <div dir="ltr" style={{fontFamily: 'var(--kit-font)', fontWeight: 700, fontSize: 40, color: '#B9BCCB', letterSpacing: 0.5}}>Source: WHO</div>
+      </Place>
+      <div style={{position: 'absolute', inset: 0, transformOrigin: '0 0', transform: `translate(${S.x + (C.x - S.x) * m}px, ${S.y + (C.y - S.y) * m}px) scale(${z}) translate(${-S.x}px, ${-S.y}px)`}}>
+        <WorldMap
+          box={{x: 0, y: 520, w: 1080}}
+          highlight={{Somalia: {at: s(1.3), off: s(2.8)}}}
+          dots={caseDots.dots}
+          dotsAt={s(0.15)}
+          dotsFade={[s(0.6), s(1.7)]}
+          lastCase={{x: caseDots.somalia[0], y: caseDots.somalia[1], at: s(1.3), off: s(2.8)}}
+          greyAt={s(2.9)}
+          at={4}
+        />
+      </div>
+      <Stamp text="ERADICATED" x={540} y={800} fontSize={124} rotate={-8} heavy at={s(3.8)} />
+      <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(4.3)} />
+    </>
+  );
+};
 
 /** Smallpox Reel v3: Vox look, hard-cut scenes, 34.9 s incl. end card. */
 export const Smallpox: React.FC<SmallpoxProps> = (props) => {

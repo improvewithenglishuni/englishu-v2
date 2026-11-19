@@ -139,22 +139,69 @@ export const Sticker: React.FC<{src: string; x: number; y: number; width: number
  * pushes in on the scars while a soft coral glow pulses over them (no ring, no outline).
  * Scar centre is given as fractions of the sticker (default for arm_sticker.png).
  */
-export const ScarSticker: React.FC<{src: string; x: number; y: number; width: number; rotate?: number; at?: number; scarAt?: number; scar?: {x: number; y: number}; aspect?: number; scars?: number[][]; zoomTo?: number; exitAt?: number}> = ({src, x, y, width, rotate = -5, at = 0, scarAt = 12, zoomTo = 1.28, scar = {x: 0.5, y: 0.5}, aspect = 1202 / 960, scars = [[0.469, 0.408], [0.504, 0.491], [0.529, 0.552]], exitAt}) => {
+export const ScarSticker: React.FC<{
+  src: string;
+  x: number;
+  y: number;
+  width: number;
+  rotate?: number;
+  at?: number;
+  scarAt?: number;
+  scar?: {x: number; y: number};
+  aspect?: number;
+  scars?: number[][];
+  zoomFrom?: number;
+  zoomTo?: number;
+  /** frame point where the `scar` point of the sticker should sit (overrides x,y) */
+  scarTarget?: {x: number; y: number};
+  /** hand-drawn red marker loop: centre as fractions of the sticker, radii in sticker px, rot in degrees */
+  marker?: {cx: number; cy: number; rx: number; ry: number; rot?: number; at: number};
+  exitAt?: number;
+}> = ({src, x, y, width, rotate = -5, at = 0, scarAt = 12, zoomFrom = 1, zoomTo = 1.28, scar = {x: 0.5, y: 0.5}, aspect = 1202 / 960, scars = [[0.469, 0.408], [0.504, 0.491], [0.529, 0.552]], scarTarget, marker, exitAt}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const glow = clamp01((frame - scarAt) / 10) * (0.55 + 0.25 * Math.sin((frame - scarAt) * 0.28));
-  const zoom = interpolate(frame, [scarAt, scarAt + 60], [1, zoomTo], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const zoom = interpolate(frame, [scarAt, scarAt + 60], [zoomFrom, zoomTo], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const e = exitFactor(frame, exitAt, fps);
   const s = clamp01(pop(frame, at, fps, SETTLE));
   if (s * e <= 0.001) return null;
   const h = width * aspect;
+  let px = x;
+  let py = y;
+  if (scarTarget) {
+    const vx = (scar.x - 0.5) * width;
+    const vy = (scar.y - 0.5) * h;
+    const r = (rotate * Math.PI) / 180;
+    px = scarTarget.x - (vx * Math.cos(r) - vy * Math.sin(r));
+    py = scarTarget.y - (vx * Math.sin(r) + vy * Math.cos(r));
+  }
+  let markerPath = '';
+  if (marker) {
+    const pts: string[] = [];
+    const N = 70;
+    for (let i = 0; i <= N; i++) {
+      const u = i / N;
+      const th = -0.3 * Math.PI + u * 2.5 * Math.PI;
+      const wob = 1 + 0.035 * Math.sin(3 * th + 1) + 0.07 * u;
+      pts.push(`${i === 0 ? 'M' : 'L'}${(Math.cos(th) * marker.rx * wob).toFixed(1)} ${(Math.sin(th) * marker.ry * wob).toFixed(1)}`);
+    }
+    markerPath = pts.join(' ');
+  }
+  const mp = marker ? clamp01((frame - marker.at) / 16) : 0;
   return (
-    <Place x={x} y={y + (1 - s) * 420} rotate={rotate} opacity={s * e}>
+    <Place x={px} y={py + (1 - s) * 420} rotate={rotate} opacity={s * e}>
       <div style={{position: 'relative', width, height: h, transform: `scale(${zoom})`, transformOrigin: `${scar.x * 100}% ${scar.y * 100}%`, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.38))'}}>
         <Img src={src} style={{width: '100%', height: '100%', display: 'block'}} />
         {scars.map(([a, b], i) => (
           <div key={i} style={{position: 'absolute', left: `${(a as number) * 100}%`, top: `${(b as number) * 100}%`, width: width * 0.2, height: width * 0.2, transform: 'translate(-50%,-50%)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(224,97,94,0.95) 0%, rgba(224,97,94,0.45) 40%, rgba(224,97,94,0) 70%)', mixBlendMode: 'multiply', opacity: glow}} />
         ))}
+        {marker && mp > 0 ? (
+          <svg width={width} height={h} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
+            <g transform={`translate(${marker.cx * width} ${marker.cy * h}) rotate(${marker.rot ?? 0})`}>
+              <path d={markerPath} pathLength={1} fill="none" stroke="#E5372F" strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1 1" strokeDashoffset={1 - mp} />
+            </g>
+          </svg>
+        ) : null}
       </div>
     </Place>
   );

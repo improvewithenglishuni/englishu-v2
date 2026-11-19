@@ -61,6 +61,7 @@ export const ActionWord: React.FC<{
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const ui = useUi();
+  const uid = useId().replace(/:/g, '');
   const e = exitFactor(frame, exitAt, fps);
   const main = color === 'white' ? ui.white : color === 'yellow' ? '#FDF551' : ui.slate;
   const letters = text.split('');
@@ -95,13 +96,35 @@ export const ActionWord: React.FC<{
               const t0 = actAt + i * 2 + rnd(i + 11) * 6;
               const out = interpolate(frame, [t0, t0 + 28], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
               const rise = out * out * 260 + out * 40;
-              const cx = x - totalW / 2 + letters.slice(0, i).reduce((a, c) => a + cwOf(c), 0) + cwOf(ch) / 2;
-              const fill = hollow ? clamp01((frame - fillAt - Math.abs(cx - fillFromX) * 0.03) / 12) : 1;
-              const hollowStyle: React.CSSProperties = hollow
-                ? {color: 'transparent', WebkitTextStroke: `${Math.max(3, fontSize * 0.022)}px ${main}`, background: `linear-gradient(to top, ${main} ${fill * 100 - 3}%, transparent ${fill * 100 + 3}%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text'}
-                : {};
+              const cwi = cwOf(ch);
+              const cx = x - totalW / 2 + letters.slice(0, i).reduce((acc, c) => acc + cwOf(c), 0) + cwi / 2;
+              const lvl = hollow ? clamp01((frame - fillAt - Math.abs(cx - fillFromX) * 0.03) / 22) : 1;
+              const tf = `translate(${(rnd(i + 3) - 0.5) * 50 * out}px, ${(1 - enter) * 60 - rise}px) scale(${(0.4 + 0.6 * enter) * (1 + 0.35 * out)})`;
+              const op = enter * (1 - clamp01((out - 0.15) / 0.85));
+              if (hollow) {
+                const base = fontSize * 0.86;
+                const capH = fontSize * 0.72;
+                const top = base + 4 - (capH + 8) * lvl;
+                const wave: string[] = [`M-6 ${fontSize + 6}`, `L-6 ${top}`];
+                for (let wx = -6; wx <= cwi + 6; wx += 6) wave.push(`L${wx} ${top + (lvl > 0 && lvl < 1 ? Math.sin((wx + frame * 1.6) * 0.16 + i) * 2.4 : 0)}`);
+                wave.push(`L${cwi + 6} ${fontSize + 6}`, 'Z');
+                const common = {x: cwi / 2, y: base, textAnchor: 'middle' as const, fontSize, style: {fontFamily: SANS, fontWeight: 800}};
+                return (
+                  <span key={i} style={{display: 'inline-block', width: cwi, height: fontSize, transform: tf, opacity: op, filter: `blur(${out * 22}px)`}}>
+                    <svg width={cwi} height={fontSize} viewBox={`0 0 ${cwi} ${fontSize}`} style={{overflow: 'visible', display: 'block'}}>
+                      <defs>
+                        <clipPath id={`lq${uid}${i}`}>
+                          <path d={wave.join(' ')} />
+                        </clipPath>
+                      </defs>
+                      <text {...common} fill={main} clipPath={`url(#lq${uid}${i})`}>{ch}</text>
+                      <text {...common} fill="none" stroke={main} strokeWidth={Math.max(3, fontSize * 0.022)} strokeLinejoin="round">{ch}</text>
+                    </svg>
+                  </span>
+                );
+              }
               return (
-                <span key={i} style={{...hollowStyle, display: 'inline-block', width: cwOf(ch), textAlign: 'center', transform: `translate(${(rnd(i + 3) - 0.5) * 50 * out}px, ${(1 - enter) * 60 - rise}px) scale(${(0.4 + 0.6 * enter) * (1 + 0.35 * out)})`, opacity: enter * (1 - clamp01((out - 0.15) / 0.85)), filter: `blur(${out * 22}px)`}}>
+                <span key={i} style={{display: 'inline-block', width: cwi, textAlign: 'center', transform: tf, opacity: op, filter: `blur(${out * 22}px)`}}>
                   {ch}
                 </span>
               );
@@ -143,12 +166,25 @@ export const Stamp: React.FC<{
   const e = exitFactor(frame, exitAt, fps);
   const f = frame - at;
   if (f < 0 || e <= 0.001) return null;
-  const drop = clamp01(f / 5);
-  const scale = 2.6 - 1.6 * (1 - Math.pow(1 - drop, 3)) + (f > 5 ? Math.max(0, 0.06 * Math.sin((f - 5) * 1.3) * Math.exp(-(f - 5) / 5)) : 0);
-  const shake = f >= 5 && f < 13 ? Math.sin(f * 4) * (13 - f) * 1.4 : 0;
-  const inkA = clamp01(f / 3);
+  const HIT = 8; // frame the rubber face touches the page
+  const k = clamp01(f / HIT);
+  const dk = Math.pow(k, 2.2);
+  const lift = clamp01((f - (HIT + 3)) / 12);
+  const stW = fontSize * (0.7 * text.length + 0.25);
+  const stH = fontSize * 1.5;
+  const stScale = (1.5 - 0.5 * dk) * (1 + 0.3 * lift * lift);
+  const stY = -(1 - dk) * 380 - lift * lift * 460;
+  const stOp = clamp01(f / 3) * (1 - clamp01((lift - 0.45) / 0.55)) * e;
+  const inkF = f - HIT;
+  const printed = inkF >= 0;
+  const spread = printed ? 1 + 0.05 * (1 - clamp01(inkF / 5)) : 1;
+  const blur = printed ? 3 * (1 - clamp01(inkF / 6)) : 0;
+  const shake = printed && inkF < 8 ? Math.sin(inkF * 4.5) * (8 - inkF) * 1.2 : 0;
+  const scale = spread;
+  const inkA = printed ? 1 : 0;
   return (
-    <Place x={x} y={y} rotate={rotate} scale={scale} opacity={inkA * e} style={{transform: `translate(-50%, -50%) translate(${shake}px, ${shake * 0.6}px) rotate(${rotate}deg) scale(${scale})`}}>
+    <>
+      <Place x={x} y={y} rotate={rotate} scale={scale} opacity={inkA * e} style={{transform: `translate(-50%, -50%) translate(${shake}px, ${shake * 0.6}px) rotate(${rotate}deg) scale(${scale})`, filter: blur > 0.05 ? `blur(${blur}px)` : undefined}}>
       <svg width={0} height={0} style={{position: 'absolute'}}>
         <filter id={id} x="-10%" y="-10%" width="120%" height="120%">
           <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="4" result="n" />
@@ -162,5 +198,16 @@ export const Stamp: React.FC<{
         </div>
       </div>
     </Place>
+      {stOp > 0.01 ? (
+        <Place x={x} y={y} style={{transform: `translate(-50%, -50%) rotate(${rotate}deg) translateY(${stY}px) scale(${stScale})`, opacity: stOp, filter: 'drop-shadow(0 26px 24px rgba(0,0,0,0.45))'}}>
+          <div style={{position: 'relative', width: stW, height: stH}}>
+            <div style={{position: 'absolute', inset: 0, background: '#7F2B29', borderRadius: 10, border: `${fontSize * 0.04}px solid rgba(255,255,255,0.14)`}} />
+            <div style={{position: 'absolute', left: -22, top: -56, width: stW + 44, height: 60, background: '#5A5E70', borderRadius: 12}} />
+            <div style={{position: 'absolute', left: stW / 2 - 55, top: -150, width: 110, height: 100, background: '#454959'}} />
+            <div style={{position: 'absolute', left: stW / 2 - 105, top: -230, width: 210, height: 96, background: '#363845', borderRadius: 48}} />
+          </div>
+        </Place>
+      ) : null}
+    </>
   );
 };

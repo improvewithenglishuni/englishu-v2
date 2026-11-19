@@ -16,7 +16,7 @@ export const SEC = {
   eradicate: 15.4, // WHO 1967 + TARGET WORD 1: ERADICATE (vanishes) + the English sentence
   outbreak: 19.8, // ring vaccination, needle moves person to person
   chart: 23.8, // reported cases fall to 0
-  victory: 27.2, // map: last cases, grey, ERADICATED stamp, 1980
+  victory: 26.7, // map: case dots fade, last case (zoom in/out), grey, ERADICATED stamp, 1980
   end: 32.2, // end card
 } as const;
 

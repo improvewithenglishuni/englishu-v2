@@ -82,9 +82,9 @@ export const RemotionRoot: React.FC = () => (
           {text: 'They set out to eradicate smallpox, for good.', from: s(17.2), to: s(19.7)},
           {text: 'לא מחסנים את כולם.', from: s(19.8), to: s(21.6)},
           {text: 'כשפרץ outbreak — מחסנים את כל מי שסביב', from: s(21.6), to: s(23.7)},
-          {text: 'מעגל אחרי מעגל — עד אפס', from: s(23.8), to: s(27.1)},
-          {text: 'ב-1980 הוכרז: נגמר', from: s(27.2), to: s(29.8)},
-          {text: 'בפעם הבאה שתראו צלקת כזו — זה ניצחון', from: s(29.8), to: s(32.2)},
+          {text: 'מעגל אחרי מעגל — עד אפס', from: s(23.8), to: s(26.6)},
+          {text: 'ב-1980 הוכרז: נגמר', from: s(26.7), to: s(29.4)},
+          {text: 'בפעם הבאה שתראו צלקת כזו — זה ניצחון', from: s(29.4), to: s(32.2)},
         ],
         endCard: false,
       }}
