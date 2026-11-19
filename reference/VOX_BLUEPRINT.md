@@ -51,3 +51,14 @@ Rules: <= ~90 Hebrew words, <= 8 beats, ONE surprising fact, two target words, t
 4. Stills of every beat (`REMOTION_LOCAL_FONTS=1 npx remotion still <Comp> out.png --frame=N`), fix collisions, render with `--concurrency=1`.
 5. QA gate: (a) every frame textured, no flat field, (b) one typeface, vox palette plus one accent, brand colours only on end card, (c) every image sharp, (d) push/pull between full-frame real images and animated cutouts, (e) something new every 1.5-4 s, (f) two target words each animated, (g) strong hook, (h) <= 35 s, nothing but subtitles below y 1480, (i) no ornament unrelated to the topic.
 6. Sound: her voice only, quiet original bed, one soft paper sound per cutout entrance, at most two whooshes.
+
+## v4 rules (Sharon feedback, 2026-11-19)
+- Every image must visualize and relate to the narration (cowpox -> milkmaids, not a generic painting).
+- Historical reels include real images of the topic itself (what smallpox looked like).
+- Chart the key quantity when there is one (cases fall to 0 in 1980), data from a named source.
+- Any date on screen needs its significance shown (WHO 1967 label), not a bare year.
+- No title on slides that are not the subject; no dashed outlines; animate the action (needle moves person to person).
+- Word slides stay >= 3 s; target word gets its own accent colour (ERADICATE yellow on dark); word cards are jagged magazine-cut.
+- Cut-out stickers: let cut ends fall off-frame; never show a severed limb.
+- Big numbers sit on a crowd that disappears as the number falls.
+- No coloured disc behind portraits.

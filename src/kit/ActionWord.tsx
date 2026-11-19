@@ -42,7 +42,7 @@ export const ActionWord: React.FC<{
   y: number;
   fontSize?: number;
   mode?: 'uproot' | 'pop' | 'vanish';
-  color?: 'white' | 'slate';
+  color?: 'white' | 'slate' | 'yellow';
   /** frame the word first appears */
   at?: number;
   /** frame the letters start leaving (uproot) / the highlight lights up (pop) */
@@ -58,7 +58,7 @@ export const ActionWord: React.FC<{
   const {fps} = useVideoConfig();
   const ui = useUi();
   const e = exitFactor(frame, exitAt, fps);
-  const main = color === 'white' ? ui.white : ui.slate;
+  const main = color === 'white' ? ui.white : color === 'yellow' ? '#FDF551' : ui.slate;
   const letters = text.split('');
   const cwOf = (ch: string) => fontSize * (ch === 'I' ? 0.34 : ch === 'M' || ch === 'W' ? 0.86 : 0.66);
   const cw = fontSize * 0.66;
@@ -72,7 +72,7 @@ export const ActionWord: React.FC<{
         <div style={{position: 'absolute', left: x - totalW / 2 - 30, top: y + fontSize * 0.44, width: totalW + 60, height: 6, background: ground, opacity: clamp01(pop(frame, at, fps, SETTLE)) * e, borderRadius: 3}} />
       ) : null}
       <Place x={x} y={y} opacity={e}>
-        <div dir="ltr" style={{display: 'flex', fontFamily: SANS, fontWeight: 800, fontSize, lineHeight: 1, color: main, letterSpacing: fontSize * 0.01}}>
+        <div dir="ltr" style={{display: 'flex', fontFamily: SANS, fontWeight: 800, fontSize, lineHeight: 1, color: main, letterSpacing: fontSize * 0.01, textShadow: color === 'yellow' ? '0 10px 0 rgba(0,0,0,0.4)' : undefined}}>
           {letters.map((ch, i) => {
             const enter = clamp01(pop(frame, at + i * 2, fps, POP));
             if (mode === 'uproot') {

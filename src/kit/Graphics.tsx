@@ -172,7 +172,7 @@ export const Tally: React.FC<{peak: number; end?: number; x: number; y: number; 
   const done = down >= 1;
   return (
     <Place x={x} y={y} opacity={s} scale={0.8 + 0.2 * s}>
-      <div dir="ltr" style={{fontFamily: SANS, fontWeight: 800, fontSize, color: done ? '#FCFCFC' : '#D6403B', fontVariantNumeric: 'tabular-nums', letterSpacing: -2, whiteSpace: 'nowrap'}}>{v.toLocaleString('en-US')}</div>
+      <div dir="ltr" style={{fontFamily: SANS, fontWeight: 800, fontSize, color: done ? '#FCFCFC' : '#E5372F', fontVariantNumeric: 'tabular-nums', letterSpacing: -4, whiteSpace: 'nowrap', WebkitTextStroke: `${fontSize * 0.035}px #17171A`, paintOrder: 'stroke fill', textShadow: '0 10px 0 rgba(0,0,0,0.35)'}}>{v.toLocaleString('en-US')}</div>
     </Place>
   );
 };
@@ -201,6 +201,70 @@ export const NameLabel: React.FC<{x: number; y: number; line1: string; line2?: s
       <div dir={dir} style={{background: '#17171A', padding: `${fontSize * 0.22}px ${fontSize * 0.5}px`, boxShadow: '0 12px 18px rgba(0,0,0,0.35)', textAlign: 'center', fontFamily: SANS, color: '#FCFCFC', whiteSpace: 'nowrap'}}>
         <div style={{fontWeight: 800, fontSize, lineHeight: 1.1}}>{line1}</div>
         {line2 ? <div style={{fontWeight: 600, fontSize: fontSize * 0.6, lineHeight: 1.2, color: '#CDD0DE'}}>{line2}</div> : null}
+      </div>
+    </Place>
+  );
+};
+
+const rr = (n: number) => {
+  const x = Math.sin(n * 91.7 + 13.3) * 43758.5453;
+  return x - Math.floor(x);
+};
+
+/**
+ * A crowd of small pictograms filling the plate (a very large population). They pop in
+ * (staggered from `at`) and, if `vanishFrom`/`vanishTo` are given, drop away at random moments
+ * in that window (the number going down to zero).
+ */
+export const Crowd: React.FC<{x0: number; y0: number; cols: number; rows: number; dx: number; dy: number; size: number; color?: string; at?: number; vanishFrom?: number; vanishTo?: number}> = ({x0, y0, cols, rows, dx, dy, size, color = '#4B4D5A', at = 0, vanishFrom, vanishTo}) => {
+  const frame = useCurrentFrame();
+  const items: React.ReactNode[] = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const i = r * cols + c;
+      const enter = clamp01((frame - at - rr(i) * 24) / 8);
+      const gone = vanishFrom !== undefined && vanishTo !== undefined ? clamp01((frame - (vanishFrom + rr(i + 500) * (vanishTo - vanishFrom))) / 6) : 0;
+      const o = enter * (1 - gone);
+      if (o <= 0.01) continue;
+      const px = x0 + c * dx + (r % 2 ? dx / 2 : 0);
+      const py = y0 + r * dy;
+      items.push(
+        <g key={i} transform={`translate(${px} ${py}) scale(${(0.6 + 0.4 * enter) * (1 - 0.3 * gone)})`} opacity={o}>
+          <circle cx={0} cy={-size * 0.3} r={size * 0.17} fill={color} />
+          <path d={`M${-size * 0.2} ${-size * 0.08} h${size * 0.4} l${size * 0.07} ${size * 0.42} h${-size * 0.14} l${-size * 0.06} ${-size * 0.2} l${-size * 0.06} ${size * 0.2} h${-size * 0.14} z`} fill={color} />
+        </g>,
+      );
+    }
+  }
+  return (
+    <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+      {items}
+    </svg>
+  );
+};
+
+/**
+ * A card that looks cut out of a magazine: white border with JAGGED, scissor-cut edges and a soft
+ * shadow. `children` sit inside (the picture or graphic). x,y = centre.
+ */
+export const Jagged: React.FC<{x: number; y: number; width: number; height: number; rotate?: number; fill?: string; at?: number; exitAt?: number; border?: number; children?: React.ReactNode}> = ({x, y, width, height, rotate = 2, fill, at = 0, exitAt, border = 22, children}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const id = useId().replace(/:/g, '');
+  const s = clamp01(pop(frame, at, fps, SETTLE));
+  const e = exitFactor(frame, exitAt, fps);
+  if (s * e <= 0.001) return null;
+  return (
+    <Place x={x} y={y + (1 - s) * 420} rotate={rotate} opacity={s * e}>
+      <div style={{position: 'relative', width, height, filter: 'drop-shadow(0 16px 18px rgba(0,0,0,0.36))'}}>
+        <svg width={0} height={0} style={{position: 'absolute'}}>
+          <filter id={id} x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="turbulence" baseFrequency="0.07" numOctaves="2" seed="11" result="t" />
+            <feDisplacementMap in="SourceGraphic" in2="t" scale="26" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </svg>
+        <div style={{position: 'absolute', inset: -border, background: '#FAFAF7', filter: `url(#${id})`}} />
+        <div style={{position: 'absolute', inset: 0, overflow: 'hidden', background: fill}}>{children}</div>
       </div>
     </Place>
   );

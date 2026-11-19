@@ -22,3 +22,7 @@ Older newsprint-version files (`gillray.jpg`, `ota.jpg`, `tem.jpg`, `vial*.jpg`)
 
 | `arm.jpg` (from `VaccineScarsNL.jpg`), `public/assets/vox/arm_sticker.png` | "VaccineScarsNL.jpg", Wikimedia Commons (real photo of vaccine scars on an upper arm) | CC0 |
 | `public/assets/worlds/vox/plate_clip.jpg` | generated newspaper-clipping plate (greeked text, no real article) | own work |
+
+| `milk.jpg`, `public/assets/vox/milkmaid.jpg` | "Melking av kyr", Nasjonalbiblioteket (National Library of Norway), via Wikimedia Commons (woman milking cows, early 20th c.) | Public domain |
+| `public/assets/vox/smallpox_patient.jpg` | Sharon-supplied screenshot of a historical halftone photo of a child with smallpox (original source not recorded; identify and credit before publishing) | unverified |
+| chart data (World, reported smallpox cases 1967-1977) | WHO via Our World in Data, "Number of reported smallpox cases" (1978-1980 = 0; last case Oct 1977, Somalia, per CDC MMWR 1978) | CC BY (OWID) |

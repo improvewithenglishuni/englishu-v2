@@ -16,3 +16,7 @@ Rules applied: every on-screen word must add something the subtitle does not say
 | 8 | 27-32.2 | ב-1980 הוכרז: נגמר. בפעם הבאה שתראו צלקת כזו — זה ניצחון | map lights Brazil, Bangladesh, Somalia (last cases); then the whole map goes grey; red stamp ERADICATED slams over it like a classified stamp; year "1980" (year only) low in the frame where the stamp used to be | map |
 
 Coherence check: scar (1) -> the disease killed 300M and is now 0 (2) -> how: Jenner, cows (3-4) -> the word vaccination (5) -> the world's decision and the word eradicate (6) -> the method (7) -> the result and callback to the scar (8). No full-frame real photos are used, because no sharp source could be obtained (see SOURCES.md).
+
+
+## v4 final beats
+0.0 arm scar sticker | 2.2 real smallpox photo | 3.7 300M tally + crowd to 0 | 7.4 Jenner 1796 | 10.0 milkmaids | 12.2 VACCINATION (3.2 s, jagged card with needle) | 15.4 WHO 1967 + ERADICATE (yellow, vanishes) | 19.8 ring vaccination, needle hops | 23.8 cases chart to 0 | 27.2 map grey + ERADICATED stamp + 1980.
