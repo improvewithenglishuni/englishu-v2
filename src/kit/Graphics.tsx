@@ -3,6 +3,7 @@ import {Img, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {clamp01, exitFactor, pop, POP, SETTLE} from './motion';
 import {Place} from './Place';
 import {SANS} from './SerifTitle';
+import {HAND} from './fonts';
 import {useUi} from './theme';
 
 /**
@@ -138,12 +139,11 @@ export const Sticker: React.FC<{src: string; x: number; y: number; width: number
  * pushes in on the scars while a soft coral glow pulses over them (no ring, no outline).
  * Scar centre is given as fractions of the sticker (default for arm_sticker.png).
  */
-export const ScarSticker: React.FC<{src: string; x: number; y: number; width: number; rotate?: number; at?: number; scarAt?: number; scar?: {x: number; y: number}; exitAt?: number}> = ({src, x, y, width, rotate = -5, at = 0, scarAt = 12, scar = {x: 0.5, y: 0.5}, exitAt}) => {
+export const ScarSticker: React.FC<{src: string; x: number; y: number; width: number; rotate?: number; at?: number; scarAt?: number; scar?: {x: number; y: number}; aspect?: number; scars?: number[][]; zoomTo?: number; exitAt?: number}> = ({src, x, y, width, rotate = -5, at = 0, scarAt = 12, zoomTo = 1.28, scar = {x: 0.5, y: 0.5}, aspect = 1202 / 960, scars = [[0.469, 0.408], [0.504, 0.491], [0.529, 0.552]], exitAt}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const aspect = 1202 / 960;
   const glow = clamp01((frame - scarAt) / 10) * (0.55 + 0.25 * Math.sin((frame - scarAt) * 0.28));
-  const zoom = interpolate(frame, [scarAt, scarAt + 60], [1, 1.28], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const zoom = interpolate(frame, [scarAt, scarAt + 60], [1, zoomTo], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const e = exitFactor(frame, exitAt, fps);
   const s = clamp01(pop(frame, at, fps, SETTLE));
   if (s * e <= 0.001) return null;
@@ -152,7 +152,7 @@ export const ScarSticker: React.FC<{src: string; x: number; y: number; width: nu
     <Place x={x} y={y + (1 - s) * 420} rotate={rotate} opacity={s * e}>
       <div style={{position: 'relative', width, height: h, transform: `scale(${zoom})`, transformOrigin: `${scar.x * 100}% ${scar.y * 100}%`, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.38))'}}>
         <Img src={src} style={{width: '100%', height: '100%', display: 'block'}} />
-        {[[0.469, 0.408], [0.504, 0.491], [0.529, 0.552]].map(([a, b], i) => (
+        {scars.map(([a, b], i) => (
           <div key={i} style={{position: 'absolute', left: `${(a as number) * 100}%`, top: `${(b as number) * 100}%`, width: width * 0.2, height: width * 0.2, transform: 'translate(-50%,-50%)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(224,97,94,0.95) 0%, rgba(224,97,94,0.45) 40%, rgba(224,97,94,0) 70%)', mixBlendMode: 'multiply', opacity: glow}} />
         ))}
       </div>
@@ -172,7 +172,7 @@ export const Tally: React.FC<{peak: number; end?: number; x: number; y: number; 
   const done = down >= 1;
   return (
     <Place x={x} y={y} opacity={s} scale={0.8 + 0.2 * s}>
-      <div dir="ltr" style={{fontFamily: SANS, fontWeight: 800, fontSize, color: done ? '#FCFCFC' : '#E5372F', fontVariantNumeric: 'tabular-nums', letterSpacing: -4, whiteSpace: 'nowrap', WebkitTextStroke: `${fontSize * 0.035}px #17171A`, paintOrder: 'stroke fill', textShadow: '0 10px 0 rgba(0,0,0,0.35)'}}>{v.toLocaleString('en-US')}</div>
+      <div dir="ltr" style={{fontFamily: SANS, fontWeight: 800, fontSize, color: done ? '#FCFCFC' : '#E5372F', fontVariantNumeric: 'tabular-nums', letterSpacing: -4, whiteSpace: 'nowrap', textShadow: `0 ${fontSize * 0.03}px ${fontSize * 0.06}px rgba(0,0,0,0.38)`}}>{v.toLocaleString('en-US')}</div>
     </Place>
   );
 };
@@ -190,12 +190,41 @@ export const Disc: React.FC<{x: number; y: number; r: number; color?: string; at
   );
 };
 
-/** Black torn-slab label with white text: name on top line, title/year below (Vox name tag). */
-export const NameLabel: React.FC<{x: number; y: number; line1: string; line2?: string; dir?: 'rtl' | 'ltr'; fontSize?: number; rotate?: number; at?: number; exitAt?: number}> = ({x, y, line1, line2, dir = 'rtl', fontSize = 84, rotate = -2, at = 0, exitAt}) => {
+/** Black torn-slab label with white text, or (paper) a white crumpled torn-paper tag with handwritten ink. */
+export const NameLabel: React.FC<{x: number; y: number; line1: string; line2?: string; dir?: 'rtl' | 'ltr'; fontSize?: number; rotate?: number; paper?: boolean; at?: number; exitAt?: number}> = ({x, y, line1, line2, dir = 'rtl', fontSize = 84, rotate = -2, paper = false, at = 0, exitAt}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const id = useId().replace(/:/g, '');
   const s = clamp01(pop(frame, at, fps, SETTLE)) * exitFactor(frame, exitAt, fps);
   if (s <= 0.001) return null;
+  if (paper) {
+    const fs = fontSize * 1.35;
+    const padX = fs * 0.55;
+    const padY = fs * 0.28;
+    return (
+      <Place x={x} y={y} rotate={rotate} scale={0.85 + 0.15 * s} opacity={s}>
+        <svg width={0} height={0} style={{position: 'absolute'}}>
+          <filter id={`p${id}`} x="-12%" y="-25%" width="124%" height="150%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="5" result="e" />
+            <feDisplacementMap in="SourceGraphic" in2="e" scale="16" result="rough" />
+            <feTurbulence type="fractalNoise" baseFrequency="0.018 0.03" numOctaves="4" seed="11" result="n" />
+            <feDiffuseLighting in="n" lighting-color="#ffffff" surfaceScale="3.2" result="light">
+              <feDistantLight azimuth="235" elevation="58" />
+            </feDiffuseLighting>
+            <feComposite in="light" in2="rough" operator="in" result="lit" />
+            <feBlend in="rough" in2="lit" mode="multiply" />
+          </filter>
+        </svg>
+        <div style={{position: 'relative', filter: 'drop-shadow(0 12px 14px rgba(0,0,0,0.38))'}}>
+          <div style={{position: 'absolute', inset: 0, background: '#F7F4EA', filter: `url(#p${id})`}} />
+          <div dir={dir} style={{position: 'relative', padding: `${padY}px ${padX}px`, textAlign: 'center', fontFamily: HAND, color: '#26242E', whiteSpace: 'nowrap', transform: 'rotate(-1deg)'}}>
+            <div style={{fontWeight: 700, fontSize: fs, lineHeight: 1.0}}>{line1}</div>
+            {line2 ? <div style={{fontWeight: 700, fontSize: fs * 0.66, lineHeight: 1.1, color: '#45424F'}}>{line2}</div> : null}
+          </div>
+        </div>
+      </Place>
+    );
+  }
   return (
     <Place x={x} y={y} rotate={rotate} scale={0.85 + 0.15 * s} opacity={s}>
       <div dir={dir} style={{background: '#17171A', padding: `${fontSize * 0.22}px ${fontSize * 0.5}px`, boxShadow: '0 12px 18px rgba(0,0,0,0.35)', textAlign: 'center', fontFamily: SANS, color: '#FCFCFC', whiteSpace: 'nowrap'}}>
@@ -229,9 +258,9 @@ export const Crowd: React.FC<{x0: number; y0: number; cols: number; rows: number
       const px = x0 + c * dx + (r % 2 ? dx / 2 : 0);
       const py = y0 + r * dy;
       items.push(
-        <g key={i} transform={`translate(${px} ${py}) scale(${(0.6 + 0.4 * enter) * (1 - 0.3 * gone)})`} opacity={o}>
-          <circle cx={0} cy={-size * 0.3} r={size * 0.17} fill={color} />
-          <path d={`M${-size * 0.2} ${-size * 0.08} h${size * 0.4} l${size * 0.07} ${size * 0.42} h${-size * 0.14} l${-size * 0.06} ${-size * 0.2} l${-size * 0.06} ${size * 0.2} h${-size * 0.14} z`} fill={color} />
+        <g key={i} transform={`translate(${px} ${py}) scale(${((0.6 + 0.4 * enter) * (1 - 0.3 * gone) * size) / 160}) translate(-50 -80)`} opacity={o}>
+          <circle cx={50} cy={28} r={19} fill={color} />
+          <path d="M28 52 L72 52 L80 104 L66 104 L63 150 L53 150 L50 118 L47 150 L37 150 L34 104 L20 104 Z" fill={color} />
         </g>,
       );
     }
@@ -267,5 +296,65 @@ export const Jagged: React.FC<{x: number; y: number; width: number; height: numb
         <div style={{position: 'absolute', inset: 0, overflow: 'hidden', background: fill}}>{children}</div>
       </div>
     </Place>
+  );
+};
+
+
+/**
+ * Tiny germs that rush at a (vaccinated) person, hit its invisible shield and bounce away.
+ * (cx,cy) = person centre; rx,ry = body ellipse the germs cannot enter.
+ */
+export const Germs: React.FC<{cx: number; cy: number; rx: number; ry: number; n?: number; at: number; stagger?: number; color?: string; spike?: string; size?: number}> = ({cx, cy, rx, ry, n = 12, at, stagger = 2, color = '#E0615E', spike = '#3E414C', size = 38}) => {
+  const frame = useCurrentFrame();
+  const out: React.ReactNode[] = [];
+  const IN = 11;
+  const OUT = 16;
+  for (let i = 0; i < n; i++) {
+    const ang = -0.15 * Math.PI + (i / (n - 1)) * 1.3 * Math.PI + (rr(i + 3) - 0.5) * 0.12;
+    const ca = Math.cos(ang);
+    const sa = Math.sin(ang);
+    const edge = 1 / Math.sqrt((ca / rx) ** 2 + (sa / ry) ** 2);
+    const f = frame - (at + i * stagger);
+    if (f < 0 || f > IN + OUT + 6) continue;
+    const far = 760;
+    const bounceAng = ang + (rr(i + 9) - 0.5) * 1.4;
+    let px: number;
+    let py: number;
+    let o = 1;
+    let rot: number;
+    if (f <= IN) {
+      const k = f / IN;
+      const r = far + (edge + 14 - far) * (k * k);
+      px = cx + ca * r;
+      py = cy + sa * r;
+      rot = f * 14;
+    } else {
+      const k = Math.min(1, (f - IN) / OUT);
+      const e2 = 1 - Math.pow(1 - k, 2.2);
+      const r = edge + 14 + 360 * e2;
+      px = cx + Math.cos(bounceAng) * r + (ca - Math.cos(bounceAng)) * (edge + 14) * (1 - e2);
+      py = cy + Math.sin(bounceAng) * r + (sa - Math.sin(bounceAng)) * (edge + 14) * (1 - e2);
+      rot = IN * 14 + (f - IN) * 34;
+      o = 1 - clamp01((k - 0.55) / 0.45);
+    }
+    const hit = f > IN && f < IN + 7 ? 1 - (f - IN) / 7 : 0;
+    const R = size / 2;
+    out.push(
+      <g key={i} transform={`translate(${px} ${py})`} opacity={o}>
+        {hit > 0 ? <circle cx={0} cy={0} r={R * (1.2 + (1 - hit) * 1.6)} fill="none" stroke="#FDF551" strokeWidth={4} opacity={hit} /> : null}
+        <g transform={`rotate(${rot})`}>
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((k) => (
+            <line key={k} x1={Math.cos((k * Math.PI) / 4) * R * 0.8} y1={Math.sin((k * Math.PI) / 4) * R * 0.8} x2={Math.cos((k * Math.PI) / 4) * R * 1.35} y2={Math.sin((k * Math.PI) / 4) * R * 1.35} stroke={spike} strokeWidth={3.2} strokeLinecap="round" />
+          ))}
+          <circle cx={0} cy={0} r={R * 0.82} fill={color} stroke={spike} strokeWidth={2.4} />
+          <circle cx={-R * 0.25} cy={-R * 0.2} r={R * 0.16} fill="#F4F3F9" opacity={0.7} />
+        </g>
+      </g>,
+    );
+  }
+  return (
+    <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+      {out}
+    </svg>
   );
 };

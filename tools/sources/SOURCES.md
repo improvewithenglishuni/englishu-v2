@@ -26,3 +26,7 @@ Older newsprint-version files (`gillray.jpg`, `ota.jpg`, `tem.jpg`, `vial*.jpg`)
 | `milk.jpg`, `public/assets/vox/milkmaid.jpg` | "Melking av kyr", Nasjonalbiblioteket (National Library of Norway), via Wikimedia Commons (woman milking cows, early 20th c.) | Public domain |
 | `public/assets/vox/smallpox_patient.jpg` | Sharon-supplied screenshot of a historical halftone photo of a child with smallpox (original source not recorded; identify and credit before publishing) | unverified |
 | chart data (World, reported smallpox cases 1967-1977) | WHO via Our World in Data, "Number of reported smallpox cases" (1978-1980 = 0; last case Oct 1977, Somalia, per CDC MMWR 1978) | CC BY (OWID) |
+
+| `public/assets/vox/arm_hand.png` | Sharon-supplied die-cut arm with hand and scars (hook sticker; original source not recorded) | unverified |
+| `public/assets/vox/patient_full.jpg` | Sharon-supplied child smallpox photo, upscaled 4x for full-frame (source not recorded) | unverified |
+| `public/fonts/amatic-sc-*-700-normal.woff2` | Amatic SC (Hebrew + Latin handwriting) via @fontsource/amatic-sc, used for the Jenner name tag | OFL |

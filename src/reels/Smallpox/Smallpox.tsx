@@ -3,12 +3,14 @@ import {Audio, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} fr
 import {
   ActionWord,
   Crowd,
+  Germs,
   END_CARD_SECONDS,
   EndCard,
   Jagged,
   LineChart,
   NameLabel,
   Person,
+  Place,
   ringPositions,
   Ring,
   ScarSticker,
@@ -29,27 +31,45 @@ import type {SmallpoxProps} from './schema';
 import {T} from './timing';
 
 const s = (sec: number) => Math.round(sec * 30);
-const arm = staticFile('assets/vox/arm_sticker.png');
-const patient = staticFile('assets/vox/smallpox_patient.jpg');
+const arm = staticFile('assets/vox/arm_hand.png');
+const patient = staticFile('assets/vox/patient_full.jpg');
 const jennerSticker = staticFile('assets/vox/jenner_sticker.png');
-const milkmaid = staticFile('assets/vox/milkmaid.jpg');
+const milkmaid = staticFile('assets/vox/milkmaid_full.jpg');
 
 const cover: React.CSSProperties = {width: '100%', height: '100%', objectFit: 'cover', display: 'block'};
 
-/** 1. HOOK: the REAL scar photo as a die-cut sticker entering from the frame edges (no visible cut-off), with a glow/zoom effect. */
-const Hook = () => <ScarSticker src={arm} x={650} y={500} width={1000} rotate={0} at={2} scarAt={s(0.6)} scar={{x: 0.5, y: 0.49}} />;
-
-/** 2. What smallpox looked like: real historical photo as a jagged magazine cutout on the clipping plate. */
-const Patient = () => (
-  <Jagged x={540} y={760} width={1000} height={567} rotate={-2} at={2}>
-    <Img src={patient} style={cover} />
-  </Jagged>
+/** 1. HOOK: the REAL scar photo (arm + hand) as a die-cut sticker with a scar glow and slow push-in. */
+const Hook = () => (
+  <ScarSticker
+    src={arm}
+    x={540}
+    y={760}
+    width={960}
+    zoomTo={1.06}
+    aspect={1153 / 1364}
+    rotate={-4}
+    at={2}
+    scarAt={s(0.6)}
+    scar={{x: 0.34, y: 0.5}}
+    scars={[[0.312, 0.425], [0.339, 0.514], [0.357, 0.577]]}
+  />
 );
+
+/** 2. What smallpox looked like: a real historical photo, FULL FRAME. */
+const Patient = () => {
+  const frame = useCurrentFrame();
+  const z = interpolate(frame, [0, 45], [1.0, 1.06], {extrapolateRight: 'clamp'});
+  return (
+    <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
+      <Img src={patient} style={{...cover, objectPosition: '38% 50%', transform: `scale(${z})`, transformOrigin: '38% 40%'}} />
+    </div>
+  );
+};
 
 /** 3. 300,000,000 counts up while narrated, then down to 0 while the crowd disappears. */
 const Tally300 = () => (
   <>
-    <Crowd x0={70} y0={190} cols={8} rows={13} dx={135} dy={112} size={150} at={2} vanishFrom={s(1.7)} vanishTo={s(3.3)} />
+    <Crowd x0={40} y0={70} cols={15} rows={28} dx={72} dy={68} size={66} at={2} vanishFrom={s(1.7)} vanishTo={s(3.3)} />
     <Tally peak={300000000} x={540} y={830} fontSize={170} at={2} upAt={s(0.1)} upDur={s(1.4)} downAt={s(1.7)} downDur={s(1.6)} />
   </>
 );
@@ -58,44 +78,43 @@ const Tally300 = () => (
 const JennerPortrait = () => (
   <>
     <Sticker src={jennerSticker} x={540} y={780} width={780} aspect={1444 / 1120} rotate={-3} at={2} />
-    <NameLabel x={540} y={1260} line1="אדוארד ג׳נר" line2="רופא · 1796" fontSize={92} at={s(0.5)} />
+    <NameLabel x={540} y={1265} line1="אדוארד ג׳נר" line2="רופא · 1796" fontSize={92} paper at={s(0.5)} />
   </>
 );
 
-/** 5. Milkmaids: cowpox came from the cows. Old photo as a jagged magazine cutout. */
-const Milkmaids = () => (
-  <Jagged x={540} y={820} width={940} height={846} rotate={2} at={2}>
-    <Img src={milkmaid} style={cover} />
-  </Jagged>
-);
-
-const VaccCard = () => {
+/** 5. Milkmaids: cowpox came from the cows. Old photo, FULL FRAME. */
+const Milkmaids = () => {
   const frame = useCurrentFrame();
-  const jab = interpolate(frame, [s(1.7), s(1.95), s(2.3)], [0, 1, 0.55], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  const done = frame >= s(1.95);
+  const z = interpolate(frame, [0, 66], [1.0, 1.07], {extrapolateRight: 'clamp'});
   return (
-    <>
-      <Person x={560} y={400} size={470} tone="ink" glow={done ? '#FDF551' : undefined} at={4} />
-      <Syringe x={250 + jab * 60} y={250 + jab * 34} size={560} rotate={30} at={s(0.6)} />
-    </>
+    <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
+      <Img src={milkmaid} style={{...cover, objectPosition: '86% 50%', transform: `scale(${z})`, transformOrigin: '75% 55%'}} />
+    </div>
   );
 };
 
-/** 6. TARGET WORD 2: VACCINATION (vacca = cow), 3.2 s, with a jagged magazine-cut card showing the needle. */
-const Vaccination = () => (
-  <>
-    <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={300} fontSize={118} at={2} actAt={s(1.0)} hiFrom={0} hiTo={5} gloss="vacca = פרה (לטינית)" />
-    <Jagged x={540} y={1010} width={800} height={720} rotate={-2} fill="#A1ACCA" at={s(0.7)}>
-      <VaccCard />
-    </Jagged>
-  </>
-);
+/** 6. TARGET WORD 2: VACCINATION (vacca = cow). The figure is jabbed, glows, and germs bounce off. */
+const Vaccination = () => {
+  const frame = useCurrentFrame();
+  const PX = 540;
+  const PY = 1090;
+  const jab = interpolate(frame, [s(0.9), s(1.1), s(1.4)], [0, 1, 0.55], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const done = frame >= s(1.1);
+  return (
+    <>
+      <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={118} at={2} actAt={s(1.0)} hiFrom={0} hiTo={5} gloss="vacca = פרה (לטינית)" />
+      <Person x={PX} y={PY} size={560} tone="ink" glow={done ? '#FDF551' : undefined} at={4} />
+      <Syringe x={PX - 310 + jab * 62} y={PY - 150 + jab * 34} size={560} rotate={30} at={s(0.3)} />
+      <Germs cx={PX} cy={PY + 20} rx={150} ry={260} n={12} at={s(1.35)} stagger={2} />
+    </>
+  );
+};
 
 /** 7. WHO 1967 + TARGET WORD 1: ERADICATE (yellow), then the whole word vanishes. */
 const Eradicate = () => (
   <>
     <NameLabel x={540} y={330} line1="ארגון הבריאות העולמי" line2="1967" fontSize={80} at={2} />
-    <ActionWord text="ERADICATE" mode="vanish" color="yellow" x={540} y={820} fontSize={150} at={s(0.5)} actAt={s(3.0)} />
+    <ActionWord text="ERADICATE" mode="vanish" color="yellow" x={540} y={820} fontSize={150} at={s(0.5)} actAt={s(2.3)} />
     <SansHeading text="למגר = לעקור מהשורש" x={540} y={1150} fontSize={84} color="white" dir="rtl" at={s(1.3)} />
   </>
 );
@@ -147,7 +166,7 @@ const CASES: [number, number][] = [
 /** 9. Reported smallpox cases worldwide fall to zero in 1980 (WHO via Our World in Data). */
 const Chart = () => (
   <>
-    <SerifTitle text="מקרי אבעבועות שחורות בעולם" dir="rtl" x={540} y={250} width={980} fontSize={74} color="slate" source="Source: WHO via Our World in Data" at={2} />
+    <SerifTitle text="Reported smallpox cases worldwide" dir="ltr" x={540} y={250} width={980} fontSize={80} color="slate" source="Source: WHO via Our World in Data" at={2} />
     <LineChart
       box={{x: 190, y: 520, w: 740, h: 720}}
       points={CASES}
@@ -165,14 +184,16 @@ const Chart = () => (
 /** 10. Last natural cases light up, the whole map goes grey, a red classified-style stamp slams on, then only the year. */
 const Victory = () => (
   <>
-    <SerifTitle text="Last natural cases" x={540} y={215} fontSize={92} color="white" source="Source: WHO" at={2} />
+    <Place x={540} y={520} opacity={Math.min(1, Math.max(0, (useCurrentFrame() - 2) / 10))}>
+      <div dir="ltr" style={{fontFamily: 'var(--kit-font)', fontWeight: 700, fontSize: 40, color: '#B9BCCB', letterSpacing: 0.5}}>Source: WHO</div>
+    </Place>
     <WorldMap
       box={{x: 40, y: 560, w: 1000}}
       highlight={{Brazil: {at: s(0.3)}, Bangladesh: {at: s(0.7)}, Somalia: {at: s(1.1)}}}
       greyAt={s(1.6)}
       at={4}
     />
-    <Stamp text="ERADICATED" x={540} y={800} fontSize={118} rotate={-8} at={s(2.0)} />
+    <Stamp text="ERADICATED" x={540} y={800} fontSize={124} rotate={-8} heavy at={s(2.0)} />
     <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(2.7)} />
   </>
 );

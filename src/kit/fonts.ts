@@ -13,6 +13,7 @@ import {loadFont as loadHeebo} from '@remotion/google-fonts/Heebo';
 import {loadFont as loadRubik} from '@remotion/google-fonts/Rubik';
 import {loadFont as loadPlayfair} from '@remotion/google-fonts/PlayfairDisplay';
 import {loadFont as loadDavid} from '@remotion/google-fonts/DavidLibre';
+import {loadFont as loadAmatic} from '@remotion/google-fonts/AmaticSC';
 import {loadFont as loadBarlow} from '@remotion/google-fonts/BarlowCondensed';
 import {staticFile} from 'remotion';
 import manifest from './fontManifest.json';
@@ -25,12 +26,12 @@ const opts = (m: string) => ({weights: spec(m).weights as W[], subsets: spec(m).
 
 const LOCAL = process.env.REMOTION_LOCAL_FONTS === '1' && manifest.length > 0;
 
-let families: {anton: string; rubik: string; heebo: string; frank: string; playfair: string; barlow: string; david: string};
+let families: {anton: string; rubik: string; heebo: string; frank: string; playfair: string; barlow: string; david: string; hand: string};
 if (LOCAL) {
   for (const f of manifest as Array<{family: string; weight: string; file: string; unicodeRange: string}>) {
     loadLocal({family: f.family, url: staticFile(`fonts/${f.file}`), weight: f.weight, unicodeRange: f.unicodeRange});
   }
-  families = {anton: 'Anton', rubik: 'Rubik', heebo: 'Heebo', frank: 'Frank Ruhl Libre', playfair: 'Playfair Display', barlow: 'Barlow Condensed', david: 'David Libre'};
+  families = {anton: 'Anton', rubik: 'Rubik', heebo: 'Heebo', frank: 'Frank Ruhl Libre', playfair: 'Playfair Display', barlow: 'Barlow Condensed', david: 'David Libre', hand: 'Amatic SC'};
 } else {
   families = {
     anton: loadAnton('normal', opts('Anton') as never).fontFamily,
@@ -40,6 +41,7 @@ if (LOCAL) {
     playfair: loadPlayfair('normal', {weights: ['700', '900'], subsets: ['latin']} as never).fontFamily,
     barlow: loadBarlow('normal', {weights: ['700', '800'], subsets: ['latin']} as never).fontFamily,
     david: loadDavid('normal', opts('DavidLibre') as never).fontFamily,
+    hand: loadAmatic('normal', {weights: ['700'], subsets: ['hebrew', 'latin']} as never).fontFamily,
   };
 }
 
@@ -54,6 +56,8 @@ export const FONTS = families;
 export type FontName = keyof typeof FONTS;
 
 export const DAVID = families.david;
+/** Handwriting (Hebrew + Latin) for name tags only. */
+export const HAND = families.hand;
 /**
  * ONE typeface per video, chosen by the theme's `typeface` (see theme.ts) and applied to every
  * Vox-kit element through the CSS variable --kit-font set by <World>. Both cover Hebrew AND Latin.

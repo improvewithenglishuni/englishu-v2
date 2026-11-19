@@ -88,10 +88,11 @@ export const ActionWord: React.FC<{
               );
             }
             if (mode === 'vanish') {
-              const t0 = actAt + i * 3;
-              const out = interpolate(frame, [t0, t0 + 14], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+              const t0 = actAt + i * 2 + rnd(i + 11) * 6;
+              const out = interpolate(frame, [t0, t0 + 28], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+              const rise = out * out * 260 + out * 40;
               return (
-                <span key={i} style={{display: 'inline-block', width: cwOf(ch), textAlign: 'center', transform: `translateY(${(1 - enter) * 60 - out * 30}px) scale(${(0.4 + 0.6 * enter) * (1 - 0.5 * out)})`, opacity: enter * (1 - out), filter: `blur(${out * 14}px)`}}>
+                <span key={i} style={{display: 'inline-block', width: cwOf(ch), textAlign: 'center', transform: `translate(${(rnd(i + 3) - 0.5) * 50 * out}px, ${(1 - enter) * 60 - rise}px) scale(${(0.4 + 0.6 * enter) * (1 + 0.35 * out)})`, opacity: enter * (1 - clamp01((out - 0.15) / 0.85)), filter: `blur(${out * 22}px)`}}>
                   {ch}
                 </span>
               );
@@ -125,7 +126,8 @@ export const Stamp: React.FC<{
   at?: number;
   exitAt?: number;
   color?: string;
-}> = ({text, x, y, fontSize = 150, rotate = -8, at = 0, exitAt, color = '#E5483F'}) => {
+  heavy?: boolean;
+}> = ({text, x, y, fontSize = 150, rotate = -8, at = 0, exitAt, color = '#E5483F', heavy = false}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const id = useId().replace(/:/g, '');
@@ -145,9 +147,9 @@ export const Stamp: React.FC<{
           <feComposite in="SourceGraphic" in2="m" operator="in" />
         </filter>
       </svg>
-      <div style={{filter: `url(#${id})`, border: `${fontSize * 0.07}px solid ${color}`, borderRadius: fontSize * 0.08, padding: `${fontSize * 0.08}px ${fontSize * 0.2}px`, boxShadow: `inset 0 0 0 ${fontSize * 0.035}px transparent`}}>
-        <div style={{border: `${fontSize * 0.025}px solid ${color}`, borderRadius: fontSize * 0.04, padding: `${fontSize * 0.04}px ${fontSize * 0.12}px`}}>
-          <div dir="ltr" style={{fontFamily: SANS, fontWeight: 800, fontSize, lineHeight: 1.05, color, letterSpacing: fontSize * 0.04, textTransform: 'uppercase', whiteSpace: 'nowrap'}}>{text}</div>
+      <div style={{filter: `url(#${id})`, border: `${fontSize * (heavy ? 0.12 : 0.07)}px solid ${color}`, borderRadius: fontSize * 0.08, padding: `${fontSize * 0.08}px ${fontSize * 0.2}px`, boxShadow: `inset 0 0 0 ${fontSize * 0.035}px transparent`}}>
+        <div style={{border: `${fontSize * (heavy ? 0.05 : 0.025)}px solid ${color}`, borderRadius: fontSize * 0.04, padding: `${fontSize * 0.04}px ${fontSize * 0.12}px`}}>
+          <div dir="ltr" style={{fontFamily: SANS, fontWeight: 900, fontSize, lineHeight: 1.05, color, letterSpacing: fontSize * 0.04, textTransform: 'uppercase', whiteSpace: 'nowrap', WebkitTextStroke: heavy ? `${fontSize * 0.03}px ${color}` : undefined}}>{text}</div>
         </div>
       </div>
     </Place>
