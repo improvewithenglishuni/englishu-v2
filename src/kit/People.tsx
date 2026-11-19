@@ -29,11 +29,14 @@ export const Person: React.FC<{
   /** halo colour (fuzzy ink edge), e.g. ui.halo; undefined = none */
   halo?: string;
   glow?: string;
+  /** protective outline colour: contours emanate outward from the body (repeats) */
+  shield?: string;
+  shieldAt?: number;
   dashed?: boolean;
   at?: number;
   exitAt?: number;
   rotate?: number;
-}> = ({x, y, size = 150, tone = 'ink', halo, glow, dashed, at = 0, exitAt, rotate = 0}) => {
+}> = ({x, y, size = 150, tone = 'ink', halo, glow, shield, shieldAt = 0, dashed, at = 0, exitAt, rotate = 0}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const ui = useUi();
@@ -62,6 +65,30 @@ export const Person: React.FC<{
             <feGaussianBlur stdDeviation="9" />
           </filter>
         </defs>
+        {shield && frame >= shieldAt
+          ? [0, 1, 2].map((k) => {
+              const ph = (((frame - shieldAt) / 40 + k / 3) % 1 + 1) % 1;
+              const d = 3 + 26 * ph;
+              const op = (1 - ph) * 0.95 * clamp01((frame - shieldAt) / 6);
+              const hw = d + 1.3;
+              const iw = Math.max(0, d - 1.3);
+              return (
+                <g key={k} opacity={op}>
+                  <mask id={`m${id}${k}`} maskUnits="userSpaceOnUse" x="-80" y="-80" width="260" height="320">
+                    <g stroke="#fff" strokeWidth={hw * 2} strokeLinejoin="round" fill="#fff">
+                      <circle cx="50" cy="28" r="19" />
+                      <path d={BODY} />
+                    </g>
+                    <g stroke="#000" strokeWidth={iw * 2} strokeLinejoin="round" fill="#000">
+                      <circle cx="50" cy="28" r="19" />
+                      <path d={BODY} />
+                    </g>
+                  </mask>
+                  <rect x="-80" y="-80" width="260" height="320" fill={shield} mask={`url(#m${id}${k})`} />
+                </g>
+              );
+            })
+          : null}
         {glow ? (
           <g filter={`url(#g${id})`} opacity={0.9}>
             <circle cx="50" cy="28" r="26" fill={glow} />

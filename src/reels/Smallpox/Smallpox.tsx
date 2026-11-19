@@ -34,7 +34,7 @@ const s = (sec: number) => Math.round(sec * 30);
 const arm = staticFile('assets/vox/arm_hand.png');
 const patient = staticFile('assets/vox/patient_full.jpg');
 const jennerSticker = staticFile('assets/vox/jenner_sticker.png');
-const milkmaid = staticFile('assets/vox/milkmaid_full.jpg');
+const milkmaid = staticFile('assets/vox/milkmaid_new.jpg');
 
 const cover: React.CSSProperties = {width: '100%', height: '100%', objectFit: 'cover', display: 'block'};
 
@@ -88,36 +88,47 @@ const Milkmaids = () => {
   const z = interpolate(frame, [0, 66], [1.0, 1.07], {extrapolateRight: 'clamp'});
   return (
     <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
-      <Img src={milkmaid} style={{...cover, objectPosition: '86% 50%', transform: `scale(${z})`, transformOrigin: '75% 55%'}} />
+      <Img src={milkmaid} style={{...cover, objectPosition: '52% 50%', transform: `scale(${z})`, transformOrigin: '52% 55%'}} />
     </div>
   );
 };
 
-/** 6. TARGET WORD 2: VACCINATION (vacca = cow). The figure is jabbed, glows, and germs bounce off. */
+/** 6. TARGET WORD 2: VACCINATION (vacca = cow). The figure is jabbed, a protective outline radiates from its body, and germs bounce off. */
 const Vaccination = () => {
   const frame = useCurrentFrame();
   const PX = 540;
   const PY = 1090;
-  const jab = interpolate(frame, [s(0.9), s(1.1), s(1.4)], [0, 1, 0.55], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  const done = frame >= s(1.1);
+  const SZ = 430;
+  const off = {x: 0.411 * SZ, y: 0.2375 * SZ};
+  const jab = interpolate(frame, [s(0.7), s(1.0), s(1.4)], [0, 1, 0.6], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const tip = {x: PX - 175 + jab * 100, y: PY - 80 + jab * 62};
   return (
     <>
       <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={118} at={2} actAt={s(1.0)} hiFrom={0} hiTo={5} gloss="vacca = פרה (לטינית)" />
-      <Person x={PX} y={PY} size={560} tone="ink" glow={done ? '#FDF551' : undefined} at={4} />
-      <Syringe x={PX - 310 + jab * 62} y={PY - 150 + jab * 34} size={560} rotate={30} at={s(0.3)} />
-      <Germs cx={PX} cy={PY + 20} rx={150} ry={260} n={12} at={s(1.35)} stagger={2} />
+      <Person x={PX} y={PY} size={560} tone="ink" shield="#4E669B" shieldAt={s(1.05)} at={4} />
+      <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#9A9DAA" at={s(0.2)} />
+      <Germs cx={PX} cy={PY + 10} rx={205} ry={345} n={12} at={s(1.35)} stagger={2} />
     </>
   );
 };
 
 /** 7. WHO 1967 + TARGET WORD 1: ERADICATE (yellow), then the whole word vanishes. */
-const Eradicate = () => (
-  <>
-    <NameLabel x={540} y={330} line1="ארגון הבריאות העולמי" line2="1967" fontSize={80} at={2} />
-    <ActionWord text="ERADICATE" mode="vanish" color="yellow" x={540} y={820} fontSize={150} at={s(0.5)} actAt={s(2.3)} />
-    <SansHeading text="למגר = לעקור מהשורש" x={540} y={1150} fontSize={84} color="white" dir="rtl" at={s(1.3)} />
-  </>
-);
+const Eradicate = () => {
+  const frame = useCurrentFrame();
+  const SZ = 460;
+  const off = {x: 0.411 * SZ, y: 0.2375 * SZ};
+  const k = interpolate(frame, [s(1.5), s(2.0)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const ease = 1 - Math.pow(1 - k, 3);
+  const tip = {x: 470 - 300 * (1 - ease), y: 800 - 190 * (1 - ease)};
+  return (
+    <>
+      <NameLabel x={540} y={330} line1="ארגון הבריאות העולמי" line2="1967" fontSize={80} at={2} />
+      <ActionWord text="ERADICATE" mode="vanish" color="yellow" x={540} y={820} fontSize={150} at={s(0.5)} actAt={s(2.05)} />
+      <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#C9CBD6" at={s(1.45)} exitAt={s(3.2)} />
+      <SansHeading text="למגר = לעקור מהשורש" x={540} y={1150} fontSize={84} color="white" dir="rtl" at={s(1.3)} />
+    </>
+  );
+};
 
 /** 8. Ring vaccination: the needle moves from person to person; each one lights up when vaccinated. */
 const Outbreak = () => {

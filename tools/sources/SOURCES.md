@@ -30,3 +30,5 @@ Older newsprint-version files (`gillray.jpg`, `ota.jpg`, `tem.jpg`, `vial*.jpg`)
 | `public/assets/vox/arm_hand.png` | Sharon-supplied die-cut arm with hand and scars (hook sticker; original source not recorded) | unverified |
 | `public/assets/vox/patient_full.jpg` | Sharon-supplied child smallpox photo, upscaled 4x for full-frame (source not recorded) | unverified |
 | `public/fonts/amatic-sc-*-700-normal.woff2` | Amatic SC (Hebrew + Latin handwriting) via @fontsource/amatic-sc, used for the Jenner name tag | OFL |
+
+| `public/assets/vox/milkmaid_new.jpg` | Sharon-supplied photo of a woman milking a cow in a barn, upscaled 4x for full-frame (source not recorded) | unverified |
