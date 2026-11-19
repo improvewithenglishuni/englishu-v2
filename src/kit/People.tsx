@@ -66,28 +66,34 @@ export const Person: React.FC<{
           </filter>
         </defs>
         {shield && frame >= shieldAt
-          ? [0, 1, 2].map((k) => {
-              const ph = (((frame - shieldAt) / 40 + k / 3) % 1 + 1) % 1;
-              const d = 3 + 26 * ph;
-              const op = (1 - ph) * 0.95 * clamp01((frame - shieldAt) / 6);
-              const hw = d + 1.3;
-              const iw = Math.max(0, d - 1.3);
-              return (
-                <g key={k} opacity={op}>
-                  <mask id={`m${id}${k}`} maskUnits="userSpaceOnUse" x="-80" y="-80" width="260" height="320">
-                    <g stroke="#fff" strokeWidth={hw * 2} strokeLinejoin="round" fill="#fff">
-                      <circle cx="50" cy="28" r="19" />
-                      <path d={BODY} />
-                    </g>
-                    <g stroke="#000" strokeWidth={iw * 2} strokeLinejoin="round" fill="#000">
-                      <circle cx="50" cy="28" r="19" />
-                      <path d={BODY} />
-                    </g>
-                  </mask>
-                  <rect x="-80" y="-80" width="260" height="320" fill={shield} mask={`url(#m${id}${k})`} />
-                </g>
-              );
-            })
+          ? (() => {
+              const f = frame - shieldAt;
+              const ease = (v: number) => 1 - Math.pow(1 - clamp01(v), 3);
+              const rings = [{d: 3 + 16 * ease(f / 26), op: clamp01(f / 5)}];
+              [0, 9].forEach((delay) => {
+                const g = (f - delay) / 34;
+                if (g > 0 && g < 1) rings.push({d: 3 + 30 * ease(g), op: (1 - g) * 0.8});
+              });
+              return rings.map((r, k) => {
+                const hw = r.d + 0.55;
+                const iw = Math.max(0, r.d - 0.55);
+                return (
+                  <g key={k} opacity={r.op}>
+                    <mask id={`m${id}${k}`} maskUnits="userSpaceOnUse" x="-80" y="-80" width="260" height="320">
+                      <g stroke="#fff" strokeWidth={hw * 2} strokeLinejoin="round" fill="#fff">
+                        <circle cx="50" cy="28" r="19" />
+                        <path d={BODY} />
+                      </g>
+                      <g stroke="#000" strokeWidth={iw * 2} strokeLinejoin="round" fill="#000">
+                        <circle cx="50" cy="28" r="19" />
+                        <path d={BODY} />
+                      </g>
+                    </mask>
+                    <rect x="-80" y="-80" width="260" height="320" fill={shield} mask={`url(#m${id}${k})`} />
+                  </g>
+                );
+              });
+            })()
           : null}
         {glow ? (
           <g filter={`url(#g${id})`} opacity={0.9}>
@@ -159,7 +165,7 @@ export const Links: React.FC<{lines: {x1: number; y1: number; x2: number; y2: nu
 };
 
 /** Ink syringe, diagonal, with a rough edge. Centre-anchored. */
-export const Syringe: React.FC<{x: number; y: number; size?: number; rotate?: number; at?: number; exitAt?: number; color?: string}> = ({x, y, size = 360, rotate = -35, at = 0, exitAt, color}) => {
+export const Syringe: React.FC<{x: number; y: number; size?: number; rotate?: number; at?: number; exitAt?: number; color?: string; liquid?: string; plunge?: number}> = ({x, y, size = 360, rotate = -35, at = 0, exitAt, color, liquid, plunge = 0}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const ui = useUi();
@@ -177,9 +183,10 @@ export const Syringe: React.FC<{x: number; y: number; size?: number; rotate?: nu
           </filter>
         </defs>
         <g filter={`url(#${id})`} fill={c}>
-          <rect x="10" y="50" width="34" height="20" rx="3" />
-          <rect x="2" y="30" width="14" height="60" rx="4" />
           <rect x="44" y="44" width="200" height="32" rx="4" />
+          {liquid ? <rect x={48 + 192 * plunge} y="48" width={192 * (1 - plunge)} height="24" rx="2" fill={liquid} /> : null}
+          <rect x={10 + 192 * plunge} y="50" width="34" height="20" rx="3" />
+          <rect x={2 + 192 * plunge} y="30" width="14" height="60" rx="4" />
           <rect x="244" y="32" width="14" height="56" rx="4" />
           <rect x="258" y="56" width="132" height="8" />
         </g>

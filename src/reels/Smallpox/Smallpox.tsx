@@ -29,6 +29,7 @@ import {
 } from '../../kit';
 import type {SmallpoxProps} from './schema';
 import {T} from './timing';
+import caseDots from './caseDots.json';
 
 const s = (sec: number) => Math.round(sec * 30);
 const arm = staticFile('assets/vox/arm_hand.png');
@@ -105,9 +106,9 @@ const Vaccination = () => {
   return (
     <>
       <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={118} at={2} actAt={s(1.0)} hiFrom={0} hiTo={5} gloss="vacca = פרה (לטינית)" />
-      <Person x={PX} y={PY} size={560} tone="ink" shield="#4E669B" shieldAt={s(1.05)} at={4} />
+      <Person x={PX} y={PY} size={560} tone="ink" shield="#8F93A3" shieldAt={s(1.05)} at={4} />
       <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#9A9DAA" at={s(0.2)} />
-      <Germs cx={PX} cy={PY + 10} rx={205} ry={345} n={12} at={s(1.35)} stagger={2} />
+      <Germs cx={PX} cy={PY + 10} rx={200} ry={330} n={12} at={s(1.35)} stagger={2} />
     </>
   );
 };
@@ -115,16 +116,17 @@ const Vaccination = () => {
 /** 7. WHO 1967 + TARGET WORD 1: ERADICATE (yellow), then the whole word vanishes. */
 const Eradicate = () => {
   const frame = useCurrentFrame();
-  const SZ = 460;
+  const SZ = 340;
   const off = {x: 0.411 * SZ, y: 0.2375 * SZ};
-  const k = interpolate(frame, [s(1.5), s(2.0)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const k = interpolate(frame, [s(1.4), s(1.9)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const ease = 1 - Math.pow(1 - k, 3);
-  const tip = {x: 470 - 300 * (1 - ease), y: 800 - 190 * (1 - ease)};
+  const tip = {x: 470 - 260 * (1 - ease), y: 800 - 165 * (1 - ease)};
+  const plunge = interpolate(frame, [s(1.9), s(2.5)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
     <>
       <NameLabel x={540} y={330} line1="ארגון הבריאות העולמי" line2="1967" fontSize={80} at={2} />
-      <ActionWord text="ERADICATE" mode="vanish" color="yellow" x={540} y={820} fontSize={150} at={s(0.5)} actAt={s(2.05)} />
-      <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#C9CBD6" at={s(1.45)} exitAt={s(3.2)} />
+      <ActionWord text="ERADICATE" mode="vanish" color="yellow" hollow x={540} y={820} fontSize={150} at={s(0.5)} fillAt={s(1.9)} fillFromX={470} actAt={s(2.7)} />
+      <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#C9CBD6" liquid="#FDF551" plunge={plunge} at={s(1.35)} exitAt={s(3.3)} />
       <SansHeading text="למגר = לעקור מהשורש" x={540} y={1150} fontSize={84} color="white" dir="rtl" at={s(1.3)} />
     </>
   );
@@ -195,17 +197,21 @@ const Chart = () => (
 /** 10. Last natural cases light up, the whole map goes grey, a red classified-style stamp slams on, then only the year. */
 const Victory = () => (
   <>
-    <Place x={540} y={520} opacity={Math.min(1, Math.max(0, (useCurrentFrame() - 2) / 10))}>
+    <Place x={540} y={470} opacity={Math.min(1, Math.max(0, (useCurrentFrame() - 2) / 10))}>
       <div dir="ltr" style={{fontFamily: 'var(--kit-font)', fontWeight: 700, fontSize: 40, color: '#B9BCCB', letterSpacing: 0.5}}>Source: WHO</div>
     </Place>
     <WorldMap
-      box={{x: 40, y: 560, w: 1000}}
-      highlight={{Brazil: {at: s(0.3)}, Bangladesh: {at: s(0.7)}, Somalia: {at: s(1.1)}}}
-      greyAt={s(1.6)}
+      box={{x: 0, y: 520, w: 1080}}
+      highlight={{Somalia: {at: s(1.5), off: s(2.9)}}}
+      dots={caseDots.dots}
+      dotsAt={s(0.15)}
+      dotsFade={[s(0.7), s(2.0)]}
+      lastCase={{x: caseDots.somalia[0], y: caseDots.somalia[1], at: s(1.5), off: s(2.9)}}
+      greyAt={s(3.0)}
       at={4}
     />
-    <Stamp text="ERADICATED" x={540} y={800} fontSize={124} rotate={-8} heavy at={s(2.0)} />
-    <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(2.7)} />
+    <Stamp text="ERADICATED" x={540} y={800} fontSize={124} rotate={-8} heavy at={s(3.4)} />
+    <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(3.5)} />
   </>
 );
 

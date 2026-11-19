@@ -24,7 +24,13 @@ const WIDE = {w: 1000, h: 520};
  */
 export const WorldMap: React.FC<{
   box: {x: number; y: number; w: number};
-  highlight?: Record<string, {at?: number; color?: string}>;
+  highlight?: Record<string, {at?: number; color?: string; off?: number}>;
+  /** tiny case dots (positions in the 1000x520 map space): appear at dotsAt, then vanish at random between dotsFade[0..1] */
+  dots?: number[][];
+  dotsAt?: number;
+  dotsFade?: [number, number];
+  /** one larger red pulsing dot (e.g. the last case) that disappears at `off` */
+  lastCase?: {x: number; y: number; at: number; off: number};
   markers?: {lon: number; lat: number; at?: number; color?: string; r?: number}[];
   light?: boolean;
   /** all other countries (default: land grey on dark, steel-lavender on light) */
@@ -33,7 +39,7 @@ export const WorldMap: React.FC<{
   exitAt?: number;
   /** frame when the WHOLE map fades to grey (e.g. after the last case) */
   greyAt?: number;
-}> = ({box, highlight = {}, markers = [], light = false, land, at = 0, exitAt, greyAt}) => {
+}> = ({box, highlight = {}, markers = [], light = false, land, at = 0, exitAt, greyAt, dots = [], dotsAt = 0, dotsFade = [60, 90], lastCase}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const ui = useUi();
@@ -52,12 +58,29 @@ export const WorldMap: React.FC<{
       <g transform={`translate(${box.x},${box.y}) scale(${k})`}>
         {paths.map((p) => {
           const h = highlight[p.name];
-          const on = h ? clamp01(pop(frame, h.at ?? 0, fps, SETTLE)) : 0;
+          const on = h ? clamp01(pop(frame, h.at ?? 0, fps, SETTLE)) * (h.off !== undefined ? 1 - clamp01((frame - h.off) / 12) : 1) : 0;
           let fill = h && on > 0.02 ? mix(base, h.color ?? '#E0615E', on) : base;
           if (greyAt !== undefined) fill = mix(fill, '#85878F', clamp01((frame - greyAt) / 12));
           return <path key={p.name} d={p.d} fill={fill} stroke={sea} strokeWidth={0.6} strokeLinejoin="round" />;
         })}
-        {greyAt !== undefined && frame >= greyAt ? null : null}
+        {dots.map((d, i) => {
+          const enter = clamp01((frame - dotsAt - rr(i) * 12) / 6);
+          const gone = clamp01((frame - (dotsFade[0] + rr(i + 900) * (dotsFade[1] - dotsFade[0]))) / 8);
+          const o = enter * (1 - gone);
+          return o > 0.01 ? <circle key={`d${i}`} cx={d[0]} cy={d[1]} r={1.6} fill="#E5372F" opacity={o * 0.9} /> : null;
+        })}
+        {lastCase && frame >= lastCase.at && frame < lastCase.off + 12
+          ? (() => {
+              const s2 = clamp01(pop(frame, lastCase.at, fps, SETTLE)) * (1 - clamp01((frame - lastCase.off) / 10));
+              const pulse = ((frame - lastCase.at) % 36) / 36;
+              return (
+                <g transform={`translate(${lastCase.x},${lastCase.y})`} opacity={s2}>
+                  <circle r={12 + pulse * 34} fill="none" stroke="#E5372F" strokeWidth={2.4} opacity={1 - pulse} />
+                  <circle r={11 * s2} fill="#E5372F" />
+                </g>
+              );
+            })()
+          : null}
         {markers.map((m, i) => {
           const pt = project([m.lon, m.lat]);
           if (!pt) return null;
@@ -73,6 +96,11 @@ export const WorldMap: React.FC<{
       </g>
     </svg>
   );
+};
+
+const rr = (n: number) => {
+  const v = Math.sin(n * 91.7 + 13.3) * 43758.5453;
+  return v - Math.floor(v);
 };
 
 const mix = (a: string, b: string, t: number) => {

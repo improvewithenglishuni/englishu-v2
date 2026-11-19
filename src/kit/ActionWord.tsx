@@ -53,7 +53,11 @@ export const ActionWord: React.FC<{
   gloss?: string;
   glossDir?: 'rtl' | 'ltr';
   exitAt?: number;
-}> = ({text, x, y, fontSize = 150, mode = 'uproot', color = 'white', at = 0, actAt = 40, hiFrom = 0, hiTo = 0, gloss, glossDir = 'rtl', exitAt}) => {
+  /** vanish mode: outline-only letters that fill like liquid from the point `fillFromX` starting at `fillAt` */
+  hollow?: boolean;
+  fillAt?: number;
+  fillFromX?: number;
+}> = ({text, x, y, fontSize = 150, mode = 'uproot', color = 'white', at = 0, actAt = 40, hiFrom = 0, hiTo = 0, gloss, glossDir = 'rtl', exitAt, hollow = false, fillAt = 0, fillFromX = 540}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const ui = useUi();
@@ -72,7 +76,7 @@ export const ActionWord: React.FC<{
         <div style={{position: 'absolute', left: x - totalW / 2 - 30, top: y + fontSize * 0.44, width: totalW + 60, height: 6, background: ground, opacity: clamp01(pop(frame, at, fps, SETTLE)) * e, borderRadius: 3}} />
       ) : null}
       <Place x={x} y={y} opacity={e}>
-        <div dir="ltr" style={{display: 'flex', fontFamily: SANS, fontWeight: 800, fontSize, lineHeight: 1, color: main, letterSpacing: fontSize * 0.01, textShadow: color === 'yellow' ? '0 10px 0 rgba(0,0,0,0.4)' : undefined}}>
+        <div dir="ltr" style={{display: 'flex', fontFamily: SANS, fontWeight: 800, fontSize, lineHeight: 1, color: main, letterSpacing: fontSize * 0.01, textShadow: color === 'yellow' && !hollow ? '0 10px 0 rgba(0,0,0,0.4)' : undefined}}>
           {letters.map((ch, i) => {
             const enter = clamp01(pop(frame, at + i * 2, fps, POP));
             if (mode === 'uproot') {
@@ -91,8 +95,13 @@ export const ActionWord: React.FC<{
               const t0 = actAt + i * 2 + rnd(i + 11) * 6;
               const out = interpolate(frame, [t0, t0 + 28], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
               const rise = out * out * 260 + out * 40;
+              const cx = x - totalW / 2 + letters.slice(0, i).reduce((a, c) => a + cwOf(c), 0) + cwOf(ch) / 2;
+              const fill = hollow ? clamp01((frame - fillAt - Math.abs(cx - fillFromX) * 0.03) / 12) : 1;
+              const hollowStyle: React.CSSProperties = hollow
+                ? {color: 'transparent', WebkitTextStroke: `${Math.max(3, fontSize * 0.022)}px ${main}`, background: `linear-gradient(to top, ${main} ${fill * 100 - 3}%, transparent ${fill * 100 + 3}%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text'}
+                : {};
               return (
-                <span key={i} style={{display: 'inline-block', width: cwOf(ch), textAlign: 'center', transform: `translate(${(rnd(i + 3) - 0.5) * 50 * out}px, ${(1 - enter) * 60 - rise}px) scale(${(0.4 + 0.6 * enter) * (1 + 0.35 * out)})`, opacity: enter * (1 - clamp01((out - 0.15) / 0.85)), filter: `blur(${out * 22}px)`}}>
+                <span key={i} style={{...hollowStyle, display: 'inline-block', width: cwOf(ch), textAlign: 'center', transform: `translate(${(rnd(i + 3) - 0.5) * 50 * out}px, ${(1 - enter) * 60 - rise}px) scale(${(0.4 + 0.6 * enter) * (1 + 0.35 * out)})`, opacity: enter * (1 - clamp01((out - 0.15) / 0.85)), filter: `blur(${out * 22}px)`}}>
                   {ch}
                 </span>
               );
@@ -147,8 +156,8 @@ export const Stamp: React.FC<{
           <feComposite in="SourceGraphic" in2="m" operator="in" />
         </filter>
       </svg>
-      <div style={{filter: `url(#${id})`, border: `${fontSize * (heavy ? 0.12 : 0.07)}px solid ${color}`, borderRadius: fontSize * 0.08, padding: `${fontSize * 0.08}px ${fontSize * 0.2}px`, boxShadow: `inset 0 0 0 ${fontSize * 0.035}px transparent`}}>
-        <div style={{border: `${fontSize * (heavy ? 0.05 : 0.025)}px solid ${color}`, borderRadius: fontSize * 0.04, padding: `${fontSize * 0.04}px ${fontSize * 0.12}px`}}>
+      <div style={{filter: `url(#${id})`, border: `${fontSize * (heavy ? 0.085 : 0.07)}px solid ${color}`, borderRadius: fontSize * 0.08, padding: `${fontSize * 0.08}px ${fontSize * 0.2}px`, boxShadow: `inset 0 0 0 ${fontSize * 0.035}px transparent`}}>
+        <div style={{border: `${fontSize * (heavy ? 0.03 : 0.025)}px solid ${color}`, borderRadius: fontSize * 0.04, padding: `${fontSize * 0.04}px ${fontSize * 0.12}px`}}>
           <div dir="ltr" style={{fontFamily: SANS, fontWeight: 900, fontSize, lineHeight: 1.05, color, letterSpacing: fontSize * 0.04, textTransform: 'uppercase', whiteSpace: 'nowrap', WebkitTextStroke: heavy ? `${fontSize * 0.03}px ${color}` : undefined}}>{text}</div>
         </div>
       </div>
