@@ -258,9 +258,9 @@ export const NameLabel: React.FC<{x: number; y: number; line1: string; line2?: s
           <filter id={`p${id}`} x="-12%" y="-25%" width="124%" height="150%">
             <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="5" result="e" />
             <feDisplacementMap in="SourceGraphic" in2="e" scale="16" result="rough" />
-            <feTurbulence type="fractalNoise" baseFrequency="0.018 0.03" numOctaves="4" seed="11" result="n" />
-            <feDiffuseLighting in="n" lighting-color="#ffffff" surfaceScale="3.2" result="light">
-              <feDistantLight azimuth="235" elevation="58" />
+            <feTurbulence type="fractalNoise" baseFrequency="0.007 0.012" numOctaves="3" seed="11" result="n" />
+            <feDiffuseLighting in="n" lighting-color="#ffffff" surfaceScale="11" result="light">
+              <feDistantLight azimuth="225" elevation="42" />
             </feDiffuseLighting>
             <feComposite in="light" in2="rough" operator="in" result="lit" />
             <feBlend in="rough" in2="lit" mode="multiply" />
@@ -268,9 +268,9 @@ export const NameLabel: React.FC<{x: number; y: number; line1: string; line2?: s
         </svg>
         <div style={{position: 'relative', filter: 'drop-shadow(0 12px 14px rgba(0,0,0,0.38))'}}>
           <div style={{position: 'absolute', inset: 0, background: '#F7F4EA', filter: `url(#p${id})`}} />
-          <div dir={dir} style={{position: 'relative', padding: `${padY}px ${padX}px`, textAlign: 'center', fontFamily: HAND, color: '#26242E', whiteSpace: 'nowrap', transform: 'rotate(-1deg)'}}>
-            <div style={{fontWeight: 700, fontSize: fs, lineHeight: 1.0}}>{line1}</div>
-            {line2 ? <div style={{fontWeight: 700, fontSize: fs * 0.66, lineHeight: 1.1, color: '#45424F'}}>{line2}</div> : null}
+          <div dir={dir} style={{position: 'relative', padding: `${padY}px ${padX}px`, textAlign: 'center', fontFamily: SANS, color: '#26242E', whiteSpace: 'nowrap', transform: 'rotate(-1deg)'}}>
+            <div style={{fontWeight: 800, fontSize: fs * 0.8, lineHeight: 1.05}}>{line1}</div>
+            {line2 ? <div style={{fontWeight: 700, fontSize: fs * 0.52, lineHeight: 1.1, color: '#45424F'}}>{line2}</div> : null}
           </div>
         </div>
       </Place>

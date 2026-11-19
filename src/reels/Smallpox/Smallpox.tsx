@@ -82,8 +82,8 @@ const Tally300 = () => (
 /** 4. Jenner (named on screen) as a die-cut portrait on a newspaper clipping. */
 const JennerPortrait = () => (
   <>
-    <Sticker src={jennerSticker} x={540} y={780} width={780} aspect={1444 / 1120} rotate={-3} at={2} />
-    <NameLabel x={540} y={1265} line1="אדוארד ג׳נר" line2="רופא · 1796" fontSize={92} paper at={s(0.5)} />
+    <Sticker src={jennerSticker} x={540} y={735} width={910} aspect={1444 / 1120} rotate={-3} at={2} />
+    <NameLabel x={540} y={1345} line1="אדוארד ג׳נר" line2="רופא · 1796" fontSize={92} paper at={s(0.5)} />
   </>
 );
 
@@ -179,7 +179,7 @@ const Outbreak = () => {
 };
 
 const CASES: [number, number][] = [
-  [1967, 122098], [1968, 80020], [1969, 45291], [1970, 33219], [1971, 51993], [1972, 65153],
+  [1967, 132000], [1968, 80020], [1969, 45291], [1970, 33219], [1971, 51993], [1972, 65153],
   [1973, 135853], [1974, 218326], [1975, 19278], [1976, 954], [1977, 3234], [1978, 2], [1979, 0], [1980, 0],
 ];
 
@@ -226,17 +226,11 @@ const Victory = () => {
           at={4}
         />
       </div>
-      <Place x={540} y={440} opacity={Math.min(1, Math.max(0, (frame - 2) / 10)) * (1 - Math.min(1, Math.max(0, (frame - s(1.5)) / 8)))}>
-        <div dir="ltr" style={{fontFamily: 'var(--kit-font)', fontWeight: 700, fontSize: 46, color: '#E6E8F4', letterSpacing: 0.5, whiteSpace: 'nowrap'}}>Endemic smallpox, 1967</div>
-      </Place>
-      <Place x={540} y={440} opacity={Math.min(1, Math.max(0, (frame - s(1.7)) / 8)) * (1 - Math.min(1, Math.max(0, (frame - s(2.8)) / 8)))}>
-        <div dir="ltr" style={{fontFamily: 'var(--kit-font)', fontWeight: 700, fontSize: 46, color: '#E6E8F4', letterSpacing: 0.5, whiteSpace: 'nowrap', background: '#1B1E2B', padding: '6px 22px', borderRadius: 6}}>Last natural case: Somalia, 1977</div>
-      </Place>
-      <Place x={540} y={490} opacity={Math.min(1, Math.max(0, (frame - 2) / 10)) * (1 - Math.min(1, Math.max(0, (frame - s(1.5)) / 8))) + Math.min(1, Math.max(0, (frame - s(3.6)) / 8))}>
+      <Place x={540} y={1130} opacity={Math.min(1, Math.max(0, (frame - 2) / 10)) * (1 - Math.min(1, Math.max(0, (frame - s(1.5)) / 8))) + Math.min(1, Math.max(0, (frame - s(3.6)) / 8))}>
         <div dir="ltr" style={{fontFamily: 'var(--kit-font)', fontWeight: 700, fontSize: 34, color: '#B9BCCB', letterSpacing: 0.5}}>Source: WHO</div>
       </Place>
-      <Stamp text="ERADICATED" x={540} y={800} fontSize={124} rotate={-8} heavy at={s(3.8)} />
-      <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(4.3)} />
+      <Stamp text="ERADICATED" x={540} y={800} fontSize={124} rotate={-8} heavy at={s(4.4)} />
+      <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(3.7)} />
     </>
   );
 };
@@ -247,7 +241,7 @@ export const Smallpox: React.FC<SmallpoxProps> = (props) => {
   const endAt = durationInFrames - Math.round(END_CARD_SECONDS * fps);
   return (
     <>
-      <World theme={themes[props.theme]} push={[1, 1]} hud={<Subtitles lines={props.subtitles} variant="box" />}>
+      <World theme={themes[props.theme]} push={[1, 1]} hud={<Subtitles lines={props.subtitles} variant="box" fontSize={60} bottom={1630} />}>
         <Scene from={T.hook} to={T.patient} variant="light"><Hook /></Scene>
         <Scene from={T.patient} to={T.zero} variant="clip"><Patient /></Scene>
         <Scene from={T.zero} to={T.jenner} variant="charcoal"><Tally300 /></Scene>

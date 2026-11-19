@@ -21,22 +21,37 @@ const w = (lon, lat) => {
   if (lon > -82 && lon < -35 && lat > -35 && lat < 12) return 0.55; // S America
   return 0.18;
 };
+// Evenly spread (Poisson-disk style) so the dots cover each endemic country, not clumps.
 const out = [];
-let tries = 0;
-while (out.length < 1900 && tries < 900000) {
-  tries++;
+const MIN = 3.1;
+const cand = [];
+for (let i = 0; i < 400000; i++) {
   const lon = -180 + rnd() * 360;
   const lat = -58 + rnd() * 130;
   let hit = false;
-  for (let i = 0; i < endemic.length && !hit; i++) {
-    const [[a, b], [c, d]] = bounds[i];
+  for (let k = 0; k < endemic.length && !hit; k++) {
+    const [[a, b], [c, d]] = bounds[k];
     if (c < a ? false : lon < a || lon > c || lat < b || lat > d) continue;
-    if (geoContains(endemic[i], [lon, lat])) hit = true;
+    if (geoContains(endemic[k], [lon, lat])) hit = true;
   }
   if (!hit) continue;
   const p = proj([lon, lat]);
-  if (p) out.push([Math.round(p[0] * 10) / 10, Math.round(p[1] * 10) / 10]);
+  if (p) cand.push(p);
+}
+const cell = MIN, grid = new Map();
+const key = (x, y) => Math.floor(x / cell) + ',' + Math.floor(y / cell);
+for (const p of cand) {
+  const gx = Math.floor(p[0] / cell), gy = Math.floor(p[1] / cell);
+  let ok = true;
+  for (let dx = -1; dx <= 1 && ok; dx++) for (let dy = -1; dy <= 1 && ok; dy++) {
+    for (const q of grid.get((gx + dx) + ',' + (gy + dy)) || []) if ((q[0] - p[0]) ** 2 + (q[1] - p[1]) ** 2 < MIN * MIN) { ok = false; break; }
+  }
+  if (!ok) continue;
+  const k = key(p[0], p[1]);
+  if (!grid.has(k)) grid.set(k, []);
+  grid.get(k).push(p);
+  out.push([Math.round(p[0] * 10) / 10, Math.round(p[1] * 10) / 10]);
 }
 const som = proj([44.77, 1.72]);
 fs.writeFileSync('src/reels/Smallpox/caseDots.json', JSON.stringify({dots: out, somalia: som.map((v) => Math.round(v * 10) / 10)}));
-console.log(out.length, tries, som);
+console.log(out.length, som);
