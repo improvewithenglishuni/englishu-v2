@@ -2,7 +2,7 @@ import React from 'react';
 import {AbsoluteFill, OffthreadVideo, interpolate, staticFile, useCurrentFrame} from 'remotion';
 import {C, MEDIA} from '../theme';
 import {Bee, BeeTop} from '../components/bee';
-import {Branch, Comb} from '../components/props';
+import {Comb} from '../components/props';
 import {ParkWorld} from '../components/park';
 import {Lens} from '../components/explain';
 import {exitOut, pop, prog} from '../components/anim';
@@ -63,24 +63,31 @@ export const S1Hook: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur);
   const cam = prog(f, 0, dur, (t) => t);
-  // the forager leaves the blossom and flies down to the hive entrance
-  const fly = prog(f, 0, 40);
-  const fx = interpolate(fly, [0, 0.5, 1], [220, 640, HIVE.entrance.x]);
-  const fy = interpolate(fly, [0, 0.5, 1], [430, 640, HIVE.entrance.y]) - Math.sin(fly * Math.PI) * 60;
+  // the forager flies in from the left and down to the hive entrance
+  const fly = prog(f, 0, 36);
+  const fx = interpolate(fly, [0, 0.5, 1], [-80, 520, HIVE.entrance.x]);
+  const fy = interpolate(fly, [0, 0.5, 1], [520, 760, HIVE.entrance.y]) - Math.sin(fly * Math.PI) * 80;
   const fs = interpolate(fly, [0, 0.8, 1], [1, 0.55, 0.05]);
-  const lens = pop(f, 38, 12);
+  // camera pushes in toward the entrance as she goes inside...
+  const push = interpolate(f, [26, 46], [1, 1.35], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: (t) => t * t * (3 - 2 * t)});
+  // ...then a magnifying glass grows out of the entrance: we are looking inside the hive
+  const zoom = prog(f, 38, 54, (t) => 1 - (1 - t) ** 3);
   const R = 330;
+  const lx = interpolate(zoom, [0, 1], [HIVE.entrance.x, 430]);
+  const ly = interpolate(zoom, [0, 1], [HIVE.entrance.y - 60, 700]);
+  const ls = interpolate(zoom, [0, 0.85, 1], [0.08, 1.04, 1]);
   return (
     <AbsoluteFill style={{opacity: out}}>
-      <ParkWorld cam={cam} hiveX={HIVE.x} hiveY={HIVE.y} hiveW={HIVE.w} />
-      <Branch style={{left: -360, top: -170, transform: `scale(0.82) scaleX(-1) rotate(${Math.sin(f / 20) * 1.2}deg)`}} />
-      {fs > 0.06 && (
-        <div style={{position: 'absolute', left: fx - 100, top: fy - 70, transform: `scale(${fs}) rotate(${interpolate(fly, [0, 1], [10, 30])}deg)`}}>
-          <Bee size={200} flap id="s1fly" />
-        </div>
-      )}
-      {f >= 36 && (
-        <Lens cx={420} cy={720} r={R} s={lens} px={HIVE.entrance.x - 20} py={HIVE.y + 200}>
+      <AbsoluteFill style={{transform: `scale(${push})`, transformOrigin: `${HIVE.entrance.x}px ${HIVE.entrance.y - 60}px`}}>
+        <ParkWorld cam={cam} hiveX={HIVE.x} hiveY={HIVE.y} hiveW={HIVE.w} />
+        {fs > 0.06 && (
+          <div style={{position: 'absolute', left: fx - 100, top: fy - 70, transform: `scale(${fs}) rotate(${interpolate(fly, [0, 1], [8, 30])}deg)`}}>
+            <Bee size={200} flap id="s1fly" />
+          </div>
+        )}
+      </AbsoluteFill>
+      {f >= 38 && (
+        <Lens cx={lx} cy={ly} r={R} s={ls} handle>
           <BeeLensContent f={f} r={R} dancing={f > 50} startDance={50} />
         </Lens>
       )}

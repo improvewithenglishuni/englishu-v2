@@ -10,54 +10,100 @@ import {exitOut, pop, prog} from '../components/anim';
 const bez = (t: number, p0: number, p1: number, p2: number, p3: number) =>
   (1 - t) ** 3 * p0 + 3 * (1 - t) ** 2 * t * p1 + 3 * (1 - t) * t ** 2 * p2 + t ** 3 * p3;
 
-/** Beat 4: CONVEY. Letters travel along the dance path from the dancer to the followers. */
+/**
+ * Beat 4: CONVEY. Each letter is a message: it flies from the dancer to one of the three followers,
+ * the follower "receives" it (a ripple), and only then the letter rises to spell the word up top.
+ */
 export const S4Convey: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur);
   const word = 'CONVEY';
-  const size = 210;
-  const letterW = 118;
+  const size = 200;
+  const letterW = 114;
   const x0 = 540 - (letterW * word.length) / 2;
+  const WORD_Y = 430;
   const dancer = {x: 230, y: 1060};
-  const gloss = pop(f, 62, 12);
   const dW = Math.sin(f * 1.3) * 12;
   const followers = [
-    {x: 760, y: 980, r: -120},
-    {x: 900, y: 1110, r: -100},
-    {x: 780, y: 1200, r: -70},
+    {x: 780, y: 930, r: -115},
+    {x: 920, y: 1080, r: -95},
+    {x: 790, y: 1210, r: -70},
   ];
-  // the travelling path (drawn faintly first)
-  const P1 = {x: 120, y: 520}, P2 = {x: 980, y: 1260};
-  const trail = prog(f, 0, 18);
+  const T = (i: number) => {
+    const leave = 4 + i * 5;
+    const arrive = leave + 15;
+    const rise = arrive + 6;
+    return {leave, arrive, rise, land: rise + 15};
+  };
+  const lastLand = T(word.length - 1).land;
+  const gloss = pop(f, lastLand + 3, 12);
   return (
     <AbsoluteFill style={{opacity: out}}>
+      {/* faint message routes from the dancer to each follower */}
       <svg width={1080} height={1920} style={{position: 'absolute'}}>
-        <path
-          d={`M ${dancer.x} ${dancer.y} C ${P1.x} ${P1.y}, ${P2.x} ${P2.y - 500}, ${540} ${560}`}
-          stroke={C.amber}
-          strokeWidth={10}
-          strokeDasharray="2 26"
-          strokeLinecap="round"
-          fill="none"
-          opacity={0.9 * trail}
-        />
+        {followers.map((b, k) => (
+          <path
+            key={k}
+            d={`M ${dancer.x + 40} ${dancer.y - 40} Q ${(dancer.x + b.x) / 2} ${Math.min(dancer.y, b.y) - 220} ${b.x - 40} ${b.y - 30}`}
+            stroke={C.ink}
+            strokeWidth={6}
+            strokeDasharray="2 20"
+            strokeLinecap="round"
+            fill="none"
+            opacity={0.35 * prog(f, 0, 12)}
+          />
+        ))}
       </svg>
       <div style={{position: 'absolute', left: dancer.x - 55, top: dancer.y - 90, transform: `rotate(${20 + dW}deg) scale(${pop(f, 0)})`}}>
-        <BeeTop size={110} id="s4d" />
+        <BeeTop size={110} id="s4d" buzz />
       </div>
-      {followers.map((b, k) => (
-        <div key={k} style={{position: 'absolute', left: b.x - 45, top: b.y - 75, transform: `rotate(${b.r + Math.sin(f / 5 + k) * 4}deg) scale(${pop(f, 3 + k * 3)})`}}>
-          <BeeTop size={90} id={`s4f${k}`} />
-        </div>
-      ))}
+      {followers.map((b, k) => {
+        // ripple each time this follower receives a letter
+        const hits = word.split('').map((_, i) => i).filter((i) => i % 3 === k).map((i) => T(i).arrive);
+        const ripples = hits.map((h) => {
+          const t = (f - h) / 14;
+          if (t < 0 || t > 1) return null;
+          return <circle key={h} cx={b.x} cy={b.y} r={40 + t * 70} fill="none" stroke={C.ink} strokeWidth={5 * (1 - t)} opacity={1 - t} />;
+        });
+        const nod = hits.some((h) => f >= h && f < h + 6) ? 1.12 : 1;
+        return (
+          <React.Fragment key={k}>
+            <svg width={1080} height={1920} style={{position: 'absolute'}}>
+              {ripples}
+            </svg>
+            <div style={{position: 'absolute', left: b.x - 45, top: b.y - 75, transform: `rotate(${b.r + Math.sin(f / 5 + k) * 4}deg) scale(${pop(f, 3 + k * 3) * nod})`}}>
+              <BeeTop size={90} id={`s4f${k}`} />
+            </div>
+          </React.Fragment>
+        );
+      })}
       {word.split('').map((ch, i) => {
-        const t = prog(f, 6 + i * 5, 34 + i * 5);
+        const {leave, arrive, rise, land} = T(i);
+        if (f < leave) return null;
+        const fol = followers[i % 3];
         const tx = x0 + i * letterW + letterW / 2;
-        const ty = 640;
-        const x = bez(t, dancer.x, P1.x, P2.x, tx);
-        const y = bez(t, dancer.y, P1.y, P2.y - 500, ty);
-        const sc = interpolate(t, [0, 0.6, 1], [0.25, 0.7, 1]);
-        const land = pop(f, 34 + i * 5, 8);
+        let x: number, y: number, sc: number, rot = 0;
+        if (f < arrive) {
+          // dancer -> follower along an arc (the message being sent)
+          const t = prog(f, leave, arrive);
+          const cx = (dancer.x + fol.x) / 2, cy = Math.min(dancer.y, fol.y) - 220;
+          x = bez2(t, dancer.x + 40, cx, fol.x - 40);
+          y = bez2(t, dancer.y - 40, cy, fol.y - 30);
+          sc = interpolate(t, [0, 1], [0.18, 0.34]);
+          rot = (1 - t) * (i % 2 ? 25 : -25);
+        } else if (f < rise) {
+          // received: sits on the follower for a beat
+          x = fol.x - 40;
+          y = fol.y - 30 - (f - arrive) * 1.5;
+          sc = 0.34;
+        } else {
+          // follower -> its place in the word
+          const t = prog(f, rise, land);
+          x = interpolate(t, [0, 1], [fol.x - 40, tx]);
+          y = interpolate(t, [0, 1], [fol.y - 39, WORD_Y]);
+          sc = interpolate(t, [0, 1], [0.34, 1]);
+        }
+        const settle = f >= land ? 0.94 + 0.06 * pop(f, land, 8) : 1;
         return (
           <div
             key={i}
@@ -65,22 +111,22 @@ export const S4Convey: React.FC<{dur: number}> = ({dur}) => {
               position: 'absolute',
               left: x,
               top: y,
-              transform: `translate(-50%, -50%) scale(${sc * (t >= 1 ? 0.92 + 0.08 * land : 1)}) rotate(${(1 - t) * (i % 2 ? 30 : -30)}deg)`,
-              opacity: t > 0 ? 1 : 0,
+              transform: `translate(-50%, -50%) scale(${sc * settle}) rotate(${rot}deg)`,
               ...keyWordStyle(size),
-              color: C.amber,
             }}
           >
             {ch}
           </div>
         );
       })}
-      <Label size={50} rot={-2} dir="rtl" style={{left: 540, top: 800, transform: `translateX(-50%) rotate(-2deg) scale(${gloss})`}}>
+      <Label size={50} rot={-2} dir="rtl" style={{left: 540, top: 590, transform: `translateX(-50%) rotate(-2deg) scale(${gloss})`}}>
         <span dir="ltr" style={{fontFamily: FONT_KEY, fontWeight: 400, letterSpacing: 1}}>convey</span> = להעביר מסר
       </Label>
     </AbsoluteFill>
   );
 };
+
+const bez2 = (t: number, p0: number, p1: number, p2: number) => (1 - t) ** 2 * p0 + 2 * (1 - t) * t * p1 + t ** 2 * p2;
 
 /** Drawn stand-in for the real hive footage: dark comb, a dancer and followers. */
 const HiveStandIn: React.FC<{f: number}> = ({f}) => {

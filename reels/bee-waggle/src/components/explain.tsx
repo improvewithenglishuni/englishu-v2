@@ -133,7 +133,8 @@ export const Lens: React.FC<{
   py?: number;
   children: React.ReactNode;
   rim?: number;
-}> = ({cx, cy, r, s, px, py, children, rim = 14}) => {
+  handle?: boolean; // draw a magnifying-glass handle (lower right)
+}> = ({cx, cy, r, s, px, py, children, rim = 14, handle = false}) => {
   let wedge: React.ReactNode = null;
   if (px !== undefined && py !== undefined) {
     const a = Math.atan2(py - cy, px - cx);
@@ -145,9 +146,23 @@ export const Lens: React.FC<{
       </svg>
     );
   }
+  const hAng = Math.PI / 4; // handle direction: lower right
+  const hx = cx + Math.cos(hAng) * (r + rim), hy = cy + Math.sin(hAng) * (r + rim);
+  const hl = r * 0.75;
+  const handleEl = handle ? (
+    <svg width={1080} height={1920} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
+      <g transform={`translate(${cx} ${cy}) scale(${s}) translate(${-cx} ${-cy})`}>
+        <line x1={hx} y1={hy} x2={hx + Math.cos(hAng) * hl} y2={hy + Math.sin(hAng) * hl} stroke="rgba(30,20,10,0.25)" strokeWidth={56} strokeLinecap="round" transform="translate(8 14)" />
+        <line x1={hx - 6} y1={hy - 6} x2={hx + Math.cos(hAng) * 34} y2={hy + Math.sin(hAng) * 34} stroke="#E8E2D6" strokeWidth={46} strokeLinecap="round" />
+        <line x1={hx + Math.cos(hAng) * 30} y1={hy + Math.sin(hAng) * 30} x2={hx + Math.cos(hAng) * hl} y2={hy + Math.sin(hAng) * hl} stroke={C.rust} strokeWidth={48} strokeLinecap="round" />
+        <line x1={hx + Math.cos(hAng) * 50} y1={hy + Math.sin(hAng) * 50 - 12} x2={hx + Math.cos(hAng) * (hl - 20)} y2={hy + Math.sin(hAng) * (hl - 20) - 12} stroke="#fff" strokeWidth={6} strokeLinecap="round" opacity={0.35} />
+      </g>
+    </svg>
+  ) : null;
   return (
     <>
       {wedge}
+      {handleEl}
       <div
         style={{
           position: 'absolute',
@@ -163,6 +178,16 @@ export const Lens: React.FC<{
         }}
       >
         {children}
+        {handle && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle at 30% 25%, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0) 32%), radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 72%, rgba(0,0,0,0.25) 100%)',
+            }}
+          />
+        )}
       </div>
     </>
   );

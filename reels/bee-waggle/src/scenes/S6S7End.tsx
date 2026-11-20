@@ -79,54 +79,18 @@ export const S6Decipher: React.FC<{dur: number}> = ({dur}) => {
   );
 };
 
-/** Beat 7: callback. Back in the park; the bee in the lens again; the decoded dance on a paper card, stamped. */
+/** Beat 7: callback. Back in the park, looking into the hive again through the magnifying glass. */
 export const S7Callback: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur, 8);
   const cam = 0.4 + 0.6 * prog(f, 0, dur, (t) => t);
-  const stamp = interpolate(f, [40, 47], [2.2, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  const stampO = f >= 40 ? 1 : 0;
-  const shake = f >= 47 && f < 53 ? Math.sin(f * 3) * 6 : 0;
-  const card = pop(f, 0, 14);
-  const R = 300;
+  const R = 330;
   return (
-    <AbsoluteFill style={{opacity: out, transform: `translateX(${shake}px)`}}>
+    <AbsoluteFill style={{opacity: out}}>
       <ParkWorld cam={cam} hiveX={HIVE.x} hiveY={HIVE.y} hiveW={HIVE.w} />
-      <Branch style={{left: -360, top: -170, transform: `scale(0.82) scaleX(-1) rotate(${Math.sin(f / 20) * 1.2}deg)`}} />
-      <Lens cx={380} cy={900} r={R} s={pop(f, 4, 13)} px={HIVE.entrance.x - 20} py={HIVE.y + 200}>
+      <Lens cx={430} cy={720} r={R} s={pop(f, 4, 13)} px={HIVE.entrance.x - 20} py={HIVE.y + 200} handle>
         <BeeLensContent f={f} r={R} dancing startDance={0} clipFrom={45} />
       </Lens>
-      {/* the decoded dance on a taped squiggle-paper card (top right) */}
-      <div style={{position: 'absolute', left: 520, top: 150, width: 500, height: 560, transform: `rotate(5deg) scale(${card})`}}>
-        <div style={{position: 'absolute', inset: 0, overflow: 'hidden', boxShadow: '0 18px 26px rgba(30,20,10,0.3)', border: '10px solid #fff'}}>
-          <Img src={staticFile('squiggle.jpg')} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-          <DanceFigure size={760} draw={1} beeAt={(f / 70) % 1} beeSize={70} id="s7" style={{left: 240 - 380, top: 270 - 380, transform: 'scale(0.55)'}} />
-        </div>
-        <div style={{position: 'absolute', left: 170, top: -20, width: 160, height: 44, background: 'rgba(230,220,190,0.85)', transform: 'rotate(-4deg)'}} />
-        <div
-          style={{
-            position: 'absolute',
-            left: 250,
-            top: 280,
-            opacity: stampO,
-            transform: `translate(-50%, -50%) rotate(-14deg) scale(${stamp})`,
-            border: `9px solid ${C.stampRed}`,
-            borderRadius: 10,
-            padding: '6px 22px',
-            fontFamily: FONT_KEY,
-            fontSize: 86,
-            color: C.stampRed,
-            letterSpacing: 4,
-            background: 'rgba(250,247,240,0.35)',
-            mixBlendMode: 'multiply',
-          }}
-        >
-          DECIPHERED
-        </div>
-        <div style={{position: 'absolute', left: 300, top: 40, transform: `scale(${pop(f, 92, 9)})`}}>
-          <Pin size={96} />
-        </div>
-      </div>
     </AbsoluteFill>
   );
 };
