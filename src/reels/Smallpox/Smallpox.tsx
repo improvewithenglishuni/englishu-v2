@@ -57,7 +57,7 @@ const Hook = () => (
     scar={{x: 0.4022, y: 0.54}}
     scarTarget={{x: 540, y: 740}}
     scars={[]}
-    marker={{cx: 0.4022, cy: 0.54, rx: 66, ry: 58, rot: -15, at: s(0.8), dur: s(1.3)}}
+    marker={{cx: 0.4022, cy: 0.54, rx: 64, ry: 62, rot: -15, at: s(0.8), dur: s(1.3)}}
   />
 );
 
@@ -90,7 +90,7 @@ const TypedDate: React.FC<{text: string; at: number}> = ({text, at}) => {
     return x - Math.floor(x);
   };
   return (
-    <div dir="ltr" style={{position: 'absolute', right: 70, bottom: 92, transform: 'rotate(-2deg)'}}>
+    <div dir="ltr" style={{position: 'absolute', left: 74, bottom: 70, transform: 'rotate(-1deg)'}}>
       <svg width={0} height={0} style={{position: 'absolute'}}>
         <filter id={`ink${id}`} x="-10%" y="-20%" width="120%" height="140%">
           <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="4" result="g" />
@@ -100,7 +100,7 @@ const TypedDate: React.FC<{text: string; at: number}> = ({text, at}) => {
           <feDisplacementMap in="t" in2="w" scale="1.6" />
         </filter>
       </svg>
-      <div style={{display: 'flex', filter: `url(#ink${id}) drop-shadow(0 1px 1px rgba(0,0,0,0.6))`, fontFamily: "'Special Elite', 'Courier New', monospace", fontSize: 44, color: '#E8E2D0', letterSpacing: 2}}>
+      <div style={{display: 'flex', filter: `url(#ink${id}) drop-shadow(0 1px 1px rgba(0,0,0,0.6))`, fontFamily: "'Special Elite', 'Courier New', monospace", fontSize: 34, color: '#E8E2D0', letterSpacing: 2}}>
         {text.split('').map((ch, i) => {
           const k = Math.min(1, Math.max(0, (frame - (at + i * 4)) / 2));
           const strike = frame >= at + i * 4 && frame < at + i * 4 + 3 ? 1 : 0;
@@ -118,10 +118,10 @@ const TypedDate: React.FC<{text: string; at: number}> = ({text, at}) => {
 /** 4. Jenner (named on screen) as a die-cut portrait on a newspaper clipping. */
 const JennerPortrait = () => (
   <>
-    <Sticker src={jennerSticker} x={540} y={655} width={900} aspect={1355 / 1120} rotate={-3} at={2}>
+    <Sticker src={jennerSticker} x={450} y={650} width={840} aspect={1355 / 1120} rotate={3} at={2}>
       <TypedDate text="1796" at={s(0.9)} />
     </Sticker>
-    <NameLabel x={540} y={1330} line1="ד״ר אדוארד ג׳נר" fontSize={92} paper at={s(0.5)} />
+    <NameLabel x={625} y={1166} line1="ד״ר אדוארד ג׳נר" fontSize={80} paper at={s(0.5)} />
   </>
 );
 

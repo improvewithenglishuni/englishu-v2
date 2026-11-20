@@ -186,8 +186,8 @@ export const ScarSticker: React.FC<{
     const N = 70;
     for (let i = 0; i <= N; i++) {
       const u = i / N;
-      const th = -0.35 * Math.PI + u * 2.65 * Math.PI;
-      const wob = 1 + 0.06 * Math.sin(2 * th + 1) + 0.035 * Math.sin(5 * th + 2) + 0.012 * Math.sin(11 * th) + 0.14 * u * u - 0.04 * (1 - u);
+      const th = -0.3 * Math.PI + u * 2.5 * Math.PI;
+      const wob = 1 + 0.018 * Math.sin(3 * th + 1) + 0.008 * Math.sin(7 * th) + 0.05 * u;
       pts.push(`${i === 0 ? 'M' : 'L'}${(Math.cos(th) * marker.rx * wob).toFixed(1)} ${(Math.sin(th) * marker.ry * wob).toFixed(1)}`);
     }
     markerPath = pts.join(' ');
@@ -204,12 +204,15 @@ export const ScarSticker: React.FC<{
           <svg width={width} height={h} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
             <defs>
               <filter id={`mk${mkId}`} x="-20%" y="-20%" width="140%" height="140%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="3" result="n" />
-                <feDisplacementMap in="SourceGraphic" in2="n" scale="7" />
+                <feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="2" seed="3" result="n" />
+                <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" result="d" />
+                <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="8" result="g" />
+                <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.4 1.55" result="sp" />
+                <feComposite in="d" in2="sp" operator="in" />
               </filter>
             </defs>
             <g transform={`translate(${marker.cx * width} ${marker.cy * h}) rotate(${marker.rot ?? 0})`}>
-              <path d={markerPath} pathLength={1} fill="none" filter={`url(#mk${mkId})`} stroke="#E5372F" strokeWidth={8} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1 1" strokeDashoffset={1 - mp} />
+              <path d={markerPath} pathLength={1} fill="none" filter={`url(#mk${mkId})`} stroke="#C62820" strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1 1" strokeDashoffset={1 - mp} />
             </g>
           </svg>
         ) : null}
@@ -226,7 +229,10 @@ export const Tally: React.FC<{peak: number; end?: number; x: number; y: number; 
   if (s <= 0.001) return null;
   const up = interpolate(frame, [upAt, upAt + upDur], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const down = interpolate(frame, [downAt, downAt + downDur], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  const v = Math.round(peak * (1 - Math.pow(1 - up, 3)) * (1 - down) + end * down);
+  const peakNow = peak * (1 - Math.pow(1 - up, 3));
+  // count down geometrically (every frame drops a fixed fraction), so it keeps passing through
+  // every magnitude (...,000 -> 00 -> 0) instead of jumping from millions to zero at the end
+  const v = down <= 0 ? Math.round(peakNow) : Math.round(Math.max(end, Math.pow(peakNow + 1, 1 - down) - 1 + end * down));
   const done = down >= 1;
   return (
     <Place x={x} y={y} opacity={s} scale={0.8 + 0.2 * s}>
