@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Audio, Sequence, interpolate, staticFile, useCurrentFrame} from 'remotion';
 import {SCENES, sec} from './theme';
-import {loadFonts} from './fonts';
+import {useFonts} from './fonts';
 import {Grain, Plate, PlateDecor} from './components/paper';
 import {Subtitles} from './components/props';
 import {S1Hook} from './scenes/S1Hook';
@@ -9,7 +9,6 @@ import {S2Address, S3Diagram} from './scenes/S2S3';
 import {S4Convey, S5Dark} from './scenes/S4S5';
 import {EndCard, S6Decipher, S7Callback} from './scenes/S6S7End';
 
-loadFonts();
 
 const scene = (key: keyof typeof SCENES, C: React.FC<{dur: number}>) => {
   const [a, b] = SCENES[key];
@@ -22,6 +21,7 @@ const scene = (key: keyof typeof SCENES, C: React.FC<{dur: number}>) => {
 };
 
 export const BeeReel: React.FC = () => {
+  useFonts();
   const f = useCurrentFrame();
   // the plate dims into the hive for beat 5 (the one dark variant), then comes back
   const dim = interpolate(f, [sec(16.8), sec(17.2), sec(23.8), sec(24.2)], [0, 0.9, 0.9, 0], {

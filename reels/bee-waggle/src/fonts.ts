@@ -1,3 +1,4 @@
+import {useEffect, useState} from 'react';
 import {continueRender, delayRender, staticFile} from 'remotion';
 
 const HE = 'U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F';
@@ -17,11 +18,12 @@ const faces: [string, string, string, string][] = [
   ['Patrick Hand SC', 'patrick-hand-sc-latin-400-normal.woff2', '400', LA],
 ];
 
-let started = false;
-export const loadFonts = () => {
-  if (started || typeof document === 'undefined') return;
-  started = true;
-  // Plain @font-face rules (always present), plus an explicit load we wait for, with a safety timeout.
+let ready: Promise<void> | null = null;
+
+/** Inject @font-face rules once and return a promise that resolves when the faces are loaded (max 8 s). */
+export const fontsReady = (): Promise<void> => {
+  if (ready) return ready;
+  if (typeof document === 'undefined') return Promise.resolve();
   const style = document.createElement('style');
   style.textContent = faces
     .map(
@@ -30,15 +32,18 @@ export const loadFonts = () => {
     )
     .join('\n');
   document.head.appendChild(style);
-  const handle = delayRender('fonts', {timeoutInMilliseconds: 60000});
-  let done = false;
-  const finish = () => {
-    if (!done) {
-      done = true;
-      continueRender(handle);
-    }
-  };
-  Promise.all(faces.map(([family, , weight]) => document.fonts.load(`${weight} 40px '${family}'`, 'אבג ABC')))
-    .then(finish, finish);
-  setTimeout(finish, 8000);
+  const load = Promise.all(faces.map(([family, , weight]) => document.fonts.load(`${weight} 40px '${family}'`, 'אבג ABC'))).then(
+    () => undefined,
+    () => undefined,
+  );
+  ready = Promise.race([load, new Promise<void>((r) => setTimeout(r, 8000))]);
+  return ready;
+};
+
+/** Hook: hold the frame until the fonts are ready (documented delayRender-in-component pattern). */
+export const useFonts = () => {
+  const [handle] = useState(() => delayRender('fonts', {timeoutInMilliseconds: 60000}));
+  useEffect(() => {
+    fontsReady().then(() => continueRender(handle));
+  }, [handle]);
 };
