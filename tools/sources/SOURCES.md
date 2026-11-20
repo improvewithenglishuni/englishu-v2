@@ -49,3 +49,5 @@ Older newsprint-version files (`gillray.jpg`, `ota.jpg`, `tem.jpg`, `vial*.jpg`)
 - `public/assets/vox/flex2_up.png`, `flex2_fore.png` (from `tools/sources/flex_arm_bw_source.png`): black-and-white photo of a flexed arm with two round scars (smallpox-vaccine style), supplied by Sharon 2026-11-20; provenance unverified; cut at the elbow with a white die-cut outline.
 - Jenner: tag reads "ד״ר" (Dr.); Jenner received an MD from the University of St Andrews in 1792 (St Andrews special collections: special-collections.wp.st-andrews.ac.uk/?p=13655). The year 1796 is shown as a date stamp on the portrait.
 - `public/fonts/special-elite-latin-400-normal.woff2`: Special Elite typewriter font (@fontsource/special-elite, Apache-2.0) for the typed date stamp.
+
+- v23: red marker circle (`public/assets/vox/marker_a.png`, `marker_b.png`) is drawn procedurally by `tools/make_marker.py` (our own code, no third-party image); Sharon's reference photo was only a style guide. Map dots stay illustrative (random points on land); the last few are placed near Somalia only for the story beat.

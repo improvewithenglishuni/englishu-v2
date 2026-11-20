@@ -29,6 +29,8 @@ export const WorldMap: React.FC<{
   dots?: number[][];
   dotsAt?: number;
   dotsFade?: [number, number];
+  /** the dots thin out gradually (their number falls steadily, on a log scale) instead of all vanishing at random moments; the `count` dots nearest to `near` stay until `off` */
+  dotsKeep?: {count: number; near: [number, number]; off: number};
   /** one larger red pulsing dot (e.g. the last case) that disappears at `off` */
   lastCase?: {x: number; y: number; at: number; off: number};
   markers?: {lon: number; lat: number; at?: number; color?: string; r?: number}[];
@@ -39,7 +41,7 @@ export const WorldMap: React.FC<{
   exitAt?: number;
   /** frame when the WHOLE map fades to grey (e.g. after the last case) */
   greyAt?: number;
-}> = ({box, highlight = {}, markers = [], light = false, land, at = 0, exitAt, greyAt, dots = [], dotsAt = 0, dotsFade = [60, 90], lastCase}) => {
+}> = ({box, highlight = {}, markers = [], light = false, land, at = 0, exitAt, greyAt, dots = [], dotsAt = 0, dotsFade = [60, 90], dotsKeep, lastCase}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const ui = useUi();
@@ -48,6 +50,11 @@ export const WorldMap: React.FC<{
     const gp = geoPath(proj);
     return {paths: countries.map((c: Feature<Geometry, Props>) => ({name: c.properties.name, d: gp(c) ?? ''})), project: proj};
   }, []);
+  const keepSet = useMemo(() => {
+    if (!dotsKeep) return new Set<number>();
+    const order = dots.map((d, i) => ({i, dist: Math.hypot(d[0] - dotsKeep.near[0], d[1] - dotsKeep.near[1])})).sort((a, b) => a.dist - b.dist);
+    return new Set(order.slice(0, dotsKeep.count).map((o) => o.i));
+  }, [dots, dotsKeep]);
   const k = box.w / WIDE.w;
   const e = clamp01(pop(frame, at, fps, SETTLE)) * exitFactor(frame, exitAt, fps);
   if (e <= 0.001) return null;
@@ -65,9 +72,19 @@ export const WorldMap: React.FC<{
         })}
         {dots.map((d, i) => {
           const enter = clamp01((frame - dotsAt - rr(i) * 12) / 6);
-          const gone = clamp01((frame - (dotsFade[0] + rr(i + 900) * (dotsFade[1] - dotsFade[0]))) / 8);
+          let gone: number;
+          if (dotsKeep) {
+            if (keepSet.has(i)) gone = clamp01((frame - dotsKeep.off) / 8);
+            else {
+              // remaining fraction f(p) = (1-p)^2 (steady, clearly visible thinning, a couple left at the very end);
+              // a dot with random rank u is gone when u > f(p)  ->  p = 1 - sqrt(u)
+              const u = Math.max(1e-6, rr(i + 900));
+              const pp = Math.min(1, 1 - Math.sqrt(u));
+              gone = clamp01((frame - (dotsFade[0] + pp * (dotsFade[1] - dotsFade[0]))) / 5);
+            }
+          } else gone = clamp01((frame - (dotsFade[0] + rr(i + 900) * (dotsFade[1] - dotsFade[0]))) / 8);
           const o = enter * (1 - gone);
-          return o > 0.01 ? <circle key={`d${i}`} cx={d[0]} cy={d[1]} r={1.6} fill="#E5372F" opacity={o * 0.9} /> : null;
+          return o > 0.01 ? <circle key={`d${i}`} cx={d[0]} cy={d[1]} r={keepSet.has(i) ? 3.4 : 1.9} fill="#E5372F" opacity={o * 0.9} /> : null;
         })}
         {lastCase && frame >= lastCase.at && frame < lastCase.off + 12
           ? (() => {

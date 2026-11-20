@@ -5,6 +5,7 @@ import {Place} from './Place';
 import {SANS} from './SerifTitle';
 import {HAND} from './fonts';
 import {useUi} from './theme';
+import markerCircle from './markerCircle.json';
 
 /**
  * A magazine-cutout upper arm with a smallpox vaccination scar: white paper border with a rough
@@ -134,6 +135,12 @@ export const Sticker: React.FC<{src: string; x: number; y: number; width: number
   );
 };
 
+const polyLen = (pts: number[][]) => pts.reduce((acc, p, i) => (i ? acc + Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) : 0), 0);
+const polyD = (pts: number[][]) => pts.map((p, i) => `${i ? 'L' : 'M'}${p[0]} ${p[1]}`).join(' ');
+const markerD = {a: polyD(markerCircle.a), b: polyD(markerCircle.b)};
+const markerLen = {a: polyLen(markerCircle.a), b: polyLen(markerCircle.b), all: 0};
+markerLen.all = markerLen.a + markerLen.b;
+
 /**
  * The real vaccination-scar photo as a die-cut sticker with a scar EFFECT: the sticker slowly
  * pushes in on the scars while a soft coral glow pulses over them (no ring, no outline).
@@ -155,8 +162,8 @@ export const ScarSticker: React.FC<{
   zoomDur?: number;
   /** the camera pans while zooming so the `scar` point of the sticker ends up at this frame point */
   scarTarget?: {x: number; y: number};
-  /** hand-drawn red marker loop: centre as fractions of the sticker, radii in sticker px, rot in degrees */
-  marker?: {cx: number; cy: number; rx: number; ry: number; rot?: number; at: number; dur?: number};
+  /** red felt-tip marker loop (baked texture, drawn on): centre as fractions of the sticker, scale 1 = about 64 sticker px radius, rot in degrees */
+  marker?: {cx: number; cy: number; scale?: number; rot?: number; at: number; dur?: number};
   exitAt?: number;
 }> = ({src, x, y, width, rotate = -5, at = 0, scarAt = 12, zoomFrom = 1, zoomTo = 1.28, zoomDur = 60, scar = {x: 0.5, y: 0.5}, aspect = 1202 / 960, scars = [[0.469, 0.408], [0.504, 0.491], [0.529, 0.552]], scarTarget, marker, exitAt}) => {
   const frame = useCurrentFrame();
@@ -180,18 +187,6 @@ export const ScarSticker: React.FC<{
     px = x + (scarTarget.x - s0.x) * zp;
     py = y + (scarTarget.y - s0.y) * zp;
   }
-  let markerPath = '';
-  if (marker) {
-    const pts: string[] = [];
-    const N = 70;
-    for (let i = 0; i <= N; i++) {
-      const u = i / N;
-      const th = -0.3 * Math.PI + u * 2.5 * Math.PI;
-      const wob = 1 + 0.018 * Math.sin(3 * th + 1) + 0.008 * Math.sin(7 * th) + 0.05 * u;
-      pts.push(`${i === 0 ? 'M' : 'L'}${(Math.cos(th) * marker.rx * wob).toFixed(1)} ${(Math.sin(th) * marker.ry * wob).toFixed(1)}`);
-    }
-    markerPath = pts.join(' ');
-  }
   const mp = marker ? clamp01((frame - marker.at) / (marker.dur ?? 16)) : 0;
   return (
     <Place x={px} y={py + (1 - s) * 420} rotate={rotate} opacity={s * e}>
@@ -203,16 +198,22 @@ export const ScarSticker: React.FC<{
         {marker && mp > 0 ? (
           <svg width={width} height={h} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
             <defs>
-              <filter id={`mk${mkId}`} x="-20%" y="-20%" width="140%" height="140%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="2" seed="3" result="n" />
-                <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" result="d" />
-                <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="8" result="g" />
-                <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.4 1.55" result="sp" />
-                <feComposite in="d" in2="sp" operator="in" />
-              </filter>
+              {(['a', 'b'] as const).map((k) => {
+                const total = markerLen[k] + 0;
+                const start = k === 'a' ? 0 : markerLen.a;
+                const prog = clamp01((mp * markerLen.all - start) / total);
+                return (
+                  <mask key={k} id={`mm${k}${mkId}`} maskUnits="userSpaceOnUse" x={-100} y={-100} width={200} height={200}>
+                    <path d={markerD[k]} pathLength={1} fill="none" stroke="#fff" strokeWidth={markerCircle.width * 1.2} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1 1" strokeDashoffset={1 - prog} />
+                  </mask>
+                );
+              })}
             </defs>
-            <g transform={`translate(${marker.cx * width} ${marker.cy * h}) rotate(${marker.rot ?? 0})`}>
-              <path d={markerPath} pathLength={1} fill="none" filter={`url(#mk${mkId})`} stroke="#C62820" strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1 1" strokeDashoffset={1 - mp} />
+            <g transform={`translate(${marker.cx * width} ${marker.cy * h}) rotate(${marker.rot ?? 0}) scale(${marker.scale ?? 1})`} style={{mixBlendMode: 'multiply', isolation: 'isolate'}}>
+              <g style={{isolation: 'isolate'}}>
+                <image href={staticFile('assets/vox/marker_a.png')} x={-100} y={-100} width={200} height={200} mask={`url(#mma${mkId})`} />
+                <image href={staticFile('assets/vox/marker_b.png')} x={-100} y={-100} width={200} height={200} mask={`url(#mmb${mkId})`} style={{mixBlendMode: 'multiply'}} />
+              </g>
             </g>
           </svg>
         ) : null}

@@ -111,22 +111,38 @@ export const ActionWord: React.FC<{
                 for (let wx = -6; wx <= cwi + 6; wx += 6) wave.push(`L${wx} ${top + (lvl > 0 && lvl < 1 ? Math.sin((wx + frame * 1.6) * 0.16 + i) * 2.4 : 0)}`);
                 wave.push(`L${cwi + 6} ${fontSize + 6}`, 'Z');
                 const common = {x: cwi / 2, y: base, textAnchor: 'middle' as const, fontSize, style: {fontFamily: SANS, fontWeight: 800}};
-                // Vaporize: the letter stays put; a soft edge sweeps from the top of the word to the bottom and
-                // the letter turns to smoke (turbulence displacement + blur + a little drift up), no pixels.
+                // DISINTEGRATE into thin air: a fractal noise field decides which specks of the letter go first
+                // (fine, organic grains, no square pixels). Eroded specks are cut into 5 age bands; each band
+                // is scattered a little, blown up and to the right (wind), softened and faded, so the letter
+                // crumbles to dust that drifts away instead of turning into smoke.
                 const dis = frame >= actAt;
-                const t1 = actAt + i * 1.5;
-                const DUR = 34;
-                const pv = clamp01((frame - t1) / DUR); // 0 -> 1 progress for this letter
-                const soft = fontSize * 0.55;
-                const edge = -soft + pv * (fontSize + 2 * soft); // y where the vanishing edge currently is
-                const fid = `vp${uid}${i}`;
-                const mid = `dm${uid}${i}`;
-                const gid = `dg${uid}${i}`;
-                const dispScale = 4 + 70 * pv;
-                const blurStd = 0.4 + 7 * pv;
-                const drift = -pv * fontSize * 0.28;
-                const fade = 1 - clamp01((pv - 0.75) / 0.25);
+                const t1 = actAt + i * 2;
+                const DUR = 28;
+                const pv = clamp01((frame - t1) / DUR);
                 if (dis && pv >= 1) return <span key={i} style={{display: 'inline-block', width: cwi, height: fontSize}} />;
+                const fid = `dz${uid}${i}`;
+                const NB = 5;
+                const LO = 0.17;
+                const SPAN = 0.66;
+                const th = LO + SPAN * pv;
+                const mat = (a: number, b: number) => `0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  ${a} 0 0 0 ${b}`;
+                const remainFade = 1 - clamp01((pv - 0.8) / 0.2);
+                const bands = [...Array(NB).keys()].map((k) => {
+                  const q = clamp01((pv - k / NB) / (1 - k / NB));
+                  const lo = LO + (SPAN * k) / NB;
+                  const hi = LO + (SPAN * (k + 1)) / NB;
+                  const wind = 0.5 + 0.5 * rnd(i * 5 + k + 21);
+                  return {
+                    k,
+                    lo,
+                    hi,
+                    dx: fontSize * (0.1 + 0.55 * wind) * Math.pow(q, 1.15),
+                    dy: -fontSize * (0.25 + 0.5 * rnd(i * 3 + k + 7)) * Math.pow(q, 1.1) - fontSize * 0.2 * q,
+                    scatter: 10 + 80 * q,
+                    blur: 0.3 + 1.6 * q,
+                    op: 1 - clamp01((q - 0.45) / 0.55),
+                  };
+                });
                 return (
                   <span key={i} style={{display: 'inline-block', width: cwi, height: fontSize, transform: `translateY(${(1 - enter) * 60}px) scale(${0.4 + 0.6 * enter})`, opacity: enter}}>
                     <svg width={cwi} height={fontSize} viewBox={`0 0 ${cwi} ${fontSize}`} style={{overflow: 'visible', display: 'block'}}>
@@ -135,27 +151,38 @@ export const ActionWord: React.FC<{
                           <path d={wave.join(' ')} />
                         </clipPath>
                         {dis ? (
-                          <>
-                            <linearGradient id={gid} gradientUnits="userSpaceOnUse" x1="0" x2="0" y1={edge - soft} y2={edge + soft}>
-                              <stop offset="0" stopColor="#000" />
-                              <stop offset="1" stopColor="#fff" />
-                            </linearGradient>
-                            <mask id={mid} maskUnits="userSpaceOnUse" x={-fontSize} y={-fontSize} width={cwi + 2 * fontSize} height={fontSize * 3}>
-                              <rect x={-fontSize} y={-fontSize} width={cwi + 2 * fontSize} height={fontSize * 3} fill={`url(#${gid})`} />
-                            </mask>
-                            <filter id={fid} x="-80%" y="-80%" width="260%" height="260%">
-                              <feTurbulence type="fractalNoise" baseFrequency="0.018 0.03" numOctaves="3" seed={i * 7 + 3} result="n" />
-                              <feDisplacementMap in="SourceGraphic" in2="n" scale={dispScale} xChannelSelector="R" yChannelSelector="G" result="d" />
-                              <feGaussianBlur in="d" stdDeviation={blurStd} />
-                            </filter>
-                          </>
+                          <filter id={fid} filterUnits="userSpaceOnUse" x={-cwi} y={-fontSize * 1.5} width={cwi * 2 + fontSize * 1.4} height={fontSize * 3} colorInterpolationFilters="sRGB">
+                            <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="4" seed={i * 5 + 2} result="noise" />
+                            <feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="2" seed={i * 3 + 11} result="sc" />
+                            <feColorMatrix in="noise" type="matrix" values={mat(18, 0.5 - 18 * th)} result="keepM" />
+                            <feColorMatrix in="noise" type="matrix" values={mat(-18, 0.5 + 18 * th)} result="goneM" />
+                            <feComposite in="SourceGraphic" in2="keepM" operator="in" result="rem" />
+                            <feColorMatrix in="rem" type="matrix" values={`1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 ${remainFade} 0`} result="remF" />
+                            {bands.map((b) => (
+                              <React.Fragment key={b.k}>
+                                <feColorMatrix in="noise" type="matrix" values={mat(18, 0.5 - 18 * b.lo)} result={`a${b.k}`} />
+                                <feColorMatrix in="noise" type="matrix" values={mat(-18, 0.5 + 18 * b.hi)} result={`b${b.k}`} />
+                                <feComposite in={`a${b.k}`} in2={`b${b.k}`} operator="in" result={`ab${b.k}`} />
+                                <feComposite in={`ab${b.k}`} in2="goneM" operator="in" result={`m${b.k}`} />
+                                <feComposite in="SourceGraphic" in2={`m${b.k}`} operator="in" result={`s${b.k}`} />
+                                <feDisplacementMap in={`s${b.k}`} in2="sc" scale={b.scatter} xChannelSelector="R" yChannelSelector="G" result={`d${b.k}`} />
+                                <feOffset in={`d${b.k}`} dx={b.dx} dy={b.dy} result={`o${b.k}`} />
+                                <feGaussianBlur in={`o${b.k}`} stdDeviation={b.blur} result={`g${b.k}`} />
+                                <feColorMatrix in={`g${b.k}`} type="matrix" values={`1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 ${b.op.toFixed(3)} 0`} result={`f${b.k}`} />
+                              </React.Fragment>
+                            ))}
+                            <feMerge>
+                              <feMergeNode in="remF" />
+                              {bands.map((b) => (
+                                <feMergeNode key={b.k} in={`f${b.k}`} />
+                              ))}
+                            </feMerge>
+                          </filter>
                         ) : null}
                       </defs>
-                      <g filter={dis ? `url(#${fid})` : undefined} opacity={dis ? fade : 1} transform={dis ? `translate(0 ${drift})` : undefined}>
-                        <g mask={dis ? `url(#${mid})` : undefined}>
-                          <text {...common} fill={main} clipPath={`url(#lq${uid}${i})`}>{ch}</text>
-                          <text {...common} fill="none" stroke={main} strokeWidth={Math.max(3, fontSize * 0.022)} strokeLinejoin="round">{ch}</text>
-                        </g>
+                      <g filter={dis ? `url(#${fid})` : undefined}>
+                        <text {...common} fill={main} clipPath={`url(#lq${uid}${i})`}>{ch}</text>
+                        <text {...common} fill="none" stroke={main} strokeWidth={Math.max(3, fontSize * 0.022)} strokeLinejoin="round">{ch}</text>
                       </g>
                     </svg>
                   </span>
