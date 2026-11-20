@@ -93,7 +93,7 @@ const Milkmaids = () => {
   const z = interpolate(frame, [0, 66], [1.0, 1.07], {extrapolateRight: 'clamp'}); // full-frame image: slow zoom
   return (
     <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
-      <Img src={milkmaid} style={{...cover, objectPosition: '100% 50%', transform: `scale(${z})`, transformOrigin: '70% 55%'}} />
+      <Img src={milkmaid} style={{...cover, objectPosition: '64% 50%', transform: `scale(${z})`, transformOrigin: '50% 55%'}} />
     </div>
   );
 };
@@ -236,44 +236,33 @@ const Victory = () => {
 };
 
 
-/** 11. Callback to the hook: the arm with the vaccine scar raises into a strong-arm (Rosie the Riveter) pose = victory. */
+/** 11. Callback to the hook: the arm with the vaccine scar (white die-cut outline, like the first scene) bends at the elbow into a strong-arm pose = victory. */
 const FlexArm = () => {
   const frame = useCurrentFrame();
   const pop = (a: number, b: number) => Math.min(1, Math.max(0, (frame - a) / (b - a)));
   const back = (v: number) => {
-    const c1 = 1.9;
+    const c1 = 1.7;
     const c3 = c1 + 1;
     return 1 + c3 * Math.pow(v - 1, 3) + c1 * Math.pow(v - 1, 2);
   };
-  const slide = 1 - pop(0, s(0.3)); // arm enters from below
-  const raise = back(pop(s(0.15), s(0.85)));
-  const angle = -88 * (1 - raise); // forearm swings from pointing left to upright
-  const bulge = back(pop(s(0.7), s(1.05)));
-  const scar = pop(s(0.95), s(1.1));
-  const pulse = 1 + 0.12 * Math.sin(Math.max(0, frame - s(1.1)) * 0.25);
-  const ink = '#17171A';
-  const E = {x: 215, y: 665};
+  const easeOut = (v: number) => 1 - Math.pow(1 - v, 3);
+  const SC = 0.75; // display scale of the 953x1046 art
+  const W = 953 * SC;
+  const H = 1046 * SC;
+  const PIV = {x: 191 * SC, y: 811 * SC}; // elbow pivot inside the art
+  const L = 170;
+  const T = 430;
+  const tx = 330 * (1 - easeOut(pop(0, s(0.9)))); // arm pushes in from the right
+  const angle = -100 * (1 - back(pop(s(0.15), s(0.95)))); // forearm swings from pointing left to upright
+  const glow = pop(s(1.0), s(1.2));
+  const pulse = 0.75 + 0.25 * Math.sin(Math.max(0, frame - s(1.2)) * 0.22);
+  const img: React.CSSProperties = {position: 'absolute', left: 0, top: 0, width: W, height: H, display: 'block'};
   return (
-    <Place x={540} y={740} opacity={1}>
-      <svg width={1300} height={1300} viewBox="0 0 900 900" style={{overflow: 'visible', transform: `translate(60px, ${slide * 500}px)`}}>
-        <g>
-          <path d="M215 555 L740 548 L1100 540 L1100 800 L215 778 Z" fill={ink} />
-          <path d={`M300 570 C 350 ${560 - 190 * bulge}, 560 ${560 - 200 * bulge}, 700 570 Z`} fill={ink} />
-          <circle cx={E.x} cy={E.y} r={112} fill={ink} />
-          <g transform={`rotate(${angle} ${E.x} ${E.y})`}>
-            <path d="M140 330 C128 450 108 560 106 665 L322 665 C 322 560 312 440 305 330 Z" fill={ink} />
-            <path d="M135 335 C112 250 122 180 160 150 C205 118 292 124 314 168 C338 215 318 285 306 335 Z" fill={ink} />
-            <path d="M168 205 C 210 195 262 195 312 205 M164 248 C 210 240 266 240 316 250 M160 292 C 205 284 262 284 312 294" stroke="#EDEEF3" strokeWidth={6} fill="none" strokeLinecap="round" opacity={0.85} />
-            <ellipse cx={178} cy={300} rx={44} ry={26} fill={ink} stroke="#EDEEF3" strokeWidth={5} transform="rotate(-18 178 300)" opacity={1} />
-          </g>
-          <g transform={`translate(640 640) scale(${scar * pulse})`}>
-            <circle r={52} fill="none" stroke="#FDF551" strokeWidth={6} opacity={0.9} />
-            <circle r={30} fill="#E0615E" />
-            <circle r={15} fill="#F2A09B" />
-          </g>
-        </g>
-      </svg>
-    </Place>
+    <div style={{position: 'absolute', left: L + tx, top: T, width: W, height: H, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.38))'}}>
+      <Img src={staticFile('assets/vox/flex_up.png')} style={img} />
+      <Img src={staticFile('assets/vox/flex_fore.png')} style={{...img, transformOrigin: `${PIV.x}px ${PIV.y}px`, transform: `rotate(${angle}deg)`}} />
+      <div style={{position: 'absolute', left: 768 * SC - 46, top: 601 * SC - 46, width: 92, height: 92, borderRadius: '50%', border: '6px solid #FDF551', boxSizing: 'border-box', boxShadow: '0 0 22px 6px rgba(253,245,81,0.55)', opacity: glow * pulse, transform: `scale(${1.5 - 0.5 * glow})`}} />
+    </div>
   );
 };
 
