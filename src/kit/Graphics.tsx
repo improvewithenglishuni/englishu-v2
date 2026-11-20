@@ -320,7 +320,17 @@ export const Crowd: React.FC<{x0: number; y0: number; cols: number; rows: number
       const fillC = wave ? mixHex(color, wave.lit, litK) : color;
       items.push(
         <g key={i} transform={`translate(${px} ${py}) scale(${((0.6 + 0.4 * enter) * (1 - 0.3 * gone) * size) / 160}) translate(-50 -80)`} opacity={o}>
-          {litK > 0.02 ? <circle cx={50} cy={80} r={92} fill="url(#crowdGlow)" opacity={litK * o} /> : null}
+          {litK > 0.02 ? (
+            <g opacity={litK * o} fill="#FDF551" stroke="#FDF551" strokeLinejoin="round" strokeLinecap="round">
+              {/* faint glow BORDER: stacked, widening, fading outlines of the figure (no fill wash) */}
+              {[[34, 0.1], [24, 0.16], [15, 0.26], [8, 0.4]].map(([w, a]) => (
+                <g key={w} strokeWidth={w} strokeOpacity={a} fillOpacity={0}>
+                  <circle cx={50} cy={28} r={19} />
+                  <path d="M28 52 L72 52 L80 104 L66 104 L63 150 L53 150 L50 118 L47 150 L37 150 L34 104 L20 104 Z" />
+                </g>
+              ))}
+            </g>
+          ) : null}
           <circle cx={50} cy={28} r={19} fill={fillC} />
           <path d="M28 52 L72 52 L80 104 L66 104 L63 150 L53 150 L50 118 L47 150 L37 150 L34 104 L20 104 Z" fill={fillC} />
         </g>,

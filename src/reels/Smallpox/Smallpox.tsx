@@ -43,21 +43,21 @@ const cover: React.CSSProperties = {width: '100%', height: '100%', objectFit: 'c
 /** 1. HOOK: a black-and-white photo of a real smallpox-vaccine scar appears whole; then the camera zooms all the way into the scar, and only then a red marker circles it. */
 const Hook = () => (
   <ScarSticker
-    src={staticFile('assets/vox/hook_scar_bw.png')}
+    src={staticFile('assets/vox/hook_scar2_bw.png')}
     x={540}
     y={760}
     width={1000}
-    aspect={826 / 1084}
+    aspect={1372 / 1672}
     rotate={-3}
     at={2}
     scarAt={s(0.25)}
     zoomFrom={1}
-    zoomTo={4.2}
+    zoomTo={3.4}
     zoomDur={s(1.2)}
-    scar={{x: 0.4022, y: 0.54}}
+    scar={{x: 0.5837, y: 0.4869}}
     scarTarget={{x: 540, y: 740}}
     scars={[]}
-    marker={{cx: 0.4022, cy: 0.54, scale: 1, rot: 8, at: s(1.28), dur: s(0.8)}}
+    marker={{cx: 0.5837, cy: 0.4869, scale: 1.42, rot: 8, at: s(1.28), dur: s(0.8)}}
   />
 );
 
@@ -294,7 +294,7 @@ const FlexArm = () => {
   return (
     <>
     {/* the crowd from the 300-million scene, saved: a wave of yellow spreads outward from the arm */}
-    <Crowd x0={40} y0={70} cols={15} rows={28} dx={72} dy={68} size={66} color="#B9BDD0" at={2} wave={{at: s(0.15), lit: '#FDF551', cx: 540, cy: 950, speed: 1100 / 30}} />
+    <Crowd x0={40} y0={70} cols={15} rows={28} dx={72} dy={68} size={66} color="#B9BDD0" at={2} wave={{at: s(0.15), lit: '#F0B400', cx: 540, cy: 950, speed: 1100 / 30}} />
     <div style={{position: 'absolute', left: L + tx, top: T, width: W, height: H, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.38))'}}>
       <Img src={staticFile('assets/vox/flex2_up.png')} style={img} />
       <Img src={staticFile('assets/vox/flex2_fore.png')} style={{...img, transformOrigin: `${PIV.x}px ${PIV.y}px`, transform: `rotate(${angle}deg)`}} />

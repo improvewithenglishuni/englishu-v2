@@ -51,3 +51,5 @@ Older newsprint-version files (`gillray.jpg`, `ota.jpg`, `tem.jpg`, `vial*.jpg`)
 - `public/fonts/special-elite-latin-400-normal.woff2`: Special Elite typewriter font (@fontsource/special-elite, Apache-2.0) for the typed date stamp.
 
 - v23: red marker circle (`public/assets/vox/marker_a.png`, `marker_b.png`) is drawn procedurally by `tools/make_marker.py` (our own code, no third-party image); Sharon's reference photo was only a style guide. Map dots stay illustrative (random points on land); the last few are placed near Somalia only for the story beat.
+
+- v23-27 hook photo (`tools/sources/hook_scar2_source.png` -> `public/assets/vox/hook_scar2_bw.png`): close-up of a round vaccination scar on an upper arm with a pointing finger, 800x650, supplied by Sharon, provenance/licence unverified (looks like a stock photo). NOT yet confirmed that it is a smallpox-vaccine scar. Converted to B/W, upscaled 2x (Lanczos) for the zoom.
