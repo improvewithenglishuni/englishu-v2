@@ -110,8 +110,8 @@ export const Arrow: React.FC<{
         stroke={color}
         strokeWidth={w}
         fill="none"
-        strokeLinecap="round"
-        strokeDasharray={dash ? `2 ${w * 2.6}` : `${len}`}
+        strokeLinecap={dash ? 'butt' : 'round'}
+        strokeDasharray={dash ? `${w * 3.4} ${w * 1.9}` : `${len}`}
         strokeDashoffset={dash ? 0 : len * (1 - p)}
         opacity={dash ? Math.min(1, p * 3) : 1}
       />

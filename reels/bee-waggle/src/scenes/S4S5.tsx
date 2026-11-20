@@ -47,8 +47,8 @@ export const S4Convey: React.FC<{dur: number}> = ({dur}) => {
             d={`M ${dancer.x + 40} ${dancer.y - 40} Q ${(dancer.x + b.x) / 2} ${Math.min(dancer.y, b.y) - 220} ${b.x - 40} ${b.y - 30}`}
             stroke={C.ink}
             strokeWidth={6}
-            strokeDasharray="2 20"
-            strokeLinecap="round"
+            strokeDasharray="24 13"
+            strokeLinecap="butt"
             fill="none"
             opacity={0.35 * prog(f, 0, 12)}
           />

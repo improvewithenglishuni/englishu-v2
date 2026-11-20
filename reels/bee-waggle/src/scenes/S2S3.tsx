@@ -59,8 +59,8 @@ const Line: React.FC<{x1: number; y1: number; x2: number; y2: number; p: number;
     y2={y1 + (y2 - y1) * p}
     stroke={color}
     strokeWidth={w}
-    strokeLinecap="round"
-    strokeDasharray={dash ? `2 ${w * 2.4}` : undefined}
+    strokeLinecap={dash ? 'butt' : 'round'}
+    strokeDasharray={dash ? `${w * 3.4} ${w * 1.9}` : undefined}
   />
 );
 
@@ -94,7 +94,7 @@ const DistanceRow: React.FC<{y: number; s: number; runLen: number; runP: number;
     <div style={{position: 'absolute', left: 0, top: y, width: 1080, height: 420, transform: `scale(${s})`, transformOrigin: '50% 30%'}}>
       <HiveFrame x={110} y={0} w={860} h={170} seed={`${seed}c`} r={28} />
       <svg width={1080} height={420} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
-        <polyline points={shown.map(([x, yy]) => `${x0 + x},${104 + yy}`).join(' ')} stroke="#fff" strokeWidth={9} fill="none" strokeLinejoin="round" strokeLinecap="round" />
+        <polyline points={shown.map(([x, yy]) => `${x0 + x},${104 + yy}`).join(' ')} stroke="#fff" strokeWidth={9} fill="none" strokeLinejoin="miter" strokeLinecap="butt" strokeDasharray="20 11" />
         {/* duration bar: how long the waggle lasts */}
         <rect x={x0} y={200} width={Math.max(0, runLen * runP)} height={22} rx={11} fill={C.amber} />
         <rect x={x0} y={200} width={runLen} height={22} rx={11} fill="none" stroke={C.amber} strokeWidth={3} strokeDasharray="6 8" opacity={0.6} />
@@ -161,7 +161,7 @@ export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
           <svg width={1080} height={1920} style={{position: 'absolute', opacity: frameS}}>
             <Line x1={comb.x} y1={comb.y} x2={comb.x} y2={950} p={prog(f, 46, 58)} color="#fff" w={9} />
             {f > 58 && <polyline points={`${comb.x - 16},${972} ${comb.x},${948} ${comb.x + 16},${972}`} stroke="#fff" strokeWidth={9} fill="none" strokeLinecap="round" strokeLinejoin="round" />}
-            <polyline points={zz.slice(0, beeIdx + 1).map(([x, y]) => `${x},${y}`).join(' ')} stroke={C.ink} strokeWidth={8} fill="none" strokeLinejoin="round" />
+            <polyline points={zz.slice(0, beeIdx + 1).map(([x, y]) => `${x},${y}`).join(' ')} stroke="#fff" strokeWidth={9} fill="none" strokeLinejoin="miter" strokeLinecap="butt" strokeDasharray="20 11" />
             <Arc cx={comb.x} cy={comb.y} r={110} a={ANG} p={prog(f, 70, 84)} color="#fff" />
           </svg>
           <Sun size={74} style={{left: comb.x - 37, top: 912, transform: `scale(${pop(f, 56, 10)})`}} />
