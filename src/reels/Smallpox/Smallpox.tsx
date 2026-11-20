@@ -103,14 +103,14 @@ const Vaccination = () => {
   const frame = useCurrentFrame();
   const PX = 540;
   const PY = 1090;
-  const SZ = 430;
+  const SZ = 360;
   const off = {x: 0.411 * SZ, y: 0.2375 * SZ};
   const jab = interpolate(frame, [s(0.7), s(1.0), s(1.55), s(1.95)], [0, 1, 1, 0.6], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const tip = {x: PX - 175 + jab * 100, y: PY - 80 + jab * 62};
   const plungeV = interpolate(frame, [s(1.0), s(1.55)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
     <>
-      <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={118} heavy at={2} actAt={s(1.0)} hiFrom={0} hiTo={5} gloss="vacca = פרה (לטינית)" />
+      <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={146} heavy at={2} actAt={s(1.0)} hiFrom={0} hiTo={5} gloss="vacca = פרה (לטינית)" />
       <Person x={PX} y={PY} size={560} tone="ink" shield="#FDF551" shieldAt={s(1.6)} at={4} />
       <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#9A9DAA" liquid="#FDF551" plunge={plungeV} at={s(0.2)} />
       <Germs cx={PX} cy={PY + 10} rx={200} ry={330} n={12} at={s(1.9)} stagger={2} />
@@ -229,8 +229,8 @@ const Victory = () => {
       <Place x={540} y={1130} opacity={Math.min(1, Math.max(0, (frame - 2) / 10)) * (1 - Math.min(1, Math.max(0, (frame - s(1.5)) / 8))) + Math.min(1, Math.max(0, (frame - s(3.6)) / 8))}>
         <div dir="ltr" style={{fontFamily: 'var(--kit-font)', fontWeight: 700, fontSize: 34, color: '#B9BCCB', letterSpacing: 0.5}}>Source: WHO</div>
       </Place>
-      <Stamp text="ERADICATED" x={540} y={800} fontSize={124} rotate={-8} heavy at={s(4.4)} />
-      <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(3.7)} />
+      <Stamp text="ERADICATED" x={540} y={800} fontSize={124} rotate={-8} heavy at={s(3.9)} />
+      <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(3.3)} />
     </>
   );
 };
@@ -251,7 +251,7 @@ export const Smallpox: React.FC<SmallpoxProps> = (props) => {
         <Scene from={T.era} to={T.outbreak} variant="dark"><Eradicate /></Scene>
         <Scene from={T.outbreak} to={T.chart} variant="charcoal"><Outbreak /></Scene>
         <Scene from={T.chart} to={T.victory} variant="light"><Chart /></Scene>
-        <Scene from={T.victory} to={T.end} variant="dark"><Victory /></Scene>
+        <Scene from={T.victory} to={durationInFrames} variant="dark"><Victory /></Scene>
       </World>
       {props.voiceover ? <Audio src={staticFile(props.voiceover)} /> : null}
       {props.endCard ? <EndCard at={endAt} /> : null}
