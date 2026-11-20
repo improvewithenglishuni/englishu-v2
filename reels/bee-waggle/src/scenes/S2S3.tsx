@@ -208,10 +208,13 @@ export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
           {/* precision footnote: very close food gets a different dance */}
           <div style={{position: 'absolute', left: 0, top: 0, opacity: prog(f, SPLIT + 58, SPLIT + 64)}}>
             <svg width={1080} height={1920} style={{position: 'absolute'}}>
-              <circle cx={905} cy={1212} r={30} fill="none" stroke={C.ink} strokeWidth={6} strokeDasharray="12 8" />
+              <circle cx={940} cy={1190} r={30} fill="none" stroke={C.ink} strokeWidth={6} strokeDasharray="12 8" />
             </svg>
-            <Hand x={850} y={1212} size={54} anchor="right">
-              אוכל ממש קרוב (עד כ-50 מ׳)? ריקוד עגול, בלי נענוע
+            <Hand x={890} y={1160} size={54} anchor="right">
+              אוכל קרוב מאוד, עד כ-50 מטר?
+            </Hand>
+            <Hand x={890} y={1225} size={54} anchor="right">
+              ריקוד עגול, בלי נענוע
             </Hand>
           </div>
         </AbsoluteFill>
