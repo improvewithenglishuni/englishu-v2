@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, OffthreadVideo, interpolate, staticFile, useCurrentFrame} from 'remotion';
 import {C, MEDIA} from '../theme';
 import {Bee, BeeTop} from '../components/bee';
 import {Branch, Comb} from '../components/props';
@@ -8,9 +8,23 @@ import {Lens} from '../components/explain';
 import {exitOut, pop, prog} from '../components/anim';
 
 /** What we see through the lens: a bee dancing on the comb, with followers (or the real photo). */
-export const BeeLensContent: React.FC<{f: number; r: number; dancing: boolean; startDance: number}> = ({f, r, dancing, startDance}) => {
-  if (MEDIA.beeOnComb)
-    return <Img src={staticFile(MEDIA.beeOnComb)} style={{width: '100%', height: '100%', objectFit: 'cover'}} />;
+export const BeeLensContent: React.FC<{f: number; r: number; dancing: boolean; startDance: number; real?: boolean; clipFrom?: number}> = ({
+  f,
+  r,
+  dancing,
+  startDance,
+  real = true,
+  clipFrom = 0,
+}) => {
+  if (real && MEDIA.comb)
+    return (
+      <OffthreadVideo
+        src={staticFile(MEDIA.comb)}
+        startFrom={clipFrom}
+        muted
+        style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${1.08 + 0.0008 * f})`}}
+      />
+    );
   const t = Math.max(0, f - startDance);
   const wag = dancing ? Math.sin(t * 1.6) * 14 : 0;
   const run = dancing ? ((t % 40) / 40) * 120 - 60 : 0;

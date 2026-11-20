@@ -94,7 +94,7 @@ export const S7Callback: React.FC<{dur: number}> = ({dur}) => {
       <ParkWorld cam={cam} hiveX={HIVE.x} hiveY={HIVE.y} hiveW={HIVE.w} />
       <Branch style={{left: -360, top: -170, transform: `scale(0.82) scaleX(-1) rotate(${Math.sin(f / 20) * 1.2}deg)`}} />
       <Lens cx={380} cy={900} r={R} s={pop(f, 4, 13)} px={HIVE.entrance.x - 20} py={HIVE.y + 200}>
-        <BeeLensContent f={f} r={R} dancing startDance={0} />
+        <BeeLensContent f={f} r={R} dancing startDance={0} clipFrom={45} />
       </Lens>
       {/* the decoded dance on a taped squiggle-paper card (top right) */}
       <div style={{position: 'absolute', left: 520, top: 150, width: 500, height: 560, transform: `rotate(5deg) scale(${card})`}}>

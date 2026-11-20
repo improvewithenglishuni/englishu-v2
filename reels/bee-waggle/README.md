@@ -8,7 +8,8 @@ Every visual is drawn in code (React + SVG): no AI-generated images.
 ```bash
 npm install
 npm run studio      # live preview in the browser
-npm run render      # -> out/bee-waggle.mp4
+./scripts/fetch_media.sh   # download + cut the CC footage into public/media (needs Wikimedia access)
+./scripts/render.sh        # -> out/bee-waggle-preview.mp4
 python3 scripts/make_audio.py   # rebuild the music bed + SFX after re-timing
 ```
 
@@ -38,18 +39,18 @@ python3 scripts/make_audio.py   # rebuild the music bed + SFX after re-timing
 | 7 | 28-32.4 | Opening bee returns; red DECIPHERED stamp slams over the figure-eight; pin pops | `S6S7End.tsx` |
 | end | 32.4-35.1 | Brand end card | `S6S7End.tsx` |
 
-## Real footage and photos (slots)
+## Real footage
 
-Drop files in `public/media/` and set the paths in `MEDIA` in `src/theme.ts`. While a slot is empty a drawn
-stand-in renders with a small dashed "real photo/footage" tag.
+`scripts/fetch_media.sh` downloads two CC-licensed clips from Wikimedia Commons and cuts them into
+`public/media/` (not committed):
 
-| Slot | Suggested source |
-|---|---|
-| `waggleVideo` | Wikimedia Commons, "Waggle Dance.webm" (1920x1080, CC BY 2.0, by OakleyOrig): https://commons.wikimedia.org/wiki/File:Waggle_Dance.webm |
-| `beeOnComb` | Any CC0 / CC BY honeybee-on-comb photo. A PNG with the background removed gives a true die-cut outline (`beeOnCombIsCutout: true`). |
-| `antennae` | A close-up of a bee head with antennae, ideally a cut-out PNG (`antennaeIsCutout: true`). |
+| File | Used in | Source |
+|---|---|---|
+| `hive.mp4` | beat 5, full frame | "Waggle Dance.webm", OakleyOrig, CC BY 2.0 |
+| `comb.mp4` | magnifier lens, beats 1 and 7 | same clip, square crop |
+| `dancer.mp4` | antennae moment, beat 5 | Su et al. 2008, PLoS ONE, CC BY 3.0 (red-dot dancer) |
 
-CC BY material needs a credit line in the Instagram caption, e.g. "Waggle dance footage: OakleyOrig, CC BY 2.0".
+Caption credit: "Waggle dance footage: OakleyOrig (CC BY 2.0); Su et al. 2008, PLoS ONE (CC BY 3.0), via Wikimedia Commons".
 
 ## Voiceover
 

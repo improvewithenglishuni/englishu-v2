@@ -156,16 +156,11 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
   return (
     <AbsoluteFill style={{opacity: out}}>
       <AbsoluteFill style={{transform: `scale(${push})`, clipPath: `circle(${into * 150}% at 50% 50%)`}}>
-        {MEDIA.waggleVideo ? (
-          <OffthreadVideo
-            src={staticFile(MEDIA.waggleVideo)}
-            startFrom={Math.round(MEDIA.waggleVideoStart * 30)}
-            muted
-            style={{width: '100%', height: '100%', objectFit: 'cover', filter: 'saturate(0.85) contrast(1.05)'}}
-          />
-        ) : (
-          <HiveStandIn f={f} />
-        )}
+        <OffthreadVideo
+          src={staticFile(MEDIA.hive)}
+          muted
+          style={{width: '100%', height: '100%', objectFit: 'cover', filter: 'saturate(0.9) contrast(1.06)'}}
+        />
         <AbsoluteFill
           style={{background: `radial-gradient(ellipse at 50% 42%, rgba(20,12,5,${dark * 0.55}) 20%, rgba(20,12,5,${Math.min(0.95, dark * 1.4)}) 75%)`}}
         />
@@ -173,11 +168,11 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
       {f >= 108 && (
         <>
           <Lens cx={540} cy={720} r={360} s={stick}>
-            {MEDIA.antennae ? (
-              <Img src={staticFile(MEDIA.antennae)} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-            ) : (
-              <AntennaeStandIn f={f} />
-            )}
+            <OffthreadVideo
+              src={staticFile(MEDIA.dancer)}
+              muted
+              style={{width: '100%', height: '100%', objectFit: 'cover', transform: 'scale(1.06)'}}
+            />
           </Lens>
         </>
       )}

@@ -42,27 +42,14 @@ export const FONT_HAND = "'Patrick Hand SC', 'Amatic SC', sans-serif";
 export const FONT_HAND_HE = "'Amatic SC', 'Patrick Hand SC', sans-serif";
 
 /**
- * Real media slots. Drop the files into public/media/ and set the paths here.
- * While a slot is null, a drawn stand-in renders so the preview is complete.
- *  - beeOnComb:   a real honeybee on honeycomb. A PNG with the background removed gives a
- *                 true die-cut outline; a plain JPG gets an organic sticker shape instead.
- *  - waggleVideo: real waggle-dance footage (e.g. Wikimedia "Waggle Dance.webm", CC BY 2.0)
- *  - antennae:    a close-up of a bee head with antennae (PNG cut-out preferred)
+ * Real footage (CC-licensed, from Wikimedia Commons). Run scripts/fetch_media.sh to download and cut
+ * the clips into public/media/. Credits for the Instagram caption:
+ *   "Waggle dance footage: OakleyOrig (CC BY 2.0); Su et al. 2008, PLoS ONE (CC BY 3.0), via Wikimedia Commons"
  */
-export const MEDIA: {
-  beeOnComb: string | null;
-  beeOnCombIsCutout: boolean;
-  waggleVideo: string | null;
-  waggleVideoStart: number; // seconds into the source clip
-  antennae: string | null;
-  antennaeIsCutout: boolean;
-} = {
-  beeOnComb: null,
-  beeOnCombIsCutout: false,
-  waggleVideo: null,
-  waggleVideoStart: 2,
-  antennae: null,
-  antennaeIsCutout: false,
+export const MEDIA = {
+  hive: 'media/hive.mp4', // full-frame hive interior, beat 5
+  comb: 'media/comb.mp4', // square crop for the magnifier lens, beats 1 and 7
+  dancer: 'media/dancer.mp4', // red-dot dancer with followers, antennae moment in beat 5
 };
 
 // Placeholder timing (seconds) until the real voiceover is recorded.
