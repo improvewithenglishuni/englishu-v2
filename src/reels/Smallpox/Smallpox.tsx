@@ -4,6 +4,7 @@ import {Audio, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} fr
 import {
   ActionWord,
   Crowd,
+  DrawOn,
   Germs,
   END_CARD_SECONDS,
   EndCard,
@@ -151,6 +152,7 @@ const Vaccination = () => {
       <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={146} heavy at={2} actAt={s(1.0)} hiFrom={0} hiTo={4} gloss="vacca = פרה (לטינית)" />
       <Person x={PX} y={PY} size={560} tone="ink" glow={frame >= s(1.6) ? '#FDF551' : undefined} at={4} />
       <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#9A9DAA" liquid="#FDF551" plunge={plungeV} at={s(0.2)} />
+      <DrawOn src={staticFile('assets/vox/vial.png')} x={832} y={1215} width={240} aspect={952 / 479} rotate={5} at={s(0.15)} dur={s(1.1)} />
       <Germs cx={PX} cy={PY + 10} rx={200} ry={330} n={12} at={s(1.9)} stagger={2} />
     </>
   );
@@ -294,7 +296,7 @@ const FlexArm = () => {
   return (
     <>
     {/* the crowd from the 300-million scene, saved: a wave of yellow spreads outward from the arm */}
-    <Crowd x0={40} y0={70} cols={15} rows={28} dx={72} dy={68} size={66} color="#B9BDD0" at={2} wave={{at: s(0.15), lit: '#F0B400', cx: 540, cy: 950, speed: 1100 / 30}} />
+    <Crowd x0={40} y0={70} cols={15} rows={28} dx={72} dy={68} size={66} color="#B9BDD0" at={2} wave={{at: s(0.15), lit: '#EBA800', cx: 540, cy: 950, speed: 1100 / 30}} />
     <div style={{position: 'absolute', left: L + tx, top: T, width: W, height: H, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.38))'}}>
       <Img src={staticFile('assets/vox/flex2_up.png')} style={img} />
       <Img src={staticFile('assets/vox/flex2_fore.png')} style={{...img, transformOrigin: `${PIV.x}px ${PIV.y}px`, transform: `rotate(${angle}deg)`}} />

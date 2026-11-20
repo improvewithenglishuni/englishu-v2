@@ -323,7 +323,7 @@ export const Crowd: React.FC<{x0: number; y0: number; cols: number; rows: number
           {litK > 0.02 ? (
             <g opacity={litK * o} fill="#FDF551" stroke="#FDF551" strokeLinejoin="round" strokeLinecap="round">
               {/* faint glow BORDER: stacked, widening, fading outlines of the figure (no fill wash) */}
-              {[[34, 0.1], [24, 0.16], [15, 0.26], [8, 0.4]].map(([w, a]) => (
+              {[[150, 0.05], [110, 0.07], [78, 0.09], [52, 0.12], [34, 0.12], [22, 0.18], [13, 0.26], [7, 0.4]].map(([w, a]) => (
                 <g key={w} strokeWidth={w} strokeOpacity={a} fillOpacity={0}>
                   <circle cx={50} cy={28} r={19} />
                   <path d="M28 52 L72 52 L80 104 L66 104 L63 150 L53 150 L50 118 L47 150 L37 150 L34 104 L20 104 Z" />
@@ -435,5 +435,42 @@ export const Germs: React.FC<{cx: number; cy: number; rx: number; ry: number; n?
     <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
       {out}
     </svg>
+  );
+};
+
+
+/**
+ * A line drawing that is INKED IN as if drawn by hand: a pen scribbles back and forth over the
+ * picture (boustrophedon rows) and reveals the ink where it passes. PNG with transparent paper.
+ * x,y = centre; aspect = height / width.
+ */
+export const DrawOn: React.FC<{src: string; x: number; y: number; width: number; aspect: number; rotate?: number; at?: number; dur?: number; rows?: number; exitAt?: number}> = ({src, x, y, width, aspect, rotate = 0, at = 0, dur = 30, rows = 13, exitAt}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const id = useId().replace(/:/g, '');
+  const e = exitFactor(frame, exitAt, fps);
+  const p = clamp01((frame - at) / dur);
+  if (p <= 0 || e <= 0.001) return null;
+  const h = width * aspect;
+  const rh = h / rows;
+  const pts: string[] = [];
+  for (let r = 0; r < rows; r++) {
+    const yy = (r + 0.5) * rh;
+    const a = r % 2 === 0 ? -rh : width + rh;
+    const b = r % 2 === 0 ? width + rh : -rh;
+    pts.push(`${r === 0 ? 'M' : 'L'}${a} ${yy - rh * 0.25}`, `L${b} ${yy + rh * 0.25}`);
+  }
+  const eased = p * p * (3 - 2 * p) * 0.35 + p * 0.65;
+  return (
+    <Place x={x} y={y} rotate={rotate} opacity={e}>
+      <svg width={width} height={h} viewBox={`0 0 ${width} ${h}`} style={{overflow: 'visible', display: 'block', filter: 'drop-shadow(0 8px 10px rgba(0,0,0,0.22))'}}>
+        <defs>
+          <mask id={`dr${id}`} maskUnits="userSpaceOnUse" x={-20} y={-20} width={width + 40} height={h + 40}>
+            <path d={pts.join(' ')} pathLength={1} fill="none" stroke="#fff" strokeWidth={rh * 1.7} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1 1" strokeDashoffset={1 - eased} />
+          </mask>
+        </defs>
+        <image href={src} x={0} y={0} width={width} height={h} mask={`url(#dr${id})`} />
+      </svg>
+    </Place>
   );
 };
