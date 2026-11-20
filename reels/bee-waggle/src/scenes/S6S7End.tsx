@@ -17,7 +17,7 @@ export const S6Decipher: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur);
   const word = 'DECIPHER';
-  const letterW = 112;
+  const letterW = 102;
   const x0 = 540 - (letterW * word.length) / 2;
   const scribble = prog(f, 0, 18);
   const lockAt = (i: number) => 22 + i * 6;
@@ -63,8 +63,8 @@ export const S6Decipher: React.FC<{dur: number}> = ({dur}) => {
               left: x0 + i * letterW + letterW / 2,
               top: 645,
               transform: `translate(-50%, -50%) scale(${locked ? 0.9 + 0.1 * land : 0.8}) rotate(${locked ? 0 : (random(`r${i}-${Math.floor(f / 2)}`) - 0.5) * 30}deg)`,
-              ...keyWordStyle(190),
-              color: locked ? C.amber : C.cream,
+              ...keyWordStyle(180),
+              color: locked ? C.key : C.ink,
               opacity: started ? (locked ? 1 : 0.55) : 0,
             }}
           >
@@ -73,7 +73,7 @@ export const S6Decipher: React.FC<{dur: number}> = ({dur}) => {
         );
       })}
       <Label size={50} rot={2} style={{left: 540, top: 820, transform: `translateX(-50%) rotate(2deg) scale(${gloss})`}}>
-        <span dir="ltr" style={{fontFamily: FONT_KEY, fontWeight: 400, letterSpacing: 1}}>decipher</span> = לפענח
+        <span dir="ltr" style={{fontFamily: FONT_KEY, fontWeight: 400, letterSpacing: 1, color: C.key}}>decipher</span> = לפענח
       </Label>
     </AbsoluteFill>
   );

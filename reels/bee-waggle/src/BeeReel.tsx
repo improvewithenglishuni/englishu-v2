@@ -30,6 +30,12 @@ export const BeeReel: React.FC = () => {
   });
   return (
     <AbsoluteFill>
+      <svg width={0} height={0} style={{position: 'absolute'}}>
+        <filter id="rough-type">
+          <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="7" />
+          <feDisplacementMap in="SourceGraphic" scale="3.5" />
+        </filter>
+      </svg>
       <Plate dim={dim} />
       <PlateDecor />
       {scene('s1', S1Hook)}

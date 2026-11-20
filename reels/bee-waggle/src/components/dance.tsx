@@ -50,7 +50,6 @@ export const DanceFigure: React.FC<{
       </defs>
       {dashed ? (
         <g mask={`url(#${id}-m)`}>
-          <path d={d} fill="none" stroke="rgba(42,26,15,0.35)" strokeWidth={stroke + 4} strokeDasharray="34 18" strokeLinecap="butt" transform="translate(3 4)" />
           <path d={d} fill="none" stroke={color} strokeWidth={stroke} strokeDasharray="34 18" strokeLinecap="butt" />
         </g>
       ) : (

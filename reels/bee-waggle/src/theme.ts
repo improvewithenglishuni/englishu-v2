@@ -18,6 +18,7 @@ export const C = {
   hive: '#2B1A0E', // dark variant base
   hiveMid: '#4A2E16',
   cream: '#FAF7F0',
+  key: '#C8294A', // crimson for the English key words (inspo 'ROUND AND WAGGLE')
   comb: '#C9A266', // tan honeycomb (inspo)
   combDark: '#B48A50',
   wood: '#C8A57A',
@@ -36,9 +37,10 @@ export const C = {
 };
 
 export const FONT_HE = "'Rubik', sans-serif";
-export const FONT_KEY = "'Anton', 'Rubik', sans-serif";
+// Key English words: rounded hand-drawn condensed caps (inspo 'ROUND AND WAGGLE').
+export const FONT_KEY = "'Londrina Solid', 'Anton', 'Rubik', sans-serif";
 // Hand-lettered diagram annotations (the Vox / inspo look): English in Patrick Hand SC, Hebrew in Amatic SC.
-export const FONT_HAND = "'Patrick Hand SC', 'Amatic SC', sans-serif";
+export const FONT_HAND = "'Londrina Solid', 'Patrick Hand SC', sans-serif";
 export const FONT_HAND_HE = "'Amatic SC', 'Patrick Hand SC', sans-serif";
 
 /**

@@ -239,7 +239,7 @@ export const Subtitles: React.FC = () => {
         <span>
           {isEn
             ? words.map((w, k) => (
-                <span key={k} style={{color: s.key && w.toLowerCase().startsWith(s.key) ? C.amber : '#fff'}}>
+                <span key={k} style={{color: s.key && w.toLowerCase().startsWith(s.key) ? '#FF8FA6' : '#fff'}}>
                   {w}
                   {k < words.length - 1 ? ' ' : ''}
                 </span>
@@ -251,16 +251,16 @@ export const Subtitles: React.FC = () => {
   );
 };
 
-/** Big English key word style (Anton, cream fill, dark outline, offset shadow). */
+/** Big English key word style: Londrina Solid, crimson, soft light edge, slightly rough outline (inspo). */
 export const keyWordStyle = (size: number): React.CSSProperties => ({
   fontFamily: FONT_KEY,
+  fontWeight: 400,
   fontSize: size,
   lineHeight: 1,
-  color: C.cream,
-  WebkitTextStroke: `${Math.round(size / 30)}px ${C.ink}`,
-  paintOrder: 'stroke fill',
-  textShadow: `${Math.round(size / 28)}px ${Math.round(size / 22)}px 0 rgba(42,26,15,0.35)`,
-  letterSpacing: 2,
+  color: C.key,
+  letterSpacing: size * 0.02,
+  textShadow: `0 0 ${size / 40}px #FFE9EE, 0 0 ${size / 18}px rgba(255,255,255,0.9), 0 0 ${size / 10}px rgba(255,255,255,0.6)`,
+  filter: 'url(#rough-type)',
 });
 
 export const fullW = W;

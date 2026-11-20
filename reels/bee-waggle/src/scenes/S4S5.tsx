@@ -120,7 +120,7 @@ export const S4Convey: React.FC<{dur: number}> = ({dur}) => {
         );
       })}
       <Label size={50} rot={-2} dir="rtl" style={{left: 540, top: 590, transform: `translateX(-50%) rotate(-2deg) scale(${gloss})`}}>
-        <span dir="ltr" style={{fontFamily: FONT_KEY, fontWeight: 400, letterSpacing: 1}}>convey</span> = להעביר מסר
+        <span dir="ltr" style={{fontFamily: FONT_KEY, fontWeight: 400, letterSpacing: 1, color: C.key}}>convey</span> = להעביר מסר
       </Label>
     </AbsoluteFill>
   );

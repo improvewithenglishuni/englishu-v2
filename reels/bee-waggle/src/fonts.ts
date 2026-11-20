@@ -16,6 +16,8 @@ const faces: [string, string, string, string][] = [
   ['Amatic SC', 'amatic-sc-hebrew-700-normal.woff2', '700', HE],
   ['Amatic SC', 'amatic-sc-latin-700-normal.woff2', '700', LA],
   ['Patrick Hand SC', 'patrick-hand-sc-latin-400-normal.woff2', '400', LA],
+  ['Londrina Solid', 'londrina-solid-latin-400-normal.woff2', '400', LA],
+  ['Londrina Solid', 'londrina-solid-latin-900-normal.woff2', '900', LA],
 ];
 
 let ready: Promise<void> | null = null;
