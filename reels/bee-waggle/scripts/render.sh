@@ -12,8 +12,9 @@ for ((s=0; s<TOTAL; s+=STEP)); do
   f=out/chunks/c_$s.mp4
   for try in 1 2 3; do
     [ -s "$f" ] && break
-    npx remotion render BeeReel "$f" --frames=$s-$e --codec=h264 --crf=18 --muted --timeout=90000 --log=error && break || rm -f "$f"
+    npx remotion render BeeReel "$f" --frames=$s-$e --codec=h264 --crf=18 --muted --concurrency=3 --timeout=240000 --log=error || rm -f "$f"
   done
+  [ -s "$f" ] || { echo "chunk $s-$e FAILED"; exit 1; }
   echo "file 'c_$s.mp4'" >> out/chunks/list.txt
   echo "chunk $s-$e done"
 done

@@ -72,19 +72,13 @@ export const Plate: React.FC<{dim?: number}> = ({dim = 0}) => {
   );
 };
 
-/** Animated film grain + soft vignette over everything. */
+/** Animated film grain (pre-rendered noise frames, cheap to composite) + soft vignette over everything. */
 export const Grain: React.FC = () => {
   const f = useCurrentFrame();
-  const seed = Math.floor(f / 2) % 12;
+  const k = Math.floor(f / 2) % 6;
   return (
     <AbsoluteFill style={{pointerEvents: 'none'}}>
-      <svg width={W} height={H} style={{position: 'absolute', opacity: 0.13, mixBlendMode: 'multiply'}}>
-        <filter id={`g${seed}`}>
-          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed={seed} stitchTiles="stitch" />
-          <feColorMatrix type="saturate" values="0" />
-        </filter>
-        <rect width={W} height={H} filter={`url(#g${seed})`} />
-      </svg>
+      <Img src={staticFile(`grain/g${k}.png`)} style={{position: 'absolute', width: W, height: H, opacity: 0.1, mixBlendMode: 'overlay'}} />
       <AbsoluteFill
         style={{background: 'radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(40,26,12,0.22) 100%)'}}
       />

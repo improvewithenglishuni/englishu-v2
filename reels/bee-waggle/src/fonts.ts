@@ -40,5 +40,5 @@ export const loadFonts = () => {
   };
   Promise.all(faces.map(([family, , weight]) => document.fonts.load(`${weight} 40px '${family}'`, 'אבג ABC')))
     .then(finish, finish);
-  setTimeout(finish, 15000);
+  setTimeout(finish, 8000);
 };
