@@ -166,7 +166,7 @@ export const ActionWord: React.FC<{
           })}
         </div>
         {gloss && mode === 'pop' ? (
-          <div dir={glossDir} style={{textAlign: 'center', marginTop: fontSize * 0.2, fontFamily: SANS, fontWeight: 700, fontSize: fontSize * 0.36, color: main, opacity: clamp01((frame - actAt) / 8)}}>{gloss}</div>
+          <div dir={glossDir} style={{textAlign: 'center', marginTop: fontSize * 0.2, fontFamily: SANS, fontWeight: 700, fontSize: fontSize * 0.36, color: hiTo > hiFrom ? '#E0615E' : main, opacity: clamp01((frame - actAt) / 8)}}>{gloss}</div>
         ) : null}
       </Place>
     </>

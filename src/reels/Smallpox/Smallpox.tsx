@@ -63,7 +63,7 @@ const Hook = () => (
 /** 2. What smallpox looked like: a real historical photo, FULL FRAME. */
 const Patient = () => {
   const frame = useCurrentFrame();
-  const z = interpolate(frame, [0, 45], [1.0, 1.06], {extrapolateRight: 'clamp'});
+  const z = 1; // still image: no zoom
   return (
     <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
       <Img src={patient} style={{...cover, objectPosition: '43% 50%', transform: `scale(${z})`, transformOrigin: '43% 40%'}} />
@@ -90,7 +90,7 @@ const JennerPortrait = () => (
 /** 5. Milkmaids: cowpox came from the cows. Old photo, FULL FRAME. */
 const Milkmaids = () => {
   const frame = useCurrentFrame();
-  const z = interpolate(frame, [0, 66], [1.0, 1.07], {extrapolateRight: 'clamp'});
+  const z = 1; // still image: no zoom
   return (
     <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
       <Img src={milkmaid} style={{...cover, objectPosition: '52% 50%', transform: `scale(${z})`, transformOrigin: '52% 55%'}} />
@@ -110,7 +110,7 @@ const Vaccination = () => {
   const plungeV = interpolate(frame, [s(1.0), s(1.55)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
     <>
-      <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={146} heavy at={2} actAt={s(1.0)} hiFrom={0} hiTo={5} gloss="vacca = פרה (לטינית)" />
+      <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={146} heavy at={2} actAt={s(1.0)} hiFrom={0} hiTo={4} gloss="vacca = פרה (לטינית)" />
       <Person x={PX} y={PY} size={560} tone="ink" shield="#FDF551" shieldAt={s(1.6)} at={4} />
       <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#9A9DAA" liquid="#FDF551" plunge={plungeV} at={s(0.2)} />
       <Germs cx={PX} cy={PY + 10} rx={200} ry={330} n={12} at={s(1.9)} stagger={2} />
@@ -241,17 +241,17 @@ export const Smallpox: React.FC<SmallpoxProps> = (props) => {
   const endAt = durationInFrames - Math.round(END_CARD_SECONDS * fps);
   return (
     <>
-      <World theme={themes[props.theme]} push={[1, 1]} hud={<Subtitles lines={props.subtitles} variant="box" fontSize={60} bottom={1630} />}>
-        <Scene from={T.hook} to={T.patient} variant="light"><Hook /></Scene>
-        <Scene from={T.patient} to={T.zero} variant="clip"><Patient /></Scene>
-        <Scene from={T.zero} to={T.jenner} variant="charcoal"><Tally300 /></Scene>
-        <Scene from={T.jenner} to={T.quote} variant="clip"><JennerPortrait /></Scene>
-        <Scene from={T.quote} to={T.vaccination} variant="clip"><Milkmaids /></Scene>
-        <Scene from={T.vaccination} to={T.era} variant="light"><Vaccination /></Scene>
-        <Scene from={T.era} to={T.outbreak} variant="dark"><Eradicate /></Scene>
-        <Scene from={T.outbreak} to={T.chart} variant="charcoal"><Outbreak /></Scene>
-        <Scene from={T.chart} to={T.victory} variant="light"><Chart /></Scene>
-        <Scene from={T.victory} to={durationInFrames} variant="dark"><Victory /></Scene>
+      <World theme={themes[props.theme]} push={[1, 1]} hud={<Subtitles lines={props.subtitles} variant="box" fontSize={60} bottom={1665} />}>
+        <Scene from={T.hook} to={T.patient} variant="light" push={[1, 1]}><Hook /></Scene>
+        <Scene from={T.patient} to={T.zero} variant="clip" push={[1, 1]}><Patient /></Scene>
+        <Scene from={T.zero} to={T.jenner} variant="charcoal" push={[1, 1]}><Tally300 /></Scene>
+        <Scene from={T.jenner} to={T.quote} variant="clip" push={[1, 1]}><JennerPortrait /></Scene>
+        <Scene from={T.quote} to={T.vaccination} variant="clip" push={[1, 1]}><Milkmaids /></Scene>
+        <Scene from={T.vaccination} to={T.era} variant="light" push={[1, 1]}><Vaccination /></Scene>
+        <Scene from={T.era} to={T.outbreak} variant="dark" push={[1, 1]}><Eradicate /></Scene>
+        <Scene from={T.outbreak} to={T.chart} variant="charcoal" push={[1, 1.08]}><Outbreak /></Scene>
+        <Scene from={T.chart} to={T.victory} variant="light" push={[1, 1]}><Chart /></Scene>
+        <Scene from={T.victory} to={durationInFrames} variant="dark" push={[1, 1]}><Victory /></Scene>
       </World>
       {props.voiceover ? <Audio src={staticFile(props.voiceover)} /> : null}
       {props.endCard ? <EndCard at={endAt} /> : null}

@@ -65,3 +65,7 @@ Rules: <= ~90 Hebrew words, <= 8 beats, ONE surprising fact, two target words, t
 
 ## Accuracy rule (Sharon, 2026-11-19): 100% accurate, no exceptions
 Literally every piece of information in a reel must be true and verified against a named source before it ships: narration, subtitles, labels, numbers, dates, captions, chart values, map graphics and what each image is or shows. Visuals must never imply a false fact (example: a vaccination scar is a sign of the SOLUTION, the vaccine, never of the disease; map dots only on countries where the disease really was endemic). If a fact cannot be verified, change the line or cut it. Qualify honestly ("reported cases", "natural case", "in the 20th century"). Flag any image whose identity or provenance is unverified, and log sources in `tools/sources/SOURCES.md`.
+
+
+## Zoom only where needed
+**Zoom only where it is needed.** No automatic push/zoom on every scene (set `push={[1, 1]}`). Use a zoom only when it carries the meaning: the scar close-up, the ring-vaccination (outbreak) scene, the map zoom to Somalia. Charts and still photos stay still; the graph animation is enough.
