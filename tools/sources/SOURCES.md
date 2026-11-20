@@ -39,3 +39,5 @@ Older newsprint-version files (`gillray.jpg`, `ota.jpg`, `tem.jpg`, `vial*.jpg`)
 - Last natural case: Somalia, Oct 1977. 1978: 2 cases (lab accident, England). Certified 9 Dec 1979; WHA declared eradication 8 May 1980.
 - Chart series: WHO via Our World in Data (reported cases; understates true cases). 1967 = 132,000 (OWID; WHO paper says 131,000).
 - Arm, girl and milkmaid photos supplied by Sharon: provenance unverified.
+- Map dots (v12): ~5,100 random points spread evenly over all land to show smallpox's historical spread; illustrative, not case locations. Subtitle says it struck 'almost the whole world' over thousands of years.
+- Jenner portrait source `tools/sources/jenner.jpg` is only 260x341 px (soft). A sharp original exists: Wellcome Collection V0003071, IIIF https://iiif.wellcomecollection.org/image/V0003071/full/1600,/0/default.jpg (CC BY 4.0). Container cannot download it; needs a manual drop into tools/sources/.

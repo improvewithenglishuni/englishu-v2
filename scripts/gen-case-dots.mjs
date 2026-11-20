@@ -9,7 +9,7 @@ const feats = feature(world, world.objects.countries).features.filter((f) => f.p
 // The 31 countries/territories with endemic smallpox in January 1967 (Fenner et al., WHO 1988, ch. 10), modern names.
 const ENDEMIC_1967 = new Set(['Burundi','Dem. Rep. Congo','Ethiopia','Kenya','Malawi','Mozambique','Rwanda','South Africa','Zimbabwe','Uganda','Tanzania','Zambia','Cameroon','Benin','Ghana','Guinea','Liberia','Mali','Niger','Nigeria','Sierra Leone','Togo','Burkina Faso','Brazil','Afghanistan','Bangladesh','India','Indonesia','Nepal','Pakistan','Yemen']);
 const proj = geoNaturalEarth1().fitSize([1000, 520], {type: 'FeatureCollection', features: feats});
-const endemic = feats.filter((f) => ENDEMIC_1967.has(f.properties.name));
+const endemic = feats; // all land: the map shows where smallpox struck over its history, spread across the world
 console.log('endemic polygons', endemic.length);
 const bounds = endemic.map((f) => geoBounds(f));
 let seed = 7;
@@ -23,9 +23,9 @@ const w = (lon, lat) => {
 };
 // Evenly spread (Poisson-disk style) so the dots cover each endemic country, not clumps.
 const out = [];
-const MIN = 3.1;
+const MIN = 4.4;
 const cand = [];
-for (let i = 0; i < 400000; i++) {
+for (let i = 0; i < 900000; i++) {
   const lon = -180 + rnd() * 360;
   const lat = -58 + rnd() * 130;
   let hit = false;
