@@ -5,7 +5,7 @@ import {DanceFigure} from '../components/dance';
 import {Branch, Label, Pin, keyWordStyle} from '../components/props';
 import {TornStrip} from '../components/paper';
 import {exitOut, pop, prog} from '../components/anim';
-import {BeeLensContent, HIVE, SlotTag} from './S1Hook';
+import {BeeLensContent, HIVE} from './S1Hook';
 import {ParkWorld} from '../components/park';
 import {Lens} from '../components/explain';
 import {BeeTop} from '../components/bee';
@@ -96,7 +96,6 @@ export const S7Callback: React.FC<{dur: number}> = ({dur}) => {
       <Lens cx={380} cy={900} r={R} s={pop(f, 4, 13)} px={HIVE.entrance.x - 20} py={HIVE.y + 200}>
         <BeeLensContent f={f} r={R} dancing startDance={0} />
       </Lens>
-      {!MEDIA.beeOnComb && <SlotTag text="real photo: bee on honeycomb" style={{left: 200, top: 1230}} />}
       {/* the decoded dance on a taped squiggle-paper card (top right) */}
       <div style={{position: 'absolute', left: 520, top: 150, width: 500, height: 560, transform: `rotate(5deg) scale(${card})`}}>
         <div style={{position: 'absolute', inset: 0, overflow: 'hidden', boxShadow: '0 18px 26px rgba(30,20,10,0.3)', border: '10px solid #fff'}}>

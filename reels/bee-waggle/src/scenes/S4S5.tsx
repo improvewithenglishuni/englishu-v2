@@ -6,7 +6,6 @@ import {DanceFigure} from '../components/dance';
 import {Comb, Label, keyWordStyle} from '../components/props';
 import {Hand, Lens} from '../components/explain';
 import {exitOut, pop, prog} from '../components/anim';
-import {SlotTag} from './S1Hook';
 
 const bez = (t: number, p0: number, p1: number, p2: number, p3: number) =>
   (1 - t) ** 3 * p0 + 3 * (1 - t) ** 2 * t * p1 + 3 * (1 - t) * t ** 2 * p2 + t ** 3 * p3;
@@ -171,7 +170,6 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
           style={{background: `radial-gradient(ellipse at 50% 42%, rgba(20,12,5,${dark * 0.55}) 20%, rgba(20,12,5,${Math.min(0.95, dark * 1.4)}) 75%)`}}
         />
       </AbsoluteFill>
-      {!MEDIA.waggleVideo && <SlotTag text="real footage: waggle dance" style={{left: 60, top: 230}} />}
       {f >= 108 && (
         <>
           <Lens cx={540} cy={720} r={360} s={stick}>
@@ -181,10 +179,6 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
               <AntennaeStandIn f={f} />
             )}
           </Lens>
-          <Hand x={540} y={1150} size={70} s={pop(f, 124, 12)} rot={-2} color="#fff" halo={C.ink}>
-            מגע + רטט
-          </Hand>
-          {!MEDIA.antennae && <SlotTag text="real photo: antennae close-up" style={{left: 380, top: 1040}} />}
         </>
       )}
     </AbsoluteFill>

@@ -42,24 +42,6 @@ export const BeeLensContent: React.FC<{f: number; r: number; dancing: boolean; s
   );
 };
 
-/** A tiny tag that marks a drawn stand-in for real footage/photo (shows only while the slot is empty). */
-export const SlotTag: React.FC<{text: string; style?: React.CSSProperties}> = ({text, style}) => (
-  <div
-    style={{
-      position: 'absolute',
-      fontFamily: 'Rubik',
-      fontWeight: 700,
-      fontSize: 24,
-      color: C.ink,
-      background: 'rgba(250,247,240,0.85)',
-      border: `2px dashed ${C.ink}`,
-      padding: '4px 12px',
-      ...style,
-    }}
-  >
-    {text}
-  </div>
-);
 
 export const HIVE = {x: 600, y: 820, w: 400, entrance: {x: 760, y: 1282}};
 
@@ -88,7 +70,6 @@ export const S1Hook: React.FC<{dur: number}> = ({dur}) => {
           <BeeLensContent f={f} r={R} dancing={f > 50} startDance={50} />
         </Lens>
       )}
-      {!MEDIA.beeOnComb && f >= 44 && <SlotTag text="real photo: bee on honeycomb" style={{left: 240, top: 1080}} />}
     </AbsoluteFill>
   );
 };

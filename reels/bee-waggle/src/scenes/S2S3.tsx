@@ -25,19 +25,6 @@ export const S2Address: React.FC<{dur: number}> = ({dur}) => {
       <HiveFrame x={90} y={330} w={900} h={780} seed="s2frame" scale={frame} r={34}>
         <DanceFigure size={760} draw={draw} beeAt={draw} dashed color="#fff" stroke={12} beeSize={70} id="s2" style={{left: 436 - 380, top: 358 - 380, transform: `scale(${sc})`}} />
       </HiveFrame>
-      {/* labels */}
-      <Hand x={790} y={235} size={78} s={pop(f, 14, 12)} rot={-3}>
-        ריצת נענוע
-      </Hand>
-      <Arrow x1={720} y1={270} x2={center.x + 30} y2={center.y - 60} bend={-0.25} p={prog(f, 16, 26)} />
-      <Hand x={850} y={1175} size={64} s={pop(f, 34, 12)} rot={2}>
-        חזרה בלולאה
-      </Hand>
-      <Arrow x1={850} y1={1140} x2={center.x + 215} y2={center.y + 150} bend={0.2} p={prog(f, 36, 46)} />
-      <Hand x={230} y={1175} size={64} s={pop(f, 40, 12)} rot={-2}>
-        ושוב
-      </Hand>
-      <Arrow x1={230} y1={1140} x2={center.x - 215} y2={center.y + 150} bend={-0.2} p={prog(f, 42, 52)} />
       {/* the pin: where the waggle run points */}
       <div
         style={{
@@ -121,9 +108,6 @@ const DistanceRow: React.FC<{y: number; s: number; runLen: number; runP: number;
       </div>
       <HiveBox w={92} style={{left: 100, top: 272}} />
       <Flower size={86} style={{left: 210 + dist * Math.max(runP, 0.001) - 43, top: 287, opacity: runP > 0.05 ? 1 : 0}} />
-      <Hand x={Math.min(990, 210 + dist * runP + 70)} y={262} size={66} s={runP > 0.95 ? 1 : 0} anchor="left">
-        {label}
-      </Hand>
     </div>
   );
 };
@@ -164,22 +148,14 @@ export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
             <Arc cx={P.x} cy={P.y - 40} r={130} a={ANG} p={prog(f, 26, 38)} />
           </svg>
           <Sun size={170} style={{left: sun.x - 85, top: sun.y - 85, transform: `scale(${pop(f, 0)})`}} />
-          <Hand x={sun.x + 120} y={sun.y} size={62} s={pop(f, 6, 12)} anchor="left">
-            השמש
-          </Hand>
           <div style={{position: 'absolute', left: P.x - 60, top: P.y - 50, transform: `scale(${pop(f, 3)})`}}>
             <HiveBox w={120} />
           </div>
           <Flower size={104} style={{left: flower.x - 52, top: flower.y - 52, transform: `scale(${pop(f, 12)})`}} />
-          <Hand x={flower.x + 70} y={flower.y} size={62} s={pop(f, 16, 12)} anchor="left">
-            האוכל
-          </Hand>
           <Hand x={lbl.x} y={lbl.y - 40} size={76} lang="en" s={pop(f, 34, 10)} color={C.amberDeep}>
             40°
           </Hand>
-          <Hand x={540} y={850} size={66} s={pop(f, 40, 12)} rot={-1}>
-            אותה זווית, על החלה:
-          </Hand>
+          <Arrow x1={P.x + 150} y1={P.y - 60} x2={comb.x + 150} y2={comb.y - 150} bend={-0.35} p={prog(f, 40, 56)} dash color={C.amberDeep} w={8} />
           {/* the comb, standing vertically inside the dark hive */}
           <HiveFrame x={140} y={900} w={800} h={380} seed="s3frame" scale={frameS} r={30} />
           <svg width={1080} height={1920} style={{position: 'absolute', opacity: frameS}}>
@@ -188,9 +164,7 @@ export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
             <polyline points={zz.slice(0, beeIdx + 1).map(([x, y]) => `${x},${y}`).join(' ')} stroke={C.ink} strokeWidth={8} fill="none" strokeLinejoin="round" />
             <Arc cx={comb.x} cy={comb.y} r={110} a={ANG} p={prog(f, 70, 84)} color="#fff" />
           </svg>
-          <Hand x={comb.x - 30} y={985} size={58} lang="en" s={pop(f, 56, 12)} anchor="right" color="#fff" halo={C.ink}>
-            UP = SUN
-          </Hand>
+          <Sun size={74} style={{left: comb.x - 37, top: 912, transform: `scale(${pop(f, 56, 10)})`}} />
           <Hand x={lbl2.x + 14} y={lbl2.y - 24} size={70} lang="en" s={pop(f, 82, 10)} color="#fff" halo={C.ink}>
             40°
           </Hand>
@@ -205,18 +179,6 @@ export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
         <AbsoluteFill>
           <DistanceRow y={250} s={b1} runLen={150} runP={shortRun} dist={230} label="קרוב" seed="r1" f={f} />
           <DistanceRow y={700} s={b2} runLen={620} runP={longRun} dist={640} label="רחוק" seed="r2" f={f} />
-          {/* precision footnote: very close food gets a different dance */}
-          <div style={{position: 'absolute', left: 0, top: 0, opacity: prog(f, SPLIT + 58, SPLIT + 64)}}>
-            <svg width={1080} height={1920} style={{position: 'absolute'}}>
-              <circle cx={940} cy={1190} r={30} fill="none" stroke={C.ink} strokeWidth={6} strokeDasharray="12 8" />
-            </svg>
-            <Hand x={890} y={1160} size={54} anchor="right">
-              אוכל קרוב מאוד, עד כ-50 מטר?
-            </Hand>
-            <Hand x={890} y={1225} size={54} anchor="right">
-              ריקוד עגול, בלי נענוע
-            </Hand>
-          </div>
         </AbsoluteFill>
       )}
     </AbsoluteFill>
