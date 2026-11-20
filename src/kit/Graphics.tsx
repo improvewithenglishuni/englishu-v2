@@ -185,13 +185,14 @@ export const ScarSticker: React.FC<{
     const N = 70;
     for (let i = 0; i <= N; i++) {
       const u = i / N;
-      const th = -0.3 * Math.PI + u * 2.5 * Math.PI;
-      const wob = 1 + 0.035 * Math.sin(3 * th + 1) + 0.07 * u;
+      const th = -0.35 * Math.PI + u * 2.65 * Math.PI;
+      const wob = 1 + 0.06 * Math.sin(2 * th + 1) + 0.035 * Math.sin(5 * th + 2) + 0.012 * Math.sin(11 * th) + 0.14 * u * u - 0.04 * (1 - u);
       pts.push(`${i === 0 ? 'M' : 'L'}${(Math.cos(th) * marker.rx * wob).toFixed(1)} ${(Math.sin(th) * marker.ry * wob).toFixed(1)}`);
     }
     markerPath = pts.join(' ');
   }
   const mp = marker ? clamp01((frame - marker.at) / (marker.dur ?? 16)) : 0;
+  const mkId = useId().replace(/:/g, '');
   return (
     <Place x={px} y={py + (1 - s) * 420} rotate={rotate} opacity={s * e}>
       <div style={{position: 'relative', width, height: h, transform: `scale(${zoom})`, transformOrigin: `${scar.x * 100}% ${scar.y * 100}%`, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.38))'}}>
@@ -201,8 +202,14 @@ export const ScarSticker: React.FC<{
         ))}
         {marker && mp > 0 ? (
           <svg width={width} height={h} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
+            <defs>
+              <filter id={`mk${mkId}`} x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="3" result="n" />
+                <feDisplacementMap in="SourceGraphic" in2="n" scale="7" />
+              </filter>
+            </defs>
             <g transform={`translate(${marker.cx * width} ${marker.cy * h}) rotate(${marker.rot ?? 0})`}>
-              <path d={markerPath} pathLength={1} fill="none" stroke="#E5372F" strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1 1" strokeDashoffset={1 - mp} />
+              <path d={markerPath} pathLength={1} fill="none" filter={`url(#mk${mkId})`} stroke="#E5372F" strokeWidth={8} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1 1" strokeDashoffset={1 - mp} />
             </g>
           </svg>
         ) : null}

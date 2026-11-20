@@ -111,25 +111,22 @@ export const ActionWord: React.FC<{
                 for (let wx = -6; wx <= cwi + 6; wx += 6) wave.push(`L${wx} ${top + (lvl > 0 && lvl < 1 ? Math.sin((wx + frame * 1.6) * 0.16 + i) * 2.4 : 0)}`);
                 wave.push(`L${cwi + 6} ${fontSize + 6}`, 'Z');
                 const common = {x: cwi / 2, y: base, textAnchor: 'middle' as const, fontSize, style: {fontFamily: SANS, fontWeight: 800}};
-                // Disintegration: the letter stays put; a grid of grains switches off from the top of the word to the bottom.
-                const CELL = 6;
-                const cells: React.ReactNode[] = [];
+                // Vaporize: the letter stays put; a soft edge sweeps from the top of the word to the bottom and
+                // the letter turns to smoke (turbulence displacement + blur + a little drift up), no pixels.
                 const dis = frame >= actAt;
-                if (dis) {
-                  const cols = Math.ceil((cwi + 12) / CELL);
-                  const rows = Math.ceil((fontSize + 12) / CELL);
-                  for (let r = 0; r < rows; r++) {
-                    for (let c = 0; c < cols; c++) {
-                      const cy = r * CELL - 6;
-                      const tc = actAt + (cy / fontSize) * 26 + rnd(i * 7919 + r * 131 + c * 17 + 3) * 12;
-                      const sz = 1 - clamp01((frame - tc) / 7);
-                      if (sz <= 0.01) continue;
-                      const w = CELL * sz + (sz > 0.99 ? 0.8 : 0);
-                      cells.push(<rect key={`${r}-${c}`} x={c * CELL - 6 + (CELL - w) / 2} y={cy + (CELL - w) / 2} width={w} height={w} fill="#fff" />);
-                    }
-                  }
-                }
+                const t1 = actAt + i * 1.5;
+                const DUR = 34;
+                const pv = clamp01((frame - t1) / DUR); // 0 -> 1 progress for this letter
+                const soft = fontSize * 0.55;
+                const edge = -soft + pv * (fontSize + 2 * soft); // y where the vanishing edge currently is
+                const fid = `vp${uid}${i}`;
                 const mid = `dm${uid}${i}`;
+                const gid = `dg${uid}${i}`;
+                const dispScale = 4 + 70 * pv;
+                const blurStd = 0.4 + 7 * pv;
+                const drift = -pv * fontSize * 0.28;
+                const fade = 1 - clamp01((pv - 0.75) / 0.25);
+                if (dis && pv >= 1) return <span key={i} style={{display: 'inline-block', width: cwi, height: fontSize}} />;
                 return (
                   <span key={i} style={{display: 'inline-block', width: cwi, height: fontSize, transform: `translateY(${(1 - enter) * 60}px) scale(${0.4 + 0.6 * enter})`, opacity: enter}}>
                     <svg width={cwi} height={fontSize} viewBox={`0 0 ${cwi} ${fontSize}`} style={{overflow: 'visible', display: 'block'}}>
@@ -138,14 +135,27 @@ export const ActionWord: React.FC<{
                           <path d={wave.join(' ')} />
                         </clipPath>
                         {dis ? (
-                          <mask id={mid} maskUnits="userSpaceOnUse" x={-12} y={-12} width={cwi + 24} height={fontSize + 24}>
-                            {cells}
-                          </mask>
+                          <>
+                            <linearGradient id={gid} gradientUnits="userSpaceOnUse" x1="0" x2="0" y1={edge - soft} y2={edge + soft}>
+                              <stop offset="0" stopColor="#000" />
+                              <stop offset="1" stopColor="#fff" />
+                            </linearGradient>
+                            <mask id={mid} maskUnits="userSpaceOnUse" x={-fontSize} y={-fontSize} width={cwi + 2 * fontSize} height={fontSize * 3}>
+                              <rect x={-fontSize} y={-fontSize} width={cwi + 2 * fontSize} height={fontSize * 3} fill={`url(#${gid})`} />
+                            </mask>
+                            <filter id={fid} x="-80%" y="-80%" width="260%" height="260%">
+                              <feTurbulence type="fractalNoise" baseFrequency="0.018 0.03" numOctaves="3" seed={i * 7 + 3} result="n" />
+                              <feDisplacementMap in="SourceGraphic" in2="n" scale={dispScale} xChannelSelector="R" yChannelSelector="G" result="d" />
+                              <feGaussianBlur in="d" stdDeviation={blurStd} />
+                            </filter>
+                          </>
                         ) : null}
                       </defs>
-                      <g mask={dis ? `url(#${mid})` : undefined}>
-                        <text {...common} fill={main} clipPath={`url(#lq${uid}${i})`}>{ch}</text>
-                        <text {...common} fill="none" stroke={main} strokeWidth={Math.max(3, fontSize * 0.022)} strokeLinejoin="round">{ch}</text>
+                      <g filter={dis ? `url(#${fid})` : undefined} opacity={dis ? fade : 1} transform={dis ? `translate(0 ${drift})` : undefined}>
+                        <g mask={dis ? `url(#${mid})` : undefined}>
+                          <text {...common} fill={main} clipPath={`url(#lq${uid}${i})`}>{ch}</text>
+                          <text {...common} fill="none" stroke={main} strokeWidth={Math.max(3, fontSize * 0.022)} strokeLinejoin="round">{ch}</text>
+                        </g>
                       </g>
                     </svg>
                   </span>

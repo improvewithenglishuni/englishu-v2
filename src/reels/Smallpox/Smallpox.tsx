@@ -1,4 +1,5 @@
 import React from 'react';
+import {loadFont} from '@remotion/fonts';
 import {Audio, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {
   ActionWord,
@@ -51,12 +52,12 @@ const Hook = () => (
     at={2}
     scarAt={s(0.75)}
     zoomFrom={1}
-    zoomTo={2.9}
+    zoomTo={4.2}
     zoomDur={s(1.35)}
     scar={{x: 0.4022, y: 0.54}}
     scarTarget={{x: 540, y: 740}}
     scars={[]}
-    marker={{cx: 0.4022, cy: 0.54, rx: 50, ry: 50, rot: -15, at: s(0.8), dur: s(1.3)}}
+    marker={{cx: 0.4022, cy: 0.54, rx: 66, ry: 58, rot: -15, at: s(0.8), dur: s(1.3)}}
   />
 );
 
@@ -79,13 +80,48 @@ const Tally300 = () => (
   </>
 );
 
+/** A date typed onto the image with a typewriter: letters strike one by one, uneven ink, speckled. */
+loadFont({family: 'Special Elite', url: staticFile('fonts/special-elite-latin-400-normal.woff2'), weight: '400'});
+const TypedDate: React.FC<{text: string; at: number}> = ({text, at}) => {
+  const frame = useCurrentFrame();
+  const id = React.useId().replace(/:/g, '');
+  const rn = (n: number) => {
+    const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+    return x - Math.floor(x);
+  };
+  return (
+    <div dir="ltr" style={{position: 'absolute', right: 70, bottom: 92, transform: 'rotate(-2deg)'}}>
+      <svg width={0} height={0} style={{position: 'absolute'}}>
+        <filter id={`ink${id}`} x="-10%" y="-20%" width="120%" height="140%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="4" result="g" />
+          <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.6 2.35" result="spk" />
+          <feComposite in="SourceGraphic" in2="spk" operator="in" result="t" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="9" result="w" />
+          <feDisplacementMap in="t" in2="w" scale="1.6" />
+        </filter>
+      </svg>
+      <div style={{display: 'flex', filter: `url(#ink${id}) drop-shadow(0 1px 1px rgba(0,0,0,0.6))`, fontFamily: "'Special Elite', 'Courier New', monospace", fontSize: 44, color: '#E8E2D0', letterSpacing: 2}}>
+        {text.split('').map((ch, i) => {
+          const k = Math.min(1, Math.max(0, (frame - (at + i * 4)) / 2));
+          const strike = frame >= at + i * 4 && frame < at + i * 4 + 3 ? 1 : 0;
+          return (
+            <span key={i} style={{display: 'inline-block', opacity: k * (0.78 + 0.22 * rn(i + 1)), transform: `translate(${(rn(i + 5) - 0.5) * 2}px, ${(rn(i + 9) - 0.5) * 5 + strike * 2}px) rotate(${(rn(i + 3) - 0.5) * 5}deg)`}}>
+              {ch}
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 /** 4. Jenner (named on screen) as a die-cut portrait on a newspaper clipping. */
 const JennerPortrait = () => (
   <>
-    <Sticker src={jennerSticker} x={540} y={730} width={960} aspect={1355 / 1120} rotate={-3} at={2}>
-      <div dir="ltr" style={{position: 'absolute', right: 78, bottom: 96, fontFamily: 'var(--kit-font)', fontWeight: 800, fontSize: 66, letterSpacing: 4, color: '#F4F3F9', textShadow: '0 3px 8px rgba(0,0,0,0.7)', transform: 'rotate(-2deg)', opacity: 0.95}}>1796</div>
+    <Sticker src={jennerSticker} x={540} y={655} width={900} aspect={1355 / 1120} rotate={-3} at={2}>
+      <TypedDate text="1796" at={s(0.9)} />
     </Sticker>
-    <NameLabel x={540} y={1345} line1="ד״ר אדוארד ג׳נר" fontSize={92} paper at={s(0.5)} />
+    <NameLabel x={540} y={1330} line1="ד״ר אדוארד ג׳נר" fontSize={92} paper at={s(0.5)} />
   </>
 );
 
@@ -134,8 +170,8 @@ const Eradicate = () => {
   return (
     <>
       <NameLabel x={540} y={330} line1="ארגון הבריאות העולמי" line2="1967" fontSize={80} at={2} />
-      <ActionWord text="ERADICATE" mode="vanish" color="yellow" hollow x={540} y={820} fontSize={150} at={s(0.5)} fillAt={s(1.9)} fillFromX={DTIP.x + 40} actAt={s(2.7)} />
-      <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#C9CBD6" liquid="#FDF551" plunge={plunge} at={s(1.35)} exitAt={s(3.3)} />
+      <ActionWord text="ERADICATE" mode="vanish" color="yellow" hollow x={540} y={820} fontSize={150} at={s(0.5)} fillAt={s(1.9)} fillFromX={DTIP.x + 40} actAt={s(3.7)} />
+      <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#C9CBD6" liquid="#FDF551" plunge={plunge} at={s(1.35)} exitAt={s(4.2)} />
       <SansHeading text="למגר = לעקור מהשורש" x={540} y={1150} fontSize={84} color="white" dir="rtl" at={s(1.3)} />
     </>
   );
@@ -247,25 +283,19 @@ const FlexArm = () => {
     return 1 + c3 * Math.pow(v - 1, 3) + c1 * Math.pow(v - 1, 2);
   };
   const easeOut = (v: number) => 1 - Math.pow(1 - v, 3);
-  const SC = 0.75; // display scale of the 1348x1184 art
+  const SC = 0.9; // display scale of the 1348x1184 art
   const W = 1348 * SC;
   const H = 1184 * SC;
   const PIV = {x: 1080 * SC, y: 987 * SC}; // elbow pivot inside the art
-  const SCARS = [{x: 360 * SC, y: 507 * SC}, {x: 420 * SC, y: 647 * SC}];
-  const L = -212;
-  const T = 406;
-  const tx = -330 * (1 - easeOut(pop(0, s(0.9)))); // arm pushes in from the left
+  const L = -245;
+  const T = 401;
+  const tx = -400 * (1 - easeOut(pop(0, s(0.9)))); // arm pushes in from the left
   const angle = 80 * (1 - back(pop(s(0.15), s(0.95)))); // forearm swings from pointing right to upright
-  const glow = pop(s(1.0), s(1.2));
-  const pulse = 0.75 + 0.25 * Math.sin(Math.max(0, frame - s(1.2)) * 0.22);
   const img: React.CSSProperties = {position: 'absolute', left: 0, top: 0, width: W, height: H, display: 'block'};
   return (
     <div style={{position: 'absolute', left: L + tx, top: T, width: W, height: H, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.38))'}}>
       <Img src={staticFile('assets/vox/flex2_up.png')} style={img} />
       <Img src={staticFile('assets/vox/flex2_fore.png')} style={{...img, transformOrigin: `${PIV.x}px ${PIV.y}px`, transform: `rotate(${angle}deg)`}} />
-      {SCARS.map((c, i) => (
-        <div key={i} style={{position: 'absolute', left: c.x - 40, top: c.y - 40, width: 80, height: 80, borderRadius: '50%', border: '6px solid #FDF551', boxSizing: 'border-box', boxShadow: '0 0 22px 6px rgba(253,245,81,0.55)', opacity: glow * pulse, transform: `scale(${1.5 - 0.5 * glow})`}} />
-      ))}
     </div>
   );
 };
