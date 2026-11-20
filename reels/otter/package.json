@@ -1,0 +1,20 @@
+{
+  "name": "otter-reel",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render OtterReel out/otter-reel.mp4 --concurrency=2",
+    "still": "remotion still OtterReel"
+  },
+  "dependencies": {
+    "@fontsource/rubik": "5.1.0",
+    "@fontsource/playfair-display": "5.1.0",
+    "@fontsource/frank-ruhl-libre": "5.1.0",
+    "@remotion/cli": "4.0.242",
+    "@remotion/media-utils": "4.0.242",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.242"
+  },
+  "devDependencies": { "typescript": "5.6.3", "@types/react": "18.3.12" }
+}
