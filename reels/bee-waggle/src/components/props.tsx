@@ -33,17 +33,27 @@ export const Branch: React.FC<{style?: React.CSSProperties; bloom?: number}> = (
   </svg>
 );
 
-/** Honeycomb hex grid filling a box. */
+/**
+ * Honeycomb in the inspo style: a tan sheet with thin light hexagon outlines, a few darker
+ * capped cells and amber honey cells, and fine stipple. variant "dark" = inside the hive.
+ */
 export const Comb: React.FC<{
   w: number;
   h: number;
   r?: number;
-  fill?: string;
-  stroke?: string;
-  honey?: number; // fraction of cells filled with honey
+  variant?: 'tan' | 'dark';
+  honey?: number;
   style?: React.CSSProperties;
   seed?: string;
-}> = ({w, h, r = 46, fill = '#E7B867', stroke = '#C58A2E', honey = 0.25, style, seed = 'comb'}) => {
+  // legacy props (ignored)
+  fill?: string;
+  stroke?: string;
+}> = ({w, h, r = 40, variant = 'tan', honey = 0.12, style, seed = 'comb'}) => {
+  const dark = variant === 'dark';
+  const base = dark ? '#3A2410' : C.comb;
+  const line = dark ? 'rgba(255,214,150,0.22)' : 'rgba(255,255,255,0.6)';
+  const capped = dark ? '#2E1C0C' : C.combDark;
+  const honeyC = dark ? '#8A5A1C' : '#D9A441';
   const hx = Math.sqrt(3) * r;
   const cells: React.ReactNode[] = [];
   let i = 0;
@@ -53,17 +63,17 @@ export const Comb: React.FC<{
       const cy = row * r * 1.5;
       const pts = Array.from({length: 6}, (_, k) => {
         const a = (Math.PI / 3) * k + Math.PI / 6;
-        return `${cx + Math.cos(a) * (r - 3)},${cy + Math.sin(a) * (r - 3)}`;
+        return `${(cx + Math.cos(a) * (r - 2)).toFixed(1)},${(cy + Math.sin(a) * (r - 2)).toFixed(1)}`;
       }).join(' ');
-      const isHoney = random(`${seed}${i++}`) < honey;
-      cells.push(
-        <polygon key={i} points={pts} fill={isHoney ? '#D88F1E' : fill} stroke={stroke} strokeWidth={5} />,
-      );
+      const rv = random(`${seed}${i++}`);
+      const fill = rv < honey ? honeyC : rv < honey + 0.18 ? capped : 'none';
+      cells.push(<polygon key={i} points={pts} fill={fill} stroke={line} strokeWidth={2.6} />);
     }
   }
   return (
     <svg width={w} height={h} style={{position: 'absolute', overflow: 'hidden', ...style}}>
-      <StippleDefs id={`${seed}-st`} color="#7A4A10" size={7} opacity={0.3} />
+      <StippleDefs id={`${seed}-st`} color={dark ? '#000' : '#7A5520'} size={6} opacity={dark ? 0.35 : 0.22} />
+      <rect width={w} height={h} fill={base} />
       {cells}
       <rect width={w} height={h} fill={`url(#${seed}-st)`} />
     </svg>

@@ -14,7 +14,12 @@ python3 scripts/make_audio.py   # rebuild the music bed + SFX after re-timing
 
 ## World
 
-- Plate: the attached white squiggle paper (`public/squiggle.jpg`) with a faint sage wash, slow continuous drift.
+- Outdoor beats (1 and 7): a bright sunny park (`src/components/park.tsx`): sky + sun glow, drifting clouds,
+  layered hills with stipple edges, trees, a flowered meadow, swaying grass, a wooden hive box, with parallax.
+- Explainer beats (2, 3, 4, 6): the attached white squiggle paper (`public/squiggle.jpg`) with faint hex corners
+  and drifting pollen. Diagrams sit on a wooden hive frame (tan comb, white hex lines) and carry hand-lettered
+  labels (Amatic SC for Hebrew, Patrick Hand SC for English).
+- "Die-cut" moments use a white-rimmed magnifier lens that points at its source.
 - Palette: paper white, sage `#D6DED7`, rust branch `#7E2A12`, ink `#2A1A0F`, and ONE accent, honey amber `#E9A23B`.
   The red stamp and pin are the only red. Brand navy/red appear only on the end card.
 - One dark variant: the hive interior (beat 5).

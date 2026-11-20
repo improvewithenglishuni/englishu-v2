@@ -4,9 +4,12 @@ import {C} from '../theme';
 import {BeeTop} from './bee';
 import {dancePathD} from './anim';
 
+/** Fraction of the figure-eight path that is the first straight waggle run (for syncing labels/buzz). */
+export const RUN_FRAC = 0.2;
+
 /**
- * The waggle-dance figure-eight drawn as a marker line, with a top-down bee tracing it.
- * draw: 0..1 how much of the path is drawn. beeAt: 0..1 where the bee is (null = hide bee).
+ * The waggle-dance figure-eight, drawn on by `draw` (0..1), with a top-down bee tracing it at `beeAt`.
+ * dashed: white dashed line (inspo) instead of a solid marker stroke.
  */
 export const DanceFigure: React.FC<{
   size?: number;
@@ -14,9 +17,11 @@ export const DanceFigure: React.FC<{
   beeAt?: number | null;
   color?: string;
   stroke?: number;
+  dashed?: boolean;
+  beeSize?: number;
   style?: React.CSSProperties;
   id?: string;
-}> = ({size = 760, draw, beeAt = null, color = C.amber, stroke = 16, style, id = 'df'}) => {
+}> = ({size = 760, draw, beeAt = null, color = C.amber, stroke = 16, dashed, beeSize = 60, style, id = 'df'}) => {
   const d = useMemo(() => dancePathD(), []);
   const len = useMemo(() => getLength(d), [d]);
   let bee: React.ReactNode = null;
@@ -25,9 +30,10 @@ export const DanceFigure: React.FC<{
     const p = getPointAtLength(d, l);
     const t = getTangentAtLength(d, l);
     const ang = (Math.atan2(t.y, t.x) * 180) / Math.PI + 90;
+    const onRun = Math.abs(p.x) < 22; // straight middle section = waggle run
     bee = (
-      <g transform={`translate(${p.x} ${p.y}) rotate(${ang}) translate(-30 -40)`}>
-        <BeeTop size={60} id={`${id}-bee`} />
+      <g transform={`translate(${p.x} ${p.y}) rotate(${ang}) translate(${-beeSize / 2} ${-beeSize * 0.75})`}>
+        <BeeTop size={beeSize} id={`${id}-bee`} buzz={onRun} />
       </g>
     );
   }
@@ -36,20 +42,30 @@ export const DanceFigure: React.FC<{
       <defs>
         <filter id={`${id}-rough`}>
           <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="3" />
-          <feDisplacementMap in="SourceGraphic" scale="5" />
+          <feDisplacementMap in="SourceGraphic" scale="4" />
         </filter>
+        <mask id={`${id}-m`} maskUnits="userSpaceOnUse" x="-400" y="-400" width="800" height="800">
+          <path d={d} fill="none" stroke="#fff" strokeWidth={stroke + 30} strokeLinecap="round" strokeLinejoin="round" strokeDasharray={len} strokeDashoffset={len * (1 - draw)} />
+        </mask>
       </defs>
-      <path
-        d={d}
-        fill="none"
-        stroke={color}
-        strokeWidth={stroke}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeDasharray={len}
-        strokeDashoffset={len * (1 - draw)}
-        filter={`url(#${id}-rough)`}
-      />
+      {dashed ? (
+        <g mask={`url(#${id}-m)`}>
+          <path d={d} fill="none" stroke="rgba(42,26,15,0.35)" strokeWidth={stroke + 4} strokeDasharray="34 18" strokeLinecap="butt" transform="translate(3 4)" />
+          <path d={d} fill="none" stroke={color} strokeWidth={stroke} strokeDasharray="34 18" strokeLinecap="butt" />
+        </g>
+      ) : (
+        <path
+          d={d}
+          fill="none"
+          stroke={color}
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeDasharray={len}
+          strokeDashoffset={len * (1 - draw)}
+          filter={`url(#${id}-rough)`}
+        />
+      )}
       {bee}
     </svg>
   );

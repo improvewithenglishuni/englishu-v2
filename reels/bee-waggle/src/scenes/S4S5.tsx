@@ -1,9 +1,10 @@
 import React from 'react';
-import {AbsoluteFill, OffthreadVideo, interpolate, random, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Img, OffthreadVideo, interpolate, random, staticFile, useCurrentFrame} from 'remotion';
 import {C, FONT_KEY, MEDIA} from '../theme';
 import {BeeTop} from '../components/bee';
 import {DanceFigure} from '../components/dance';
-import {Comb, Label, Sticker, keyWordStyle} from '../components/props';
+import {Comb, Label, keyWordStyle} from '../components/props';
+import {Hand, Lens} from '../components/explain';
 import {exitOut, pop, prog} from '../components/anim';
 import {SlotTag} from './S1Hook';
 
@@ -91,7 +92,7 @@ const HiveStandIn: React.FC<{f: number}> = ({f}) => {
   const beeAt = (f / 120) % 1;
   return (
     <AbsoluteFill style={{background: C.hive}}>
-      <Comb w={1080} h={1920} r={60} fill="#6B4519" stroke="#3D250F" honey={0.3} seed="hvcomb" />
+      <Comb w={1080} h={1920} r={58} variant="dark" honey={0.25} seed="hvcomb" />
       {followers.map((b, k) => (
         <div key={k} style={{position: 'absolute', left: b.x - 45, top: b.y - 75, transform: `rotate(${b.r + Math.sin(f / 6 + k) * 6}deg)`}}>
           <BeeTop size={90} id={`hvf${k}`} dim />
@@ -108,9 +109,9 @@ const AntennaeStandIn: React.FC<{f: number}> = ({f}) => {
   const tw = Math.sin(f * 0.9) * 4;
   return (
     <AbsoluteFill style={{background: '#3A2410'}}>
-      <Comb w={780} h={720} r={44} fill="#7A5020" stroke="#3D250F" honey={0.25} seed="antcomb" />
+      <Comb w={720} h={720} r={44} variant="dark" honey={0.25} seed="antcomb" />
       {/* dancer abdomen (left), waggling */}
-      <svg width={780} height={720} style={{position: 'absolute'}}>
+      <svg width={720} height={720} viewBox="40 0 720 720" style={{position: 'absolute'}}>
         <g transform={`translate(${170 + w} 380) rotate(${-10 + w / 2})`}>
           <ellipse rx="190" ry="130" fill={C.amber} />
           {[-90, -20, 50].map((x) => (
@@ -172,12 +173,19 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
       </AbsoluteFill>
       {!MEDIA.waggleVideo && <SlotTag text="real footage: waggle dance" style={{left: 60, top: 230}} />}
       {f >= 108 && (
-        <div style={{position: 'absolute', left: 150, top: 340, transform: `scale(${stick}) rotate(${-3 + (1 - stick) * 8}deg)`}}>
-          <Sticker src={MEDIA.antennae} cutout={MEDIA.antennaeIsCutout} w={780} h={720} seed="ant">
-            <AntennaeStandIn f={f} />
-          </Sticker>
-          {!MEDIA.antennae && <SlotTag text="real photo: antennae close-up" style={{left: 220, top: 700}} />}
-        </div>
+        <>
+          <Lens cx={540} cy={720} r={360} s={stick}>
+            {MEDIA.antennae ? (
+              <Img src={staticFile(MEDIA.antennae)} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+            ) : (
+              <AntennaeStandIn f={f} />
+            )}
+          </Lens>
+          <Hand x={540} y={1150} size={70} s={pop(f, 124, 12)} rot={-2} color="#fff" halo={C.ink}>
+            מגע + רטט
+          </Hand>
+          {!MEDIA.antennae && <SlotTag text="real photo: antennae close-up" style={{left: 380, top: 1040}} />}
+        </>
       )}
     </AbsoluteFill>
   );

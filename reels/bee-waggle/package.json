@@ -6,7 +6,9 @@
     "render": "remotion render BeeReel out/bee-waggle.mp4"
   },
   "dependencies": {
+    "@fontsource/amatic-sc": "^5.1.0",
     "@fontsource/anton": "^5.1.0",
+    "@fontsource/patrick-hand-sc": "^5.1.0",
     "@fontsource/permanent-marker": "^5.1.0",
     "@fontsource/rubik": "^5.1.0",
     "@remotion/cli": "4.0.290",

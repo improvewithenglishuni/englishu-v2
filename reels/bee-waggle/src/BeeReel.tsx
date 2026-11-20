@@ -2,7 +2,7 @@ import React from 'react';
 import {AbsoluteFill, Audio, Sequence, interpolate, staticFile, useCurrentFrame} from 'remotion';
 import {SCENES, sec} from './theme';
 import {loadFonts} from './fonts';
-import {Grain, Plate} from './components/paper';
+import {Grain, Plate, PlateDecor} from './components/paper';
 import {Subtitles} from './components/props';
 import {S1Hook} from './scenes/S1Hook';
 import {S2Address, S3Diagram} from './scenes/S2S3';
@@ -31,6 +31,7 @@ export const BeeReel: React.FC = () => {
   return (
     <AbsoluteFill>
       <Plate dim={dim} />
+      <PlateDecor />
       {scene('s1', S1Hook)}
       {scene('s2', S2Address)}
       {scene('s3', S3Diagram)}

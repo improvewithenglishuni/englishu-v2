@@ -18,6 +18,17 @@ export const C = {
   hive: '#2B1A0E', // dark variant base
   hiveMid: '#4A2E16',
   cream: '#FAF7F0',
+  comb: '#C9A266', // tan honeycomb (inspo)
+  combDark: '#B48A50',
+  wood: '#C8A57A',
+  woodLight: '#E3CBA8',
+  woodDark: '#9C7A52',
+  sky: '#BFDDF0',
+  hill1: '#A9C3D8',
+  hill2: '#7FA9C6',
+  hill3: '#5F8DB0',
+  meadow: '#7DBB6E',
+  meadowDark: '#4E9A5B',
   // brand: end card ONLY
   navy: '#0A2370',
   red: '#B01F25',
@@ -26,6 +37,9 @@ export const C = {
 
 export const FONT_HE = "'Rubik', sans-serif";
 export const FONT_KEY = "'Anton', 'Rubik', sans-serif";
+// Hand-lettered diagram annotations (the Vox / inspo look): English in Patrick Hand SC, Hebrew in Amatic SC.
+export const FONT_HAND = "'Patrick Hand SC', 'Amatic SC', sans-serif";
+export const FONT_HAND_HE = "'Amatic SC', 'Patrick Hand SC', sans-serif";
 
 /**
  * Real media slots. Drop the files into public/media/ and set the paths here.

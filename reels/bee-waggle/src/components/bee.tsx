@@ -92,36 +92,86 @@ export const Bee: React.FC<{
   );
 };
 
-/** Top-down bee for the comb / dance-path views (heading = up). viewBox 0 0 120 200. */
-export const BeeTop: React.FC<{size?: number; id?: string; style?: React.CSSProperties; dim?: boolean}> = ({
+/**
+ * Detailed top-down honeybee (heading = up), modelled on the inspo frames:
+ * fuzzy thorax, banded abdomen with soft shading, elbowed antennae, veined translucent wings,
+ * jointed legs and a cast shadow. viewBox 0 0 120 200.
+ * buzz: wings blur/vibrate (during the waggle run).
+ */
+export const BeeTop: React.FC<{size?: number; id?: string; style?: React.CSSProperties; dim?: boolean; buzz?: boolean}> = ({
   size = 90,
   id = 'bt',
   style,
   dim,
-}) => (
-  <svg width={size} height={(size * 200) / 120} viewBox="0 0 120 200" style={{overflow: 'visible', ...style}}>
-    <defs>
-      <clipPath id={`${id}-c`}>
-        <ellipse cx="60" cy="128" rx="34" ry="56" />
-      </clipPath>
-    </defs>
-    {/* legs */}
-    <g stroke="#3A2312" strokeWidth="5" strokeLinecap="round" fill="none">
-      <path d="M 40 72 L 12 60 M 80 72 L 108 60 M 38 88 L 8 96 M 82 88 L 112 96 M 40 104 L 16 130 M 80 104 L 104 130" />
-    </g>
-    <g clipPath={`url(#${id}-c)`}>
-      <rect x="0" y="60" width="120" height="140" fill={dim ? '#B97A24' : '#E9A23B'} />
-      {[108, 132, 156].map((y) => (
-        <rect key={y} x="0" y={y} width="120" height="12" fill={C.ink} />
-      ))}
-    </g>
-    <ellipse cx="60" cy="78" rx="28" ry="26" fill={dim ? '#A86E1E' : '#D98E2B'} />
-    <ellipse cx="60" cy="40" rx="20" ry="18" fill="#3A2312" />
-    <g stroke={C.ink} strokeWidth="4" fill="none" strokeLinecap="round">
-      <path d="M 52 26 Q 44 6 30 0" />
-      <path d="M 68 26 Q 76 6 90 0" />
-    </g>
-    <ellipse cx="34" cy="100" rx="16" ry="44" transform="rotate(14 34 100)" fill="#fff" opacity="0.55" />
-    <ellipse cx="86" cy="100" rx="16" ry="44" transform="rotate(-14 86 100)" fill="#fff" opacity="0.55" />
-  </svg>
-);
+  buzz,
+}) => {
+  const f = useCurrentFrame();
+  const wv = buzz ? Math.sin(f * 2.7) * 7 : 0;
+  const body = dim ? '#B5822F' : '#E2A23E';
+  const band = '#2E1C0E';
+  const fuzz = dim ? '#9C6A24' : '#C1832C';
+  return (
+    <svg width={size} height={(size * 200) / 120} viewBox="0 0 120 200" style={{overflow: 'visible', ...style}}>
+      <defs>
+        <clipPath id={`${id}-c`}>
+          <path d="M 60 92 C 92 92 96 140 84 168 C 76 186 66 194 60 196 C 54 194 44 186 36 168 C 24 140 28 92 60 92 Z" />
+        </clipPath>
+        <radialGradient id={`${id}-sh`} cx="0.35" cy="0.3" r="0.9">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.35" />
+          <stop offset="0.6" stopColor="#fff" stopOpacity="0" />
+          <stop offset="1" stopColor="#000" stopOpacity="0.25" />
+        </radialGradient>
+      </defs>
+      {/* cast shadow */}
+      <ellipse cx="68" cy="128" rx="40" ry="70" fill="#1A0F06" opacity="0.18" />
+      {/* legs (jointed) */}
+      <g stroke="#3A2312" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round" fill="none">
+        <polyline points="46,70 26,62 16,46" />
+        <polyline points="74,70 94,62 104,46" />
+        <polyline points="44,82 18,88 8,104" />
+        <polyline points="76,82 102,88 112,104" />
+        <polyline points="46,94 24,118 20,146" />
+        <polyline points="74,94 96,118 100,146" />
+      </g>
+      <g fill="#C97A2A">
+        <ellipse cx="23" cy="122" rx="5" ry="8" />
+        <ellipse cx="97" cy="122" rx="5" ry="8" />
+      </g>
+      {/* abdomen */}
+      <g clipPath={`url(#${id}-c)`}>
+        <rect x="0" y="88" width="120" height="112" fill={body} />
+        {[118, 140, 160, 178].map((y, k) => (
+          <path key={y} d={`M 20 ${y} Q 60 ${y + 10} 100 ${y} L 100 ${y + 11 - k} Q 60 ${y + 21 - k} 20 ${y + 11 - k} Z`} fill={band} />
+        ))}
+        {[110, 132, 153].map((y) => (
+          <path key={y} d={`M 24 ${y} Q 60 ${y + 9} 96 ${y}`} stroke="#F7D488" strokeWidth="3" fill="none" opacity="0.7" />
+        ))}
+        <rect x="0" y="88" width="120" height="112" fill={`url(#${id}-sh)`} />
+      </g>
+      {/* thorax (fuzzy) */}
+      <circle cx="60" cy="76" r="25" fill={fuzz} />
+      <circle cx="60" cy="76" r="25" fill="none" stroke={fuzz} strokeWidth="6" strokeDasharray="2 3" />
+      <ellipse cx="60" cy="74" rx="14" ry="12" fill="#6B4318" opacity="0.55" />
+      <circle cx="60" cy="76" r="25" fill={`url(#${id}-sh)`} />
+      {/* head */}
+      <ellipse cx="60" cy="44" rx="17" ry="14" fill="#4A2E18" />
+      <ellipse cx="46" cy="42" rx="6" ry="10" fill="#1E1A14" />
+      <ellipse cx="74" cy="42" rx="6" ry="10" fill="#1E1A14" />
+      <ellipse cx="44" cy="38" rx="2" ry="3" fill="#fff" opacity="0.5" />
+      {/* antennae (elbowed) */}
+      <g stroke={C.ink} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="54,32 48,18 34,6" />
+        <polyline points="66,32 72,18 86,6" />
+      </g>
+      {/* wings (folded back over the abdomen) */}
+      <g transform={`rotate(${wv} 60 72)`}>
+        <path d="M 52 70 C 28 84 22 134 34 150 C 44 140 52 104 56 76 Z" fill="#F4F8F6" opacity="0.62" stroke="#fff" strokeWidth="1.5" />
+        <path d="M 54 82 C 38 98 36 124 42 134" stroke="#8E9C95" strokeWidth="1.2" fill="none" />
+      </g>
+      <g transform={`rotate(${-wv} 60 72)`}>
+        <path d="M 68 70 C 92 84 98 134 86 150 C 76 140 68 104 64 76 Z" fill="#F4F8F6" opacity="0.62" stroke="#fff" strokeWidth="1.5" />
+        <path d="M 66 82 C 82 98 84 124 78 134" stroke="#8E9C95" strokeWidth="1.2" fill="none" />
+      </g>
+    </svg>
+  );
+};

@@ -5,7 +5,9 @@ import {DanceFigure} from '../components/dance';
 import {Branch, Label, Pin, keyWordStyle} from '../components/props';
 import {TornStrip} from '../components/paper';
 import {exitOut, pop, prog} from '../components/anim';
-import {BeeOnComb, SlotTag} from './S1Hook';
+import {BeeLensContent, HIVE, SlotTag} from './S1Hook';
+import {ParkWorld} from '../components/park';
+import {Lens} from '../components/explain';
 import {BeeTop} from '../components/bee';
 
 const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#%&?@*';
@@ -29,7 +31,6 @@ export const S6Decipher: React.FC<{dur: number}> = ({dur}) => {
   const gloss = pop(f, 76, 12);
   return (
     <AbsoluteFill style={{opacity: out}}>
-      <TornStrip w={1180} h={420} x={-50} y={430} rot={-3} seed="s6strip" />
       <svg width={1080} height={1920} style={{position: 'absolute'}}>
         <defs>
           <clipPath id="s6clip">
@@ -78,50 +79,54 @@ export const S6Decipher: React.FC<{dur: number}> = ({dur}) => {
   );
 };
 
-/** Beat 7: callback. The opening bee returns; DECIPHERED stamp over the figure-eight. */
+/** Beat 7: callback. Back in the park; the bee in the lens again; the decoded dance on a paper card, stamped. */
 export const S7Callback: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur, 8);
-  const push = 1 + 0.05 * prog(f, 0, dur);
+  const cam = 0.4 + 0.6 * prog(f, 0, dur, (t) => t);
   const stamp = interpolate(f, [40, 47], [2.2, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const stampO = f >= 40 ? 1 : 0;
   const shake = f >= 47 && f < 53 ? Math.sin(f * 3) * 6 : 0;
+  const card = pop(f, 0, 14);
+  const R = 300;
   return (
-    <AbsoluteFill style={{opacity: out, transform: `scale(${push}) translateX(${shake}px)`}}>
-      <Branch style={{left: -330, top: -150, transform: 'scale(0.75) scaleX(-1)'}} />
-      {/* figure-eight diagram on a sage panel (top right) */}
-      <div style={{position: 'absolute', left: 430, top: 160, width: 560, height: 560, transform: `rotate(4deg) scale(${pop(f, 0, 14)})`}}>
-        <TornStrip w={540} h={540} x={0} y={0} seed="s7panel" />
-        <DanceFigure size={760} draw={1} beeAt={(f / 70) % 1} style={{left: -110, top: -110, transform: 'scale(0.74)'}} id="s7" />
+    <AbsoluteFill style={{opacity: out, transform: `translateX(${shake}px)`}}>
+      <ParkWorld cam={cam} hiveX={HIVE.x} hiveY={HIVE.y} hiveW={HIVE.w} />
+      <Branch style={{left: -360, top: -170, transform: `scale(0.82) scaleX(-1) rotate(${Math.sin(f / 20) * 1.2}deg)`}} />
+      <Lens cx={380} cy={900} r={R} s={pop(f, 4, 13)} px={HIVE.entrance.x - 20} py={HIVE.y + 200}>
+        <BeeLensContent f={f} r={R} dancing startDance={0} />
+      </Lens>
+      {!MEDIA.beeOnComb && <SlotTag text="real photo: bee on honeycomb" style={{left: 200, top: 1230}} />}
+      {/* the decoded dance on a taped squiggle-paper card (top right) */}
+      <div style={{position: 'absolute', left: 520, top: 150, width: 500, height: 560, transform: `rotate(5deg) scale(${card})`}}>
+        <div style={{position: 'absolute', inset: 0, overflow: 'hidden', boxShadow: '0 18px 26px rgba(30,20,10,0.3)', border: '10px solid #fff'}}>
+          <Img src={staticFile('squiggle.jpg')} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+          <DanceFigure size={760} draw={1} beeAt={(f / 70) % 1} beeSize={70} id="s7" style={{left: 240 - 380, top: 270 - 380, transform: 'scale(0.55)'}} />
+        </div>
+        <div style={{position: 'absolute', left: 170, top: -20, width: 160, height: 44, background: 'rgba(230,220,190,0.85)', transform: 'rotate(-4deg)'}} />
         <div
           style={{
             position: 'absolute',
-            left: 270,
-            top: 270,
+            left: 250,
+            top: 280,
             opacity: stampO,
             transform: `translate(-50%, -50%) rotate(-14deg) scale(${stamp})`,
             border: `9px solid ${C.stampRed}`,
             borderRadius: 10,
             padding: '6px 22px',
             fontFamily: FONT_KEY,
-            fontSize: 92,
+            fontSize: 86,
             color: C.stampRed,
             letterSpacing: 4,
             background: 'rgba(250,247,240,0.35)',
             mixBlendMode: 'multiply',
-            maskImage: 'radial-gradient(circle at 30% 40%, #000 60%, rgba(0,0,0,0.7) 100%)',
           }}
         >
           DECIPHERED
         </div>
-      </div>
-      {/* hero bee returns */}
-      <div style={{position: 'absolute', left: 40, top: 640, transform: `scale(${0.82 * pop(f, 6, 13)}) rotate(-4deg)`}}>
-        <BeeOnComb dancing={f > 70} f={f} startDance={70} />
-      </div>
-      {!MEDIA.beeOnComb && <SlotTag text="real photo: bee on honeycomb" style={{left: 120, top: 1260}} />}
-      <div style={{position: 'absolute', left: 640, top: 600, transform: `scale(${pop(f, 92, 9)})`}}>
-        <Pin size={110} />
+        <div style={{position: 'absolute', left: 300, top: 40, transform: `scale(${pop(f, 92, 9)})`}}>
+          <Pin size={96} />
+        </div>
       </div>
     </AbsoluteFill>
   );

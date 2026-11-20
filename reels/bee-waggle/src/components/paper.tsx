@@ -122,3 +122,58 @@ export const TornStrip: React.FC<{
     {stipple && <polygon points={tornRect(w, h, 7, seed)} fill={`url(#st-${seed})`} />}
   </svg>
 );
+
+/** Extra life on the white explainer plate: faint hex lines in two corners + drifting pollen motes. */
+export const PlateDecor: React.FC = () => {
+  const f = useCurrentFrame();
+  const hex = (cx: number, cy: number, r: number, k: string) => {
+    const pts = Array.from({length: 6}, (_, i) => {
+      const a = (Math.PI / 3) * i + Math.PI / 6;
+      return `${(cx + Math.cos(a) * r).toFixed(1)},${(cy + Math.sin(a) * r).toFixed(1)}`;
+    }).join(' ');
+    return <polygon key={k} points={pts} fill="none" stroke="#9EAAA2" strokeWidth={3} />;
+  };
+  const corner = (ox: number, oy: number, rows: number, cols: number, k: string) => {
+    const r = 54, hx = Math.sqrt(3) * r;
+    const out: React.ReactNode[] = [];
+    for (let row = 0; row < rows; row++)
+      for (let col = 0; col < cols; col++) {
+        if (random(`${k}${row}-${col}`) < 0.35) continue;
+        out.push(hex(ox + col * hx + (row % 2 ? hx / 2 : 0), oy + row * r * 1.5, r - 3, `${k}${row}-${col}`));
+      }
+    return out;
+  };
+  const motes = Array.from({length: 18}).map((_, k) => {
+    const sp = 0.3 + random(`ms${k}`) * 0.6;
+    const x = (random(`mx${k}`) * W + f * sp * 0.6) % W;
+    const y = (random(`my${k}`) * H - f * sp + H * 4) % H;
+    return <circle key={k} cx={x} cy={y} r={3 + random(`mr${k}`) * 5} fill={C.amber} opacity={0.35 + random(`mo${k}`) * 0.3} />;
+  });
+  return (
+    <AbsoluteFill style={{pointerEvents: 'none'}}>
+      <svg width={W} height={H} style={{position: 'absolute', opacity: 0.35}}>
+        <defs>
+          <radialGradient id="cfadeA" cx="1" cy="0" r="1">
+            <stop offset="0" stopColor="#fff" />
+            <stop offset="1" stopColor="#000" />
+          </radialGradient>
+          <radialGradient id="cfadeB" cx="0" cy="1" r="1">
+            <stop offset="0" stopColor="#fff" />
+            <stop offset="1" stopColor="#000" />
+          </radialGradient>
+          <mask id="cmA">
+            <rect width={W} height={H} fill="url(#cfadeA)" />
+          </mask>
+          <mask id="cmB">
+            <rect width={W} height={H} fill="url(#cfadeB)" />
+          </mask>
+        </defs>
+        <g mask="url(#cmA)">{corner(640, -20, 7, 6, 'ca')}</g>
+        <g mask="url(#cmB)">{corner(-60, 1420, 7, 6, 'cb')}</g>
+      </svg>
+      <svg width={W} height={H} style={{position: 'absolute'}}>
+        {motes}
+      </svg>
+    </AbsoluteFill>
+  );
+};
