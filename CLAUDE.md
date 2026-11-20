@@ -18,7 +18,7 @@ Sharon (teacher, solo founder of EnglishU) makes ~30-35 s Hebrew-narrated, Vox-s
 - Hebrew subtitles only below y=1480; keep content above it and the right 130 px clear. Keep timings in `timing.ts`; subtitles in `src/Root.tsx`.
 - Never pass credentials to any third-party sandbox.
 
-- **Zoom only where it is needed.** No automatic push/zoom on every scene (set `push={[1, 1]}`). Use a zoom only when it carries the meaning: the scar close-up, the ring-vaccination (outbreak) scene, the map zoom to Somalia. Charts and still photos stay still; the graph animation is enough.
+- **Zoom only where it is needed.** No automatic push/zoom on every scene (set `push={[1, 1]}`). A slow zoom (about 6%) IS used on images that fill the whole frame (the patient photo, the milkmaids photo), plus where it carries meaning: the scar close-up, the ring-vaccination (outbreak) scene, the map zoom to Somalia. Stickers on plates, word slides, portraits and charts stay still; the graph animation is enough.
 
 - **100% accuracy.** Every fact, number, date, label, caption, chart value, map graphic and image identification must be verified against a named source. Visuals must not imply anything false (a vaccine scar = sign of the vaccine, not of the disease). Cut or reword anything unverified; flag unverified images.
 

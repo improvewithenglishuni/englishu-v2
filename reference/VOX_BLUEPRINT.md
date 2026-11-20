@@ -68,4 +68,4 @@ Literally every piece of information in a reel must be true and verified against
 
 
 ## Zoom only where needed
-**Zoom only where it is needed.** No automatic push/zoom on every scene (set `push={[1, 1]}`). Use a zoom only when it carries the meaning: the scar close-up, the ring-vaccination (outbreak) scene, the map zoom to Somalia. Charts and still photos stay still; the graph animation is enough.
+**Zoom only where it is needed.** No automatic push/zoom on every scene (set `push={[1, 1]}`). A slow zoom (about 6%) IS used on images that fill the whole frame (the patient photo, the milkmaids photo), plus where it carries meaning: the scar close-up, the ring-vaccination (outbreak) scene, the map zoom to Somalia. Stickers on plates, word slides, portraits and charts stay still; the graph animation is enough.
