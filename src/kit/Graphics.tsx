@@ -316,9 +316,11 @@ export const Crowd: React.FC<{x0: number; y0: number; cols: number; rows: number
       if (o <= 0.01) continue;
       const px = x0 + c * dx + (r % 2 ? dx / 2 : 0);
       const py = y0 + r * dy;
-      const fillC = wave ? mixHex(color, wave.lit, clamp01((frame - wave.at - Math.hypot(px - wave.cx, py - wave.cy) / wave.speed) / 8)) : color;
+      const litK = wave ? clamp01((frame - wave.at - Math.hypot(px - wave.cx, py - wave.cy) / wave.speed) / 8) : 0;
+      const fillC = wave ? mixHex(color, wave.lit, litK) : color;
       items.push(
         <g key={i} transform={`translate(${px} ${py}) scale(${((0.6 + 0.4 * enter) * (1 - 0.3 * gone) * size) / 160}) translate(-50 -80)`} opacity={o}>
+          {litK > 0.02 ? <circle cx={50} cy={80} r={92} fill="url(#crowdGlow)" opacity={litK * o} /> : null}
           <circle cx={50} cy={28} r={19} fill={fillC} />
           <path d="M28 52 L72 52 L80 104 L66 104 L63 150 L53 150 L50 118 L47 150 L37 150 L34 104 L20 104 Z" fill={fillC} />
         </g>,
@@ -327,6 +329,13 @@ export const Crowd: React.FC<{x0: number; y0: number; cols: number; rows: number
   }
   return (
     <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+      <defs>
+        <radialGradient id="crowdGlow">
+          <stop offset="0" stopColor="#FDF551" stopOpacity={0.75} />
+          <stop offset="0.45" stopColor="#FDF551" stopOpacity={0.3} />
+          <stop offset="1" stopColor="#FDF551" stopOpacity={0} />
+        </radialGradient>
+      </defs>
       {items}
     </svg>
   );

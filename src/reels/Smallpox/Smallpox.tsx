@@ -118,10 +118,10 @@ const TypedDate: React.FC<{text: string; at: number}> = ({text, at}) => {
 /** 4. Jenner (named on screen) as a die-cut portrait on a newspaper clipping. */
 const JennerPortrait = () => (
   <>
-    <Sticker src={jennerSticker} x={525} y={750} width={840} aspect={1355 / 1120} rotate={3} at={2}>
+    <Sticker src={jennerSticker} x={495} y={745} width={915} aspect={1355 / 1120} rotate={3} at={2}>
       <TypedDate text="1796" at={s(0.9)} />
     </Sticker>
-    <NameLabel x={580} y={1280} line1="ד״ר אדוארד ג׳נר" fontSize={88} rotate={-5.5} paper at={s(0.5)} />
+    <NameLabel x={585} y={1335} line1="ד״ר אדוארד ג׳נר" fontSize={88} rotate={-5.5} paper at={s(0.5)} />
   </>
 );
 
@@ -294,7 +294,7 @@ const FlexArm = () => {
   return (
     <>
     {/* the crowd from the 300-million scene, saved: a wave of yellow spreads outward from the arm */}
-    <Crowd x0={40} y0={70} cols={15} rows={28} dx={72} dy={68} size={66} color="#B9BDD0" at={2} wave={{at: s(0.15), lit: '#F5C400', cx: 540, cy: 950, speed: 1100 / 30}} />
+    <Crowd x0={40} y0={70} cols={15} rows={28} dx={72} dy={68} size={66} color="#B9BDD0" at={2} wave={{at: s(0.15), lit: '#FDF551', cx: 540, cy: 950, speed: 1100 / 30}} />
     <div style={{position: 'absolute', left: L + tx, top: T, width: W, height: H, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.38))'}}>
       <Img src={staticFile('assets/vox/flex2_up.png')} style={img} />
       <Img src={staticFile('assets/vox/flex2_fore.png')} style={{...img, transformOrigin: `${PIV.x}px ${PIV.y}px`, transform: `rotate(${angle}deg)`}} />
