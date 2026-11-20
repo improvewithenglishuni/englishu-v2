@@ -50,11 +50,6 @@ for b in range(nbars):
             n = int(0.25 * SR); tt = np.arange(n) / SR
             kick = np.sin(2 * np.pi * (55 + 60 * np.exp(-tt * 30)) * tt) * np.exp(-tt * 12)
             add(bed, 0.35 * kick, b * bar + k * beat)
-        for k in range(8):
-            n = int(0.05 * SR)
-            hat = rng.standard_normal(n) * np.exp(-np.arange(n) / SR * 90)
-            hat = np.diff(np.concatenate([[0], hat]))
-            add(bed, 0.05 * hat, b * bar + k * beat / 2 + beat / 4)
 # fade out over the last 2 s
 fo = np.clip((DUR - t_all) / 2.0, 0, 1)
 bed *= fo
