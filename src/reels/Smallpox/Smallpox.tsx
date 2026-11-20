@@ -111,7 +111,7 @@ const Vaccination = () => {
   return (
     <>
       <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={146} heavy at={2} actAt={s(1.0)} hiFrom={0} hiTo={4} gloss="vacca = פרה (לטינית)" />
-      <Person x={PX} y={PY} size={560} tone="ink" shield="#FDF551" shieldAt={s(1.6)} at={4} />
+      <Person x={PX} y={PY} size={560} tone="ink" glow={frame >= s(1.6) ? '#FDF551' : undefined} at={4} />
       <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#9A9DAA" liquid="#FDF551" plunge={plungeV} at={s(0.2)} />
       <Germs cx={PX} cy={PY + 10} rx={200} ry={330} n={12} at={s(1.9)} stagger={2} />
     </>
@@ -173,7 +173,7 @@ const Outbreak = () => {
         <Person key={`i${n}`} x={p.x} y={p.y} size={170} tone="white" glow={visited(n) ? ui.yellow : undefined} at={2 + n} />
       ))}
       <Person x={CX} y={CY} size={230} tone="red" halo={ui.halo} at={6} />
-      <Syringe x={tx - off.x} y={ty - off.y} size={SIZE} rotate={30} at={s(0.2)} />
+      <Syringe x={tx - off.x} y={ty - off.y} size={SIZE} rotate={30} color="#C9CBD6" at={s(0.2)} />
     </>
   );
 };
