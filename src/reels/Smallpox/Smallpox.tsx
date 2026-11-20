@@ -39,24 +39,24 @@ const milkmaid = staticFile('assets/vox/milkmaid_hq.png');
 
 const cover: React.CSSProperties = {width: '100%', height: '100%', objectFit: 'cover', display: 'block'};
 
-/** 1. HOOK: the arm photo first appears whole; then the camera zooms (~330%) into the scars while a red marker circles them. */
+/** 1. HOOK: a black-and-white photo of a real smallpox-vaccine scar appears whole; then the camera zooms into the scar while a red marker circles it. */
 const Hook = () => (
   <ScarSticker
-    src={arm}
+    src={staticFile('assets/vox/hook_scar_bw.png')}
     x={540}
     y={760}
-    width={960}
-    aspect={1153 / 1364}
-    rotate={-4}
+    width={1000}
+    aspect={826 / 1084}
+    rotate={-3}
     at={2}
     scarAt={s(0.75)}
     zoomFrom={1}
-    zoomTo={3.3}
+    zoomTo={2.9}
     zoomDur={s(1.35)}
-    scar={{x: 0.336, y: 0.5}}
-    scarTarget={{x: 540, y: 720}}
+    scar={{x: 0.4022, y: 0.54}}
+    scarTarget={{x: 540, y: 740}}
     scars={[]}
-    marker={{cx: 0.336, cy: 0.5, rx: 66, ry: 104, rot: -19, at: s(0.8), dur: s(1.3)}}
+    marker={{cx: 0.4022, cy: 0.54, rx: 50, ry: 50, rot: -15, at: s(0.8), dur: s(1.3)}}
   />
 );
 
@@ -82,8 +82,10 @@ const Tally300 = () => (
 /** 4. Jenner (named on screen) as a die-cut portrait on a newspaper clipping. */
 const JennerPortrait = () => (
   <>
-    <Sticker src={jennerSticker} x={540} y={730} width={960} aspect={1355 / 1120} rotate={-3} at={2} />
-    <NameLabel x={540} y={1345} line1="אדוארד ג׳נר" line2="רופא · 1796" fontSize={92} paper at={s(0.5)} />
+    <Sticker src={jennerSticker} x={540} y={730} width={960} aspect={1355 / 1120} rotate={-3} at={2}>
+      <div dir="ltr" style={{position: 'absolute', right: 78, bottom: 96, fontFamily: 'var(--kit-font)', fontWeight: 800, fontSize: 66, letterSpacing: 4, color: '#F4F3F9', textShadow: '0 3px 8px rgba(0,0,0,0.7)', transform: 'rotate(-2deg)', opacity: 0.95}}>1796</div>
+    </Sticker>
+    <NameLabel x={540} y={1345} line1="ד״ר אדוארד ג׳נר" fontSize={92} paper at={s(0.5)} />
   </>
 );
 
@@ -173,7 +175,6 @@ const Outbreak = () => {
         <Person key={`i${n}`} x={p.x} y={p.y} size={170} tone="white" glow={visited(n) ? ui.yellow : undefined} at={2 + n} />
       ))}
       <Person x={CX} y={CY} size={230} tone="red" halo={ui.halo} at={6} />
-      <Syringe x={tx - off.x} y={ty - off.y} size={SIZE} rotate={30} color="#C9CBD6" at={s(0.2)} />
     </>
   );
 };
@@ -236,7 +237,7 @@ const Victory = () => {
 };
 
 
-/** 11. Callback to the hook: the arm with the vaccine scar (white die-cut outline, like the first scene) bends at the elbow into a strong-arm pose = victory. */
+/** 11. Callback to the hook: the black-and-white arm with two vaccine scars (white die-cut outline) bends at the elbow into a strong pose = victory. */
 const FlexArm = () => {
   const frame = useCurrentFrame();
   const pop = (a: number, b: number) => Math.min(1, Math.max(0, (frame - a) / (b - a)));
@@ -246,22 +247,25 @@ const FlexArm = () => {
     return 1 + c3 * Math.pow(v - 1, 3) + c1 * Math.pow(v - 1, 2);
   };
   const easeOut = (v: number) => 1 - Math.pow(1 - v, 3);
-  const SC = 0.75; // display scale of the 953x1046 art
-  const W = 953 * SC;
-  const H = 1046 * SC;
-  const PIV = {x: 191 * SC, y: 811 * SC}; // elbow pivot inside the art
-  const L = 170;
-  const T = 430;
-  const tx = 330 * (1 - easeOut(pop(0, s(0.9)))); // arm pushes in from the right
-  const angle = -100 * (1 - back(pop(s(0.15), s(0.95)))); // forearm swings from pointing left to upright
+  const SC = 0.75; // display scale of the 1348x1184 art
+  const W = 1348 * SC;
+  const H = 1184 * SC;
+  const PIV = {x: 1080 * SC, y: 987 * SC}; // elbow pivot inside the art
+  const SCARS = [{x: 360 * SC, y: 507 * SC}, {x: 420 * SC, y: 647 * SC}];
+  const L = -212;
+  const T = 406;
+  const tx = -330 * (1 - easeOut(pop(0, s(0.9)))); // arm pushes in from the left
+  const angle = 80 * (1 - back(pop(s(0.15), s(0.95)))); // forearm swings from pointing right to upright
   const glow = pop(s(1.0), s(1.2));
   const pulse = 0.75 + 0.25 * Math.sin(Math.max(0, frame - s(1.2)) * 0.22);
   const img: React.CSSProperties = {position: 'absolute', left: 0, top: 0, width: W, height: H, display: 'block'};
   return (
     <div style={{position: 'absolute', left: L + tx, top: T, width: W, height: H, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.38))'}}>
-      <Img src={staticFile('assets/vox/flex_up.png')} style={img} />
-      <Img src={staticFile('assets/vox/flex_fore.png')} style={{...img, transformOrigin: `${PIV.x}px ${PIV.y}px`, transform: `rotate(${angle}deg)`}} />
-      <div style={{position: 'absolute', left: 768 * SC - 46, top: 601 * SC - 46, width: 92, height: 92, borderRadius: '50%', border: '6px solid #FDF551', boxSizing: 'border-box', boxShadow: '0 0 22px 6px rgba(253,245,81,0.55)', opacity: glow * pulse, transform: `scale(${1.5 - 0.5 * glow})`}} />
+      <Img src={staticFile('assets/vox/flex2_up.png')} style={img} />
+      <Img src={staticFile('assets/vox/flex2_fore.png')} style={{...img, transformOrigin: `${PIV.x}px ${PIV.y}px`, transform: `rotate(${angle}deg)`}} />
+      {SCARS.map((c, i) => (
+        <div key={i} style={{position: 'absolute', left: c.x - 40, top: c.y - 40, width: 80, height: 80, borderRadius: '50%', border: '6px solid #FDF551', boxSizing: 'border-box', boxShadow: '0 0 22px 6px rgba(253,245,81,0.55)', opacity: glow * pulse, transform: `scale(${1.5 - 0.5 * glow})`}} />
+      ))}
     </div>
   );
 };
