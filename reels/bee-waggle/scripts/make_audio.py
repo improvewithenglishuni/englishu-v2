@@ -80,8 +80,7 @@ def chime():
     n = int(1.6 * SR); t = np.arange(n) / SR
     return 0.25 * sum(np.sin(2 * np.pi * f * t) * np.exp(-t * 2.5) for f in (880, 1318.5, 1760))
 
-for at in [1.3, 4.55, 6.02, 9.65, 10.98, 15.3, 20.75, 26.55]:
-    add(sfx, paper_pop(), at)
+# (paper pops removed: they read as a 'smack')
 add(sfx, thump_sparkle(), 15.15)   # CONVEY completes
 add(sfx, thump_sparkle(), 26.15)   # DECIPHER resolves
 add(sfx, whoosh(0.8), 16.65)       # whoosh 1 of 2: into the dark hive
