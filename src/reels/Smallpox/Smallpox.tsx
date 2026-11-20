@@ -57,7 +57,7 @@ const Hook = () => (
     scar={{x: 0.4022, y: 0.54}}
     scarTarget={{x: 540, y: 740}}
     scars={[]}
-    marker={{cx: 0.4022, cy: 0.54, scale: 1, rot: -8, at: s(1.28), dur: s(0.8)}}
+    marker={{cx: 0.4022, cy: 0.54, scale: 1, rot: 8, at: s(1.28), dur: s(0.8)}}
   />
 );
 

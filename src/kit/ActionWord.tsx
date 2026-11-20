@@ -196,14 +196,14 @@ export const ActionWord: React.FC<{
             }
             const lit = i >= hiFrom && i < hiTo ? clamp01((frame - actAt - (i - hiFrom) * 3) / 6) : 0;
             return (
-              <span key={i} style={{display: 'inline-block', transform: `translateY(${(1 - enter) * 60}px) scale(${0.4 + 0.6 * enter})`, opacity: enter, color: lit > 0.5 ? '#E0615E' : main, WebkitTextStroke: heavy ? `${fontSize * 0.04}px ${lit > 0.5 ? '#E0615E' : main}` : undefined, transition: 'none'}}>
+              <span key={i} style={{display: 'inline-block', transform: `translateY(${(1 - enter) * 60}px) scale(${0.4 + 0.6 * enter})`, opacity: enter, color: lit > 0.5 ? '#E5500F' : main, WebkitTextStroke: heavy ? `${fontSize * 0.04}px ${lit > 0.5 ? '#E5500F' : main}` : undefined, transition: 'none'}}>
                 {ch}
               </span>
             );
           })}
         </div>
         {gloss && mode === 'pop' ? (
-          <div dir={glossDir} style={{textAlign: 'center', marginTop: fontSize * 0.2, fontFamily: SANS, fontWeight: 700, fontSize: fontSize * 0.36, color: hiTo > hiFrom ? '#E0615E' : main, opacity: clamp01((frame - actAt) / 8)}}>{gloss}</div>
+          <div dir={glossDir} style={{textAlign: 'center', marginTop: fontSize * 0.2, fontFamily: SANS, fontWeight: 700, fontSize: fontSize * 0.36, color: hiTo > hiFrom ? '#E5500F' : main, opacity: clamp01((frame - actAt) / 8)}}>{gloss}</div>
         ) : null}
       </Place>
     </>

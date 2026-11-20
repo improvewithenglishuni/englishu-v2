@@ -26,8 +26,8 @@ n = 9000
 phi = np.radians(PHI0 + np.linspace(0, SWEEP, n))
 t = np.linspace(0, 1, n)
 flare = 0.40 * np.exp(-(np.degrees(phi) - PHI0) / 38.0)  # the tail comes in from outside
-r = 1.0 + flare - 0.055 * t + 0.012 * np.sin(3 * phi + 1) + 0.008 * np.sin(5 * phi)
-cx = np.cos(phi) * RX * r
+r = 1.0 + flare - 0.02 * t + 0.012 * np.sin(3 * phi + 1) + 0.008 * np.sin(5 * phi)
+cx = -np.cos(phi) * RX * r  # mirrored: the pen travels COUNTERCLOCKWISE
 cy = np.sin(phi) * RY * r
 seg = np.hypot(np.diff(cx), np.diff(cy))
 arc = np.concatenate([[0], np.cumsum(seg)])
@@ -59,7 +59,7 @@ def noise1(len_, scale, seed):
     f = f * f * (3 - 2 * f)
     return pts[i0] * (1 - f) + pts[np.minimum(i0 + 1, k - 1)] * f
 
-W = 10.4  # full stroke width in units (about 52 px)
+W = 6.6  # full stroke width in units (thinner felt tip)
 half = 0.5 * W * (0.93 + 0.14 * noise1(Ns, 120, 3)) * (0.74 + 0.26 * sm(0, 0.03, u)) * (0.82 + 0.18 * (1 - sm(0.97, 1.0, u)))
 
 NV = 110
