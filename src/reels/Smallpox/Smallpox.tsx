@@ -33,7 +33,7 @@ import caseDots from './caseDots.json';
 
 const s = (sec: number) => Math.round(sec * 30);
 const arm = staticFile('assets/vox/arm_hand.png');
-const patient = staticFile('assets/vox/patient_full.jpg');
+const patient = staticFile('assets/vox/patient_full.png');
 const jennerSticker = staticFile('assets/vox/jenner_hires_sticker.png');
 const milkmaid = staticFile('assets/vox/milkmaid_new.jpg');
 
@@ -66,7 +66,7 @@ const Patient = () => {
   const z = interpolate(frame, [0, 45], [1.0, 1.06], {extrapolateRight: 'clamp'});
   return (
     <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
-      <Img src={patient} style={{...cover, objectPosition: '38% 50%', transform: `scale(${z})`, transformOrigin: '38% 40%'}} />
+      <Img src={patient} style={{...cover, objectPosition: '43% 50%', transform: `scale(${z})`, transformOrigin: '43% 40%'}} />
     </div>
   );
 };

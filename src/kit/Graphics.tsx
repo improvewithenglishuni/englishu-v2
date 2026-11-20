@@ -255,7 +255,7 @@ export const NameLabel: React.FC<{x: number; y: number; line1: string; line2?: s
     return (
       <Place x={x} y={y} rotate={rotate} scale={0.85 + 0.15 * s} opacity={s}>
         <div style={{position: 'relative', filter: 'drop-shadow(0 12px 14px rgba(0,0,0,0.38))'}}>
-          <div style={{position: 'absolute', inset: 0, backgroundImage: `url(${staticFile('assets/vox/crumple_paper.png')})`, backgroundSize: 'cover', backgroundPosition: 'center 38%', filter: 'brightness(1.75) contrast(0.55)'}} />
+          <div style={{position: 'absolute', inset: 0, backgroundImage: `url(${staticFile('assets/vox/crumple_paper.png')})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'none'}} />
           <div dir={dir} style={{position: 'relative', padding: `${padY}px ${padX}px`, textAlign: 'center', fontFamily: SANS, color: '#26242E', whiteSpace: 'nowrap', transform: 'rotate(-1deg)'}}>
             <div style={{fontWeight: 800, fontSize: fs * 0.8, lineHeight: 1.05}}>{line1}</div>
             {line2 ? <div style={{fontWeight: 700, fontSize: fs * 0.52, lineHeight: 1.1, color: '#45424F'}}>{line2}</div> : null}
