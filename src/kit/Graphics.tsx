@@ -1,5 +1,5 @@
 import React, {useId} from 'react';
-import {Img, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {clamp01, exitFactor, pop, POP, SETTLE} from './motion';
 import {Place} from './Place';
 import {SANS} from './SerifTitle';
@@ -257,17 +257,11 @@ export const NameLabel: React.FC<{x: number; y: number; line1: string; line2?: s
         <svg width={0} height={0} style={{position: 'absolute'}}>
           <filter id={`p${id}`} x="-12%" y="-25%" width="124%" height="150%">
             <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="5" result="e" />
-            <feDisplacementMap in="SourceGraphic" in2="e" scale="16" result="rough" />
-            <feTurbulence type="fractalNoise" baseFrequency="0.007 0.012" numOctaves="3" seed="11" result="n" />
-            <feDiffuseLighting in="n" lighting-color="#ffffff" surfaceScale="11" result="light">
-              <feDistantLight azimuth="225" elevation="42" />
-            </feDiffuseLighting>
-            <feComposite in="light" in2="rough" operator="in" result="lit" />
-            <feBlend in="rough" in2="lit" mode="multiply" />
+            <feDisplacementMap in="SourceGraphic" in2="e" scale="18" />
           </filter>
         </svg>
         <div style={{position: 'relative', filter: 'drop-shadow(0 12px 14px rgba(0,0,0,0.38))'}}>
-          <div style={{position: 'absolute', inset: 0, background: '#F7F4EA', filter: `url(#p${id})`}} />
+          <div style={{position: 'absolute', inset: 0, backgroundImage: `url(${staticFile('assets/vox/crumple_paper.png')})`, backgroundSize: 'cover', backgroundPosition: 'center 38%', filter: `url(#p${id}) brightness(1.2) contrast(1.1)`}} />
           <div dir={dir} style={{position: 'relative', padding: `${padY}px ${padX}px`, textAlign: 'center', fontFamily: SANS, color: '#26242E', whiteSpace: 'nowrap', transform: 'rotate(-1deg)'}}>
             <div style={{fontWeight: 800, fontSize: fs * 0.8, lineHeight: 1.05}}>{line1}</div>
             {line2 ? <div style={{fontWeight: 700, fontSize: fs * 0.52, lineHeight: 1.1, color: '#45424F'}}>{line2}</div> : null}

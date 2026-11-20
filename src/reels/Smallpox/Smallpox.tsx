@@ -34,7 +34,7 @@ import caseDots from './caseDots.json';
 const s = (sec: number) => Math.round(sec * 30);
 const arm = staticFile('assets/vox/arm_hand.png');
 const patient = staticFile('assets/vox/patient_full.jpg');
-const jennerSticker = staticFile('assets/vox/jenner_sticker.png');
+const jennerSticker = staticFile('assets/vox/jenner_hires_sticker.png');
 const milkmaid = staticFile('assets/vox/milkmaid_new.jpg');
 
 const cover: React.CSSProperties = {width: '100%', height: '100%', objectFit: 'cover', display: 'block'};
@@ -82,7 +82,7 @@ const Tally300 = () => (
 /** 4. Jenner (named on screen) as a die-cut portrait on a newspaper clipping. */
 const JennerPortrait = () => (
   <>
-    <Sticker src={jennerSticker} x={540} y={735} width={910} aspect={1444 / 1120} rotate={-3} at={2} />
+    <Sticker src={jennerSticker} x={540} y={730} width={960} aspect={1355 / 1120} rotate={-3} at={2} />
     <NameLabel x={540} y={1345} line1="אדוארד ג׳נר" line2="רופא · 1796" fontSize={92} paper at={s(0.5)} />
   </>
 );
