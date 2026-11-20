@@ -288,6 +288,12 @@ export const NameLabel: React.FC<{x: number; y: number; line1: string; line2?: s
   );
 };
 
+const mixHex = (a: string, b: string, t: number) => {
+  const pa = [1, 3, 5].map((i) => parseInt(a.slice(i, i + 2), 16));
+  const pb = [1, 3, 5].map((i) => parseInt(b.slice(i, i + 2), 16));
+  return '#' + pa.map((v, i) => Math.round(v + (pb[i] - v) * t).toString(16).padStart(2, '0')).join('');
+};
+
 const rr = (n: number) => {
   const x = Math.sin(n * 91.7 + 13.3) * 43758.5453;
   return x - Math.floor(x);
@@ -298,7 +304,7 @@ const rr = (n: number) => {
  * (staggered from `at`) and, if `vanishFrom`/`vanishTo` are given, drop away at random moments
  * in that window (the number going down to zero).
  */
-export const Crowd: React.FC<{x0: number; y0: number; cols: number; rows: number; dx: number; dy: number; size: number; color?: string; at?: number; vanishFrom?: number; vanishTo?: number}> = ({x0, y0, cols, rows, dx, dy, size, color = '#4B4D5A', at = 0, vanishFrom, vanishTo}) => {
+export const Crowd: React.FC<{x0: number; y0: number; cols: number; rows: number; dx: number; dy: number; size: number; color?: string; at?: number; vanishFrom?: number; vanishTo?: number; /** a wave of colour spreads outward from (cx,cy): each person turns from `color` to `lit` */ wave?: {at: number; lit: string; cx: number; cy: number; speed: number; opacity?: number}}> = ({x0, y0, cols, rows, dx, dy, size, color = '#4B4D5A', at = 0, vanishFrom, vanishTo, wave}) => {
   const frame = useCurrentFrame();
   const items: React.ReactNode[] = [];
   for (let r = 0; r < rows; r++) {
@@ -310,10 +316,11 @@ export const Crowd: React.FC<{x0: number; y0: number; cols: number; rows: number
       if (o <= 0.01) continue;
       const px = x0 + c * dx + (r % 2 ? dx / 2 : 0);
       const py = y0 + r * dy;
+      const fillC = wave ? mixHex(color, wave.lit, clamp01((frame - wave.at - Math.hypot(px - wave.cx, py - wave.cy) / wave.speed) / 8)) : color;
       items.push(
         <g key={i} transform={`translate(${px} ${py}) scale(${((0.6 + 0.4 * enter) * (1 - 0.3 * gone) * size) / 160}) translate(-50 -80)`} opacity={o}>
-          <circle cx={50} cy={28} r={19} fill={color} />
-          <path d="M28 52 L72 52 L80 104 L66 104 L63 150 L53 150 L50 118 L47 150 L37 150 L34 104 L20 104 Z" fill={color} />
+          <circle cx={50} cy={28} r={19} fill={fillC} />
+          <path d="M28 52 L72 52 L80 104 L66 104 L63 150 L53 150 L50 118 L47 150 L37 150 L34 104 L20 104 Z" fill={fillC} />
         </g>,
       );
     }
