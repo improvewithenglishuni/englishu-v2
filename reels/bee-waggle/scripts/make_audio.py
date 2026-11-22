@@ -202,13 +202,23 @@ add(sfx, onepole_lp(fl, 1800), 24.55, 0.35)
 for k, m in enumerate([69, 73, 76]):
     add(sfx, pluck(mtof(m), 2.0, 0.35), 26.13 + k * 0.05, 0.3)
 
-# ---------------- music: plucked ostinato + bowed pad, no drums ----------------
+# ---------------- music: OFF (Sharon didn't like the composed bed) ----------------
+# Set MUSIC = True to bring the plucked/bowed bed back, or better: drop in a licensed documentary track
+# (Musicbed / Artlist / Epidemic) or add music in the Instagram app at upload.
+MUSIC = False
+# Without music, a very quiet low-passed hive hum keeps the explainer beats from going dead silent.
+for a, b in [(2.9, 16.9), (23.9, 28.3)]:
+    bed = onepole_lp(segment(hum, 3, b - a, fade=0.6), 420)
+    add(amb, bed, a, 0.22)
+# end card: the meadow carries on and fades out
+add(amb, segment(meadow, 11, 2.9, fade=1.2), 32.2, 0.4)
+
 bpm = 92
 beat = 60 / bpm
 bar = 4 * beat
 prog = [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]]  # Am F C G
 pattern = [0, 2, 1, 2, 0, 2, 1, 2]
-nbars = int(DUR / bar) + 1
+nbars = int(DUR / bar) + 1 if MUSIC else 0
 for b in range(nbars):
     t0 = b * bar
     if 16.8 <= t0 < 23.5:  # the dark hive: music drops out, the real hum carries it
@@ -222,7 +232,7 @@ for b in range(nbars):
                 continue
             add(mus, pluck(mtof(ch[idx] + 12), 0.9, 0.55, 0.994), at, 0.13)
 # end card: one warm resolving chord instead of a chime
-for k, m in enumerate([57, 64, 69, 72]):
+for k, m in enumerate([57, 64, 69, 72] if MUSIC else []):
     add(mus, pluck(mtof(m), 2.6, 0.4, 0.997), 32.45 + k * 0.06, 0.22)
 t_all = np.arange(N) / SR
 mus *= np.clip((DUR - t_all) / 1.5, 0, 1)
@@ -241,7 +251,7 @@ def norm(x, peak):
     return x / m * peak if m > 0 else x
 
 
-mix = norm(amb, 0.22) + norm(sfx, 0.26) + norm(mus, 0.17)
+mix = norm(amb, 0.22) + norm(sfx, 0.26) + (norm(mus, 0.17) if MUSIC else 0)
 mix = np.tanh(mix * 1.2) / 1.2
 st = np.stack([mix, mix], 1)
 os.makedirs(os.path.join(ROOT, 'public', 'audio'), exist_ok=True)
