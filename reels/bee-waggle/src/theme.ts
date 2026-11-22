@@ -93,3 +93,7 @@ export const SUBS: Sub[] = [
 ];
 
 export const sec = (s: number) => Math.round(s * FPS);
+
+/** The one dash style (inspo): white, rounded ends, no dark backing. On white paper it gets a soft warm shadow. */
+export const DASH = {color: '#fff', width: 9, array: '18 20', cap: 'round' as const};
+export const PAPER_SHADOW = 'drop-shadow(0 2px 2.5px rgba(110,82,50,0.55))';

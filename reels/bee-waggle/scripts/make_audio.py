@@ -1,98 +1,220 @@
-"""Original synthesized music bed + sparse SFX for the bee Reel (no samples, no copyright).
-Re-run after re-timing: python3 scripts/make_audio.py  -> public/audio/bed_sfx.wav
-The voiceover will be added on its own track once recorded."""
-import numpy as np, wave, os
+"""Sound design for the bee Reel -> public/audio/bed_sfx.wav
+
+Principle: no stock "UI" sounds (pops, whooshes, sparkles, chimes). Every sound comes from the bee's world
+or carries information:
+  * real field recordings (public/media/audio/*.mp3, from Wikimedia Commons):
+      meadow.mp3   - honeybees among flowers, YLE archive (CC BY 3.0)       -> outdoor park shots
+      hive-hum.mp3 - inside a honeybee hive, "Honeybee-hive.ogg" (CC0)     -> inside the hive / the lens
+      flyby.mp3    - "Bombus buzz.ogg" (public domain)                     -> the forager flying in
+  * a "sonic zoom": as the magnifier opens, the meadow fades out and the hive hum fades in
+  * waggle buzz: a real buzz, pulsed at the waggle rate (~13 Hz), plays exactly while a bee waggles,
+    so a short waggle *sounds* short and a long one long (the distance code you can hear)
+  * CONVEY: a tiny wing-flick as each letter reaches a follower, rising in pitch
+  * music: a plucked (Karplus-Strong, string-like) ostinato + soft bowed pad, no drums;
+    it drops out in the dark hive so the real hum carries the moment, and resolves on the end card.
+Re-run after re-timing:  python3 scripts/make_audio.py
+"""
+import os
+import subprocess
+import wave
+
+import numpy as np
 
 SR = 48000
 DUR = 35.1
 N = int(SR * DUR)
-t_all = np.arange(N) / SR
-rng = np.random.default_rng(7)
+rng = np.random.default_rng(11)
+ROOT = os.path.join(os.path.dirname(__file__), '..')
 
-def env(n, a=0.005, r=0.3):
-    t = np.arange(n) / SR
-    e = np.minimum(1, t / a) * np.exp(-t / r)
-    return e
 
-def add(buf, sig, at):
+def load(name):
+    """Decode a media/audio mp3 to mono float32 via ffmpeg."""
+    path = os.path.join(ROOT, 'public', 'media', 'audio', name)
+    raw = subprocess.run(
+        ['ffmpeg', '-v', 'error', '-i', path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'],
+        check=True, capture_output=True).stdout
+    return np.frombuffer(raw, dtype=np.float32).copy()
+
+
+def add(buf, sig, at, gain=1.0):
     i = int(at * SR)
-    if i >= len(buf):
+    if i >= len(buf) or i + len(sig) <= 0:
         return
-    j = min(len(buf), i + len(sig))
-    buf[i:j] += sig[: j - i]
+    s0 = max(0, -i)
+    i = max(0, i)
+    j = min(len(buf), i + len(sig) - s0)
+    buf[i:j] += gain * sig[s0:s0 + j - i]
 
-def note(f, dur, r=0.35, harm=(1, .5, .25)):
-    n = int(dur * SR); t = np.arange(n) / SR
-    s = sum(a * np.sin(2 * np.pi * f * (k + 1) * t) for k, a in enumerate(harm))
-    return s * env(n, 0.004, r)
 
-def pad(freqs, dur):
-    n = int(dur * SR); t = np.arange(n) / SR
-    s = sum(np.sin(2 * np.pi * f * t + 0.3 * np.sin(2 * np.pi * 0.2 * t)) + 0.3 * np.sin(2 * np.pi * 2 * f * t) for f in freqs)
-    a = np.minimum(1, t / 0.6) * np.minimum(1, (dur - t) / 0.6)
-    return s * a / len(freqs)
+def env_lin(n, pts):
+    """Piecewise-linear envelope from [(t_sec, value), ...]."""
+    t = np.arange(n) / SR
+    xs, ys = zip(*pts)
+    return np.interp(t, xs, ys)
+
+
+def segment(src, start, dur, fade=0.4):
+    n = int(dur * SR)
+    a = int(start * SR)
+    s = np.resize(src[a:], n) if len(src) - a < n else src[a:a + n].copy()
+    f = int(fade * SR)
+    if f:
+        s[:f] *= np.linspace(0, 1, f)
+        s[-f:] *= np.linspace(1, 0, f)
+    return s
+
+
+def onepole_lp(x, fc):
+    a = np.exp(-2 * np.pi * fc / SR)
+    y = np.empty_like(x)
+    acc = 0.0
+    for k in range(len(x)):
+        acc = (1 - a) * x[k] + a * acc
+        y[k] = acc
+    return y
+
+
+def bandpass(x, lo, hi):
+    X = np.fft.rfft(x)
+    fr = np.fft.rfftfreq(len(x), 1 / SR)
+    X[(fr < lo) | (fr > hi)] = 0
+    return np.fft.irfft(X, len(x))
+
+
+def pluck(freq, dur, bright=0.5, decay=0.996):
+    """Karplus-Strong plucked string."""
+    n = int(dur * SR)
+    p = max(2, int(SR / freq))
+    buf = rng.uniform(-1, 1, p)
+    buf = bright * buf + (1 - bright) * np.convolve(buf, np.ones(4) / 4, 'same')
+    out = np.empty(n)
+    for k in range(n):
+        out[k] = buf[k % p]
+        buf[k % p] = decay * 0.5 * (buf[k % p] + buf[(k + 1) % p])
+    out *= np.minimum(1, np.arange(n) / (0.003 * SR))
+    return out
+
+
+def bowed(freqs, dur):
+    """Soft bowed-string pad: detuned saws, low-passed, slow swell."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    s = np.zeros(n)
+    for f in freqs:
+        for det in (-0.12, 0.12):
+            ph = (f * (1 + det / 100)) * t + 0.002 * np.sin(2 * np.pi * 5 * t)
+            s += 2 * (ph % 1) - 1
+    s = onepole_lp(s / (2 * len(freqs)), 900)
+    a = np.minimum(1, t / 0.9) * np.minimum(1, (dur - t) / 0.9)
+    return s * a
+
 
 mtof = lambda m: 440 * 2 ** ((m - 69) / 12)
-bed = np.zeros(N)
-bpm = 92; beat = 60 / bpm; bar = 4 * beat
-chords = [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]]  # Am F C G
-arp = [0, 1, 2, 1, 2, 0, 1, 2]
+
+meadow = load('meadow.mp3')
+hum = load('hive-hum.mp3')
+flyby = load('flyby.mp3')
+
+amb = np.zeros(N)
+sfx = np.zeros(N)
+mus = np.zeros(N)
+
+# ---------------- ambience ----------------
+# Park (beat 1): meadow, then the "sonic zoom" into the hive as the magnifier opens (~1.3-1.8 s)
+m1 = segment(meadow, 0, 3.2, fade=0.05) * env_lin(int(3.2 * SR), [(0, 0.0), (0.15, 1.0), (1.25, 1.0), (1.9, 0.15), (3.2, 0.0)])
+add(amb, m1, 0, 0.55)
+h1 = segment(hum, 2, 3.0, fade=0.05) * env_lin(int(3.0 * SR), [(0, 0), (1.25, 0), (1.9, 1), (2.7, 1), (3.0, 0)])
+add(amb, h1, 0.0, 0.6)
+# Dark hive (beat 5): hum swells in muffled, opens up when the antennae lens appears (~20.7 s)
+h5 = segment(hum, 5, 7.6, fade=0.3)
+muff = onepole_lp(h5, 500)
+mix5 = muff * env_lin(len(h5), [(0, 1), (3.4, 1), (4.0, 0.3), (7.6, 0.3)]) + h5 * env_lin(len(h5), [(0, 0), (3.4, 0), (4.0, 0.9), (7.6, 0.9)])
+mix5 *= env_lin(len(h5), [(0, 0), (0.6, 1.0), (6.8, 1.0), (7.6, 0)])
+add(amb, mix5, 16.7, 0.95)
+# Callback (beat 7): meadow with the hive faintly underneath (the lens), out on the end card
+m7 = segment(meadow, 6, 5.0, fade=0.5)
+add(amb, m7, 28.0, 0.5)
+h7 = segment(hum, 12, 4.6, fade=0.6)
+add(amb, h7, 28.1, 0.22)
+
+# ---------------- the forager flies in (beat 1) ----------------
+fb = segment(flyby, 1.0, 1.45, fade=0.05)
+fb *= env_lin(len(fb), [(0, 0.2), (0.7, 1.0), (1.15, 0.7), (1.45, 0.0)])
+add(sfx, fb, 0.0, 0.9)
+
+# ---------------- waggle buzz: plays exactly while a bee waggles ----------------
+buzz_src = bandpass(segment(flyby, 2.0, 4.0, fade=0.0), 150, 2500)
+
+
+def waggle_buzz(dur):
+    s = np.resize(buzz_src, int(dur * SR))
+    t = np.arange(len(s)) / SR
+    pulse = 0.55 + 0.45 * np.sin(2 * np.pi * 13 * t) ** 2  # ~13 Hz waggle
+    edge = np.minimum(1, t / 0.03) * np.minimum(1, (dur - t) / 0.05)
+    return s * pulse * edge
+
+
+# beat 2: the figure-eight bee's two waggle runs; beat 3: the angle run, then short vs long run
+for start, dur, g in [(3.13, 0.33, 0.55), (3.93, 0.33, 0.55), (8.07, 1.2, 0.6), (9.9, 0.6, 0.6), (11.1, 1.13, 0.6)]:
+    add(sfx, waggle_buzz(dur), start, g)
+
+# ---------------- CONVEY: a wing-flick as each letter reaches a follower ----------------
+for i in range(6):
+    arrive = 13.0 + (4 + i * 5 + 15) / 30
+    n = int(0.09 * SR)
+    t = np.arange(n) / SR
+    rate = 1.0 + 0.08 * i
+    grain = np.interp(np.arange(n) * rate, np.arange(len(buzz_src)), buzz_src)[:n]
+    grain *= np.sin(np.pi * t / t[-1]) ** 2
+    add(sfx, grain, arrive - 0.02, 0.5)
+add(sfx, pluck(mtof(76), 1.6, 0.4) * 0.5 + pluck(mtof(81), 1.6, 0.4) * 0.4, 15.17, 0.35)  # word complete
+
+# ---------------- DECIPHER: scrambled flutter that settles into a resolved chord ----------------
+fl = np.resize(buzz_src, int(1.6 * SR)) * env_lin(int(1.6 * SR), [(0, 0), (0.2, 0.5), (1.3, 0.35), (1.6, 0)])
+fl *= 0.6 + 0.4 * rng.standard_normal(len(fl)).clip(-1, 1)
+add(sfx, onepole_lp(fl, 1800), 24.55, 0.35)
+for k, m in enumerate([69, 73, 76]):
+    add(sfx, pluck(mtof(m), 2.0, 0.35), 26.13 + k * 0.05, 0.3)
+
+# ---------------- music: plucked ostinato + bowed pad, no drums ----------------
+bpm = 92
+beat = 60 / bpm
+bar = 4 * beat
+prog = [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]]  # Am F C G
+pattern = [0, 2, 1, 2, 0, 2, 1, 2]
 nbars = int(DUR / bar) + 1
 for b in range(nbars):
-    ch = chords[b % 4]
-    add(bed, 0.32 * pad([mtof(m - 12) for m in ch], bar + 0.6), b * bar)
+    t0 = b * bar
+    if 16.8 <= t0 < 23.5:  # the dark hive: music drops out, the real hum carries it
+        continue
+    ch = prog[b % 4]
+    add(mus, bowed([mtof(m - 12) for m in ch], bar + 0.8), t0, 0.22)
     if b >= 1:
-        for k in range(8):
-            m = ch[arp[k]] + 12
-            add(bed, 0.16 * note(mtof(m), 0.6, 0.22), b * bar + k * beat / 2)
-    if b >= 2:
-        for k in (0, 2):
-            n = int(0.25 * SR); tt = np.arange(n) / SR
-            kick = np.sin(2 * np.pi * (55 + 60 * np.exp(-tt * 30)) * tt) * np.exp(-tt * 12)
-            add(bed, 0.35 * kick, b * bar + k * beat)
-# fade out over the last 2 s
-fo = np.clip((DUR - t_all) / 2.0, 0, 1)
-bed *= fo
-bed = bed / np.max(np.abs(bed)) * 0.16
+        for k, idx in enumerate(pattern):
+            at = t0 + k * beat / 2
+            if 16.8 <= at < 23.5:
+                continue
+            add(mus, pluck(mtof(ch[idx] + 12), 0.9, 0.55, 0.994), at, 0.13)
+# end card: one warm resolving chord instead of a chime
+for k, m in enumerate([57, 64, 69, 72]):
+    add(mus, pluck(mtof(m), 2.6, 0.4, 0.997), 32.45 + k * 0.06, 0.22)
+t_all = np.arange(N) / SR
+mus *= np.clip((DUR - t_all) / 1.5, 0, 1)
+mus *= np.interp(t_all, [0, 16.4, 16.9, 23.4, 24.2, DUR], [1, 1, 0, 0, 1, 1])
 
-sfx = np.zeros(N)
-def paper_pop():
-    n = int(0.09 * SR); t = np.arange(n) / SR
-    s = rng.standard_normal(n) * np.exp(-t * 60)
-    s = np.convolve(s, np.ones(6) / 6, 'same')
-    return 0.6 * s + 0.5 * np.sin(2 * np.pi * 620 * t) * np.exp(-t * 70)
-def thump_sparkle():
-    n = int(0.9 * SR); t = np.arange(n) / SR
-    th = np.sin(2 * np.pi * (70 + 40 * np.exp(-t * 20)) * t) * np.exp(-t * 7)
-    sp = sum(np.sin(2 * np.pi * f * t) * np.exp(-(t - d).clip(0) * 9) * (t > d) for f, d in [(1760, .06), (2349, .12), (2637, .18), (3520, .24)])
-    return 0.8 * th + 0.12 * sp
-def whoosh(d=0.7):
-    n = int(d * SR); t = np.arange(n) / SR
-    s = rng.standard_normal(n)
-    s = np.convolve(s, np.ones(40) / 40, 'same')
-    return 0.9 * s * np.sin(np.pi * t / d) ** 2
-def stamp():
-    n = int(0.5 * SR); t = np.arange(n) / SR
-    body = np.sin(2 * np.pi * (90 + 50 * np.exp(-t * 40)) * t) * np.exp(-t * 14)
-    slap = rng.standard_normal(n) * np.exp(-t * 45)
-    return 0.9 * body + 0.45 * slap
-def chime():
-    n = int(1.6 * SR); t = np.arange(n) / SR
-    return 0.25 * sum(np.sin(2 * np.pi * f * t) * np.exp(-t * 2.5) for f in (880, 1318.5, 1760))
 
-# (paper pops removed: they read as a 'smack')
-add(sfx, thump_sparkle(), 15.15)   # CONVEY completes
-add(sfx, thump_sparkle(), 26.15)   # DECIPHER resolves
-add(sfx, whoosh(0.8), 16.65)       # whoosh 1 of 2: into the dark hive
-add(sfx, whoosh(0.6), 32.3)        # whoosh 2 of 2: end card page
-add(sfx, chime(), 33.68)           # CTA lands
-sfx = sfx / np.max(np.abs(sfx)) * 0.32
+def norm(x, peak):
+    m = np.max(np.abs(x))
+    return x / m * peak if m > 0 else x
 
-mix = bed + sfx
-mix = np.tanh(mix * 1.1) / 1.1
+
+mix = norm(amb, 0.22) + norm(sfx, 0.26) + norm(mus, 0.17)
+mix = np.tanh(mix * 1.2) / 1.2
 st = np.stack([mix, mix], 1)
-os.makedirs('public/audio', exist_ok=True)
-with wave.open('public/audio/bed_sfx.wav', 'wb') as w:
-    w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
+os.makedirs(os.path.join(ROOT, 'public', 'audio'), exist_ok=True)
+with wave.open(os.path.join(ROOT, 'public', 'audio', 'bed_sfx.wav'), 'wb') as w:
+    w.setnchannels(2)
+    w.setsampwidth(2)
+    w.setframerate(SR)
     w.writeframes((st * 32767).astype('<i2').tobytes())
 print('ok', DUR)

@@ -17,4 +17,13 @@ ffmpeg -v error -y -ss 4 -t 9 -i .cache/waggle.webm -vf "crop=608:1080:656:0,sca
 ffmpeg -v error -y -ss 10 -t 7 -i .cache/waggle.webm -vf "crop=1080:1080:420:0,scale=720:720:flags=lanczos" $enc public/media/comb.mp4
 # red-dot dancer surrounded by followers (antennae beat)
 ffmpeg -v error -y -t 11.5 -i .cache/dancer.ogv -vf "crop=480:480:120:0,scale=720:720:flags=lanczos" $enc public/media/dancer.mp4
-ls -la public/media
+# field recordings for the sound design (scripts/make_audio.py)
+mkdir -p public/media/audio
+get 3/3f/Honeybee-hive.ogg hive.ogg
+get 1/11/263673_ylearkisto_mehilainen-tarhamehilainen-parvi-bees-honeybees-a-swarm-of-bees-buzzing-among-the-flowers-apis-mellifera.wav meadow.wav
+get c/ca/Bombus_buzz.ogg bombus.ogg
+mp3="-ac 2 -ar 48000 -c:a libmp3lame -b:a 192k"
+ffmpeg -v error -y -ss 60 -t 20 -i .cache/hive.ogg -af loudnorm=I=-20:TP=-2 $mp3 public/media/audio/hive-hum.mp3
+ffmpeg -v error -y -ss 20 -t 20 -i .cache/meadow.wav -af loudnorm=I=-20:TP=-2 $mp3 public/media/audio/meadow.mp3
+ffmpeg -v error -y -i .cache/bombus.ogg -af loudnorm=I=-18:TP=-2 $mp3 public/media/audio/flyby.mp3
+ls -la public/media public/media/audio

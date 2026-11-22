@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react';
 import {getLength, getPointAtLength, getTangentAtLength} from '@remotion/paths';
-import {C} from '../theme';
+import {C, DASH} from '../theme';
 import {BeeTop} from './bee';
 import {dancePathD} from './anim';
 
@@ -50,7 +50,7 @@ export const DanceFigure: React.FC<{
       </defs>
       {dashed ? (
         <g mask={`url(#${id}-m)`}>
-          <path d={d} fill="none" stroke={color} strokeWidth={stroke} strokeDasharray="34 18" strokeLinecap="butt" />
+          <path d={d} fill="none" stroke={DASH.color} strokeWidth={DASH.width + 1} strokeDasharray={DASH.array} strokeLinecap={DASH.cap} />
         </g>
       ) : (
         <path

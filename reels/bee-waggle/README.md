@@ -50,7 +50,11 @@ python3 scripts/make_audio.py   # rebuild the music bed + SFX after re-timing
 | `comb.mp4` | magnifier lens, beats 1 and 7 | same clip, square crop |
 | `dancer.mp4` | antennae moment, beat 5 | Su et al. 2008, PLoS ONE, CC BY 3.0 (red-dot dancer) |
 
-Caption credit: "Waggle dance footage: OakleyOrig (CC BY 2.0); Su et al. 2008, PLoS ONE (CC BY 3.0), via Wikimedia Commons".
+Field recordings (`public/media/audio/`, committed): hive interior "Honeybee-hive.ogg" (CC0), bees among flowers
+YLE archive 263673 (CC BY 3.0), "Bombus buzz.ogg" (public domain). See the header of `scripts/make_audio.py`
+for how each sound is used.
+
+Caption credit: "Waggle dance footage: OakleyOrig (CC BY 2.0); Su et al. 2008, PLoS ONE (CC BY 3.0). Bee sounds: YLE archive (CC BY 3.0). Via Wikimedia Commons".
 
 ## Voiceover
 

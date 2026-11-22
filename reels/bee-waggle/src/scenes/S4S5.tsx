@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, Img, OffthreadVideo, interpolate, random, staticFile, useCurrentFrame} from 'remotion';
-import {C, FONT_KEY, MEDIA} from '../theme';
+import {C, DASH, FONT_KEY, MEDIA, PAPER_SHADOW} from '../theme';
 import {BeeTop} from '../components/bee';
 import {DanceFigure} from '../components/dance';
 import {Comb, Label, keyWordStyle} from '../components/props';
@@ -45,12 +45,13 @@ export const S4Convey: React.FC<{dur: number}> = ({dur}) => {
           <path
             key={k}
             d={`M ${dancer.x + 40} ${dancer.y - 40} Q ${(dancer.x + b.x) / 2} ${Math.min(dancer.y, b.y) - 220} ${b.x - 40} ${b.y - 30}`}
-            stroke={C.ink}
-            strokeWidth={6}
-            strokeDasharray="24 13"
-            strokeLinecap="butt"
+            stroke={DASH.color}
+            strokeWidth={DASH.width}
+            strokeDasharray={DASH.array}
+            strokeLinecap={DASH.cap}
             fill="none"
-            opacity={0.35 * prog(f, 0, 12)}
+            opacity={prog(f, 0, 12)}
+            style={{filter: PAPER_SHADOW}}
           />
         ))}
       </svg>

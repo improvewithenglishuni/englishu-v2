@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
-import {C} from '../theme';
+import {C, DASH, PAPER_SHADOW} from '../theme';
 import {BeeTop} from '../components/bee';
 import {DanceFigure} from '../components/dance';
 import {Flower, Pin, Sun} from '../components/props';
@@ -59,8 +59,9 @@ const Line: React.FC<{x1: number; y1: number; x2: number; y2: number; p: number;
     y2={y1 + (y2 - y1) * p}
     stroke={color}
     strokeWidth={w}
-    strokeLinecap={dash ? 'butt' : 'round'}
-    strokeDasharray={dash ? `${w * 3.4} ${w * 1.9}` : undefined}
+    strokeLinecap="round"
+    strokeDasharray={dash ? DASH.array : undefined}
+    style={dash ? {filter: PAPER_SHADOW} : undefined}
   />
 );
 
@@ -94,14 +95,13 @@ const DistanceRow: React.FC<{y: number; s: number; runLen: number; runP: number;
     <div style={{position: 'absolute', left: 0, top: y, width: 1080, height: 420, transform: `scale(${s})`, transformOrigin: '50% 30%'}}>
       <HiveFrame x={110} y={0} w={860} h={170} seed={`${seed}c`} r={28} />
       <svg width={1080} height={420} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
-        <polyline points={shown.map(([x, yy]) => `${x0 + x},${104 + yy}`).join(' ')} stroke="#fff" strokeWidth={9} fill="none" strokeLinejoin="miter" strokeLinecap="butt" strokeDasharray="20 11" />
+        <polyline points={shown.map(([x, yy]) => `${x0 + x},${104 + yy}`).join(' ')} stroke="#fff" strokeWidth={9} fill="none" strokeLinejoin="round" strokeLinecap={DASH.cap} strokeDasharray={DASH.array} />
         {/* duration bar: how long the waggle lasts */}
         <rect x={x0} y={200} width={Math.max(0, runLen * runP)} height={22} rx={11} fill={C.amber} />
-        <rect x={x0} y={200} width={runLen} height={22} rx={11} fill="none" stroke={C.amber} strokeWidth={3} strokeDasharray="6 8" opacity={0.6} />
         <circle cx={130} cy={211} r={22} fill="#fff" stroke={C.ink} strokeWidth={5} />
         <line x1={130} y1={211} x2={130 + Math.sin(f / 3) * 14} y2={211 - Math.cos(f / 3) * 14} stroke={C.ink} strokeWidth={4} strokeLinecap="round" />
         {/* distance to the food */}
-        <Line x1={210} y1={330} x2={210 + dist} y2={330} p={runP} color={C.ink} w={8} dash />
+        <Line x1={210} y1={330} x2={210 + dist} y2={330} p={runP} color={DASH.color} w={DASH.width} dash />
       </svg>
       <div style={{position: 'absolute', left: x0 + last[0] - 24, top: 104 + last[1] - 36, transform: 'rotate(90deg)'}}>
         <BeeTop size={48} id={`${seed}b`} buzz={runP > 0 && runP < 1} />
@@ -143,7 +143,7 @@ export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
       {f < SPLIT && (
         <AbsoluteFill style={{opacity: aOut}}>
           <svg width={1080} height={1920} style={{position: 'absolute'}}>
-            <Line x1={P.x} y1={P.y - 40} x2={sun.x} y2={sun.y + 80} p={prog(f, 8, 22)} color={C.ink} w={9} dash />
+            <Line x1={P.x} y1={P.y - 40} x2={sun.x} y2={sun.y + 80} p={prog(f, 8, 22)} color={DASH.color} w={DASH.width} dash />
             <Line x1={P.x} y1={P.y - 40} x2={flower.x} y2={flower.y} p={prog(f, 14, 28)} color={C.amber} w={12} />
             <Arc cx={P.x} cy={P.y - 40} r={130} a={ANG} p={prog(f, 26, 38)} />
           </svg>
@@ -155,13 +155,13 @@ export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
           <Hand x={lbl.x} y={lbl.y - 40} size={76} lang="en" s={pop(f, 34, 10)} color={C.amberDeep}>
             40°
           </Hand>
-          <Arrow x1={P.x + 150} y1={P.y - 60} x2={comb.x + 150} y2={comb.y - 150} bend={-0.35} p={prog(f, 40, 56)} dash color={C.amberDeep} w={8} />
+          <Arrow x1={P.x + 150} y1={P.y - 60} x2={comb.x + 150} y2={comb.y - 150} bend={-0.35} p={prog(f, 40, 56)} dash color={DASH.color} w={DASH.width} />
           {/* the comb, standing vertically inside the dark hive */}
           <HiveFrame x={140} y={900} w={800} h={380} seed="s3frame" scale={frameS} r={30} />
           <svg width={1080} height={1920} style={{position: 'absolute', opacity: frameS}}>
             <Line x1={comb.x} y1={comb.y} x2={comb.x} y2={950} p={prog(f, 46, 58)} color="#fff" w={9} />
             {f > 58 && <polyline points={`${comb.x - 16},${972} ${comb.x},${948} ${comb.x + 16},${972}`} stroke="#fff" strokeWidth={9} fill="none" strokeLinecap="round" strokeLinejoin="round" />}
-            <polyline points={zz.slice(0, beeIdx + 1).map(([x, y]) => `${x},${y}`).join(' ')} stroke="#fff" strokeWidth={9} fill="none" strokeLinejoin="miter" strokeLinecap="butt" strokeDasharray="20 11" />
+            <polyline points={zz.slice(0, beeIdx + 1).map(([x, y]) => `${x},${y}`).join(' ')} stroke="#fff" strokeWidth={9} fill="none" strokeLinejoin="round" strokeLinecap={DASH.cap} strokeDasharray={DASH.array} />
             <Arc cx={comb.x} cy={comb.y} r={110} a={ANG} p={prog(f, 70, 84)} color="#fff" />
           </svg>
           <Sun size={74} style={{left: comb.x - 37, top: 912, transform: `scale(${pop(f, 56, 10)})`}} />

@@ -1,5 +1,5 @@
 import React from 'react';
-import {C, FONT_HAND, FONT_HAND_HE} from '../theme';
+import {C, DASH, FONT_HAND, FONT_HAND_HE, PAPER_SHADOW} from '../theme';
 import {Comb} from './props';
 
 /** A wooden hive frame holding comb (inspo: frame with a lighter top bar). Children render on the comb. */
@@ -110,12 +110,13 @@ export const Arrow: React.FC<{
         stroke={color}
         strokeWidth={w}
         fill="none"
-        strokeLinecap={dash ? 'butt' : 'round'}
-        strokeDasharray={dash ? `${w * 3.4} ${w * 1.9}` : `${len}`}
+        strokeLinecap="round"
+        strokeDasharray={dash ? DASH.array : `${len}`}
+        style={dash ? {filter: PAPER_SHADOW} : undefined}
         strokeDashoffset={dash ? 0 : len * (1 - p)}
         opacity={dash ? Math.min(1, p * 3) : 1}
       />
-      {head && p > 0.95 && <polyline points={`${h1} ${x2},${y2} ${h2}`} stroke={color} strokeWidth={w} fill="none" strokeLinecap="round" strokeLinejoin="round" />}
+      {head && p > 0.95 && <polyline points={`${h1} ${x2},${y2} ${h2}`} stroke={color} strokeWidth={w} fill="none" strokeLinecap="round" strokeLinejoin="round" style={dash ? {filter: PAPER_SHADOW} : undefined} />}
     </svg>
   );
 };
