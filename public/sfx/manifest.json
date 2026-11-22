@@ -1,0 +1,243 @@
+{
+ "ambience": {
+  "analog_noise": [
+   "sfx/ambience/analog_noise_01.wav",
+   "sfx/ambience/analog_noise_02.wav"
+  ],
+  "electrical_hum": [
+   "sfx/ambience/electrical_hum_01.wav",
+   "sfx/ambience/electrical_hum_02.wav"
+  ],
+  "film_projector": [
+   "sfx/ambience/film_projector_01.wav",
+   "sfx/ambience/film_projector_02.wav"
+  ],
+  "projector_hum": [
+   "sfx/ambience/projector_hum_01.wav",
+   "sfx/ambience/projector_hum_02.wav"
+  ],
+  "quiet_office_room_tone": [
+   "sfx/ambience/quiet_office_room_tone_01.wav",
+   "sfx/ambience/quiet_office_room_tone_02.wav"
+  ],
+  "room_tone": [
+   "sfx/ambience/room_tone_01.wav",
+   "sfx/ambience/room_tone_02.wav"
+  ],
+  "tape_hiss": [
+   "sfx/ambience/tape_hiss_01.wav",
+   "sfx/ambience/tape_hiss_02.wav"
+  ],
+  "vinyl_crackle": [
+   "sfx/ambience/vinyl_crackle_01.wav",
+   "sfx/ambience/vinyl_crackle_02.wav"
+  ]
+ },
+ "mechanical": {
+  "camera_shutter_mechanical": [
+   "sfx/mechanical/camera_shutter_mechanical_01.wav",
+   "sfx/mechanical/camera_shutter_mechanical_02.wav",
+   "sfx/mechanical/camera_shutter_mechanical_03.wav"
+  ],
+  "circuit_breaker": [
+   "sfx/mechanical/circuit_breaker_01.wav",
+   "sfx/mechanical/circuit_breaker_02.wav",
+   "sfx/mechanical/circuit_breaker_03.wav"
+  ],
+  "gear_turn": [
+   "sfx/mechanical/gear_turn_01.wav",
+   "sfx/mechanical/gear_turn_02.wav",
+   "sfx/mechanical/gear_turn_03.wav"
+  ],
+  "kill_switch": [
+   "sfx/mechanical/kill_switch_01.wav",
+   "sfx/mechanical/kill_switch_02.wav",
+   "sfx/mechanical/kill_switch_03.wav"
+  ],
+  "lever_click": [
+   "sfx/mechanical/lever_click_01.wav",
+   "sfx/mechanical/lever_click_02.wav",
+   "sfx/mechanical/lever_click_03.wav"
+  ],
+  "light_switch_click": [
+   "sfx/mechanical/light_switch_click_01.wav",
+   "sfx/mechanical/light_switch_click_02.wav",
+   "sfx/mechanical/light_switch_click_03.wav"
+  ],
+  "mechanical_click": [
+   "sfx/mechanical/mechanical_click_01.wav",
+   "sfx/mechanical/mechanical_click_02.wav",
+   "sfx/mechanical/mechanical_click_03.wav"
+  ],
+  "mechanical_stopwatch": [
+   "sfx/mechanical/mechanical_stopwatch_01.wav",
+   "sfx/mechanical/mechanical_stopwatch_02.wav",
+   "sfx/mechanical/mechanical_stopwatch_03.wav"
+  ],
+  "rotary_dial_turn": [
+   "sfx/mechanical/rotary_dial_turn_01.wav",
+   "sfx/mechanical/rotary_dial_turn_02.wav",
+   "sfx/mechanical/rotary_dial_turn_03.wav"
+  ],
+  "stopwatch_tick": [
+   "sfx/mechanical/stopwatch_tick_01.wav",
+   "sfx/mechanical/stopwatch_tick_02.wav",
+   "sfx/mechanical/stopwatch_tick_03.wav"
+  ],
+  "toggle_switch_click": [
+   "sfx/mechanical/toggle_switch_click_01.wav",
+   "sfx/mechanical/toggle_switch_click_02.wav",
+   "sfx/mechanical/toggle_switch_click_03.wav"
+  ]
+ },
+ "miscellaneous": {
+  "soft_thump_reveal": [
+   "sfx/miscellaneous/soft_thump_reveal_01.wav",
+   "sfx/miscellaneous/soft_thump_reveal_02.wav",
+   "sfx/miscellaneous/soft_thump_reveal_03.wav"
+  ],
+  "sparkle_soft": [
+   "sfx/miscellaneous/sparkle_soft_01.wav",
+   "sfx/miscellaneous/sparkle_soft_02.wav",
+   "sfx/miscellaneous/sparkle_soft_03.wav"
+  ],
+  "stamp_thud": [
+   "sfx/miscellaneous/stamp_thud_01.wav",
+   "sfx/miscellaneous/stamp_thud_02.wav",
+   "sfx/miscellaneous/stamp_thud_03.wav"
+  ],
+  "tape_press": [
+   "sfx/miscellaneous/tape_press_01.wav",
+   "sfx/miscellaneous/tape_press_02.wav",
+   "sfx/miscellaneous/tape_press_03.wav"
+  ]
+ },
+ "tactile": {
+  "book_slide_on_desk": [
+   "sfx/tactile/book_slide_on_desk_01.wav",
+   "sfx/tactile/book_slide_on_desk_02.wav",
+   "sfx/tactile/book_slide_on_desk_03.wav"
+  ],
+  "marker_stroke": [
+   "sfx/tactile/marker_stroke_01.wav",
+   "sfx/tactile/marker_stroke_02.wav",
+   "sfx/tactile/marker_stroke_03.wav"
+  ],
+  "notebook_handling": [
+   "sfx/tactile/notebook_handling_01.wav",
+   "sfx/tactile/notebook_handling_02.wav",
+   "sfx/tactile/notebook_handling_03.wav"
+  ],
+  "page_turn": [
+   "sfx/tactile/page_turn_01.wav",
+   "sfx/tactile/page_turn_02.wav",
+   "sfx/tactile/page_turn_03.wav"
+  ],
+  "paper_movement": [
+   "sfx/tactile/paper_movement_01.wav",
+   "sfx/tactile/paper_movement_02.wav",
+   "sfx/tactile/paper_movement_03.wav"
+  ],
+  "paper_shuffle": [
+   "sfx/tactile/paper_shuffle_01.wav",
+   "sfx/tactile/paper_shuffle_02.wav",
+   "sfx/tactile/paper_shuffle_03.wav"
+  ],
+  "pen_writing": [
+   "sfx/tactile/pen_writing_01.wav",
+   "sfx/tactile/pen_writing_02.wav",
+   "sfx/tactile/pen_writing_03.wav"
+  ],
+  "pencil_writing": [
+   "sfx/tactile/pencil_writing_01.wav",
+   "sfx/tactile/pencil_writing_02.wav",
+   "sfx/tactile/pencil_writing_03.wav"
+  ]
+ },
+ "tech": {
+  "computer_button_press": [
+   "sfx/tech/computer_button_press_01.wav",
+   "sfx/tech/computer_button_press_02.wav",
+   "sfx/tech/computer_button_press_03.wav"
+  ],
+  "electrical_hum": [
+   "sfx/tech/electrical_hum_01.wav",
+   "sfx/tech/electrical_hum_02.wav"
+  ],
+  "electronic_click": [
+   "sfx/tech/electronic_click_01.wav",
+   "sfx/tech/electronic_click_02.wav",
+   "sfx/tech/electronic_click_03.wav"
+  ],
+  "keyboard_typing": [
+   "sfx/tech/keyboard_typing_01.wav",
+   "sfx/tech/keyboard_typing_02.wav",
+   "sfx/tech/keyboard_typing_03.wav"
+  ],
+  "laptop_keyboard_typing": [
+   "sfx/tech/laptop_keyboard_typing_01.wav",
+   "sfx/tech/laptop_keyboard_typing_02.wav",
+   "sfx/tech/laptop_keyboard_typing_03.wav"
+  ],
+  "mechanical_keyboard_click": [
+   "sfx/tech/mechanical_keyboard_click_01.wav",
+   "sfx/tech/mechanical_keyboard_click_02.wav",
+   "sfx/tech/mechanical_keyboard_click_03.wav"
+  ],
+  "mouse_button_press": [
+   "sfx/tech/mouse_button_press_01.wav",
+   "sfx/tech/mouse_button_press_02.wav",
+   "sfx/tech/mouse_button_press_03.wav"
+  ],
+  "mouse_click": [
+   "sfx/tech/mouse_click_01.wav",
+   "sfx/tech/mouse_click_02.wav",
+   "sfx/tech/mouse_click_03.wav"
+  ],
+  "single_key_press": [
+   "sfx/tech/single_key_press_01.wav",
+   "sfx/tech/single_key_press_02.wav",
+   "sfx/tech/single_key_press_03.wav",
+   "sfx/tech/single_key_press_04.wav"
+  ],
+  "subtle_ui_click": [
+   "sfx/tech/subtle_ui_click_01.wav",
+   "sfx/tech/subtle_ui_click_02.wav",
+   "sfx/tech/subtle_ui_click_03.wav"
+  ],
+  "trackpad_click": [
+   "sfx/tech/trackpad_click_01.wav",
+   "sfx/tech/trackpad_click_02.wav",
+   "sfx/tech/trackpad_click_03.wav"
+  ]
+ },
+ "whooshes": {
+  "air_movement": [
+   "sfx/whooshes/air_movement_01.wav",
+   "sfx/whooshes/air_movement_02.wav",
+   "sfx/whooshes/air_movement_03.wav"
+  ],
+  "cloth_movement": [
+   "sfx/whooshes/cloth_movement_01.wav",
+   "sfx/whooshes/cloth_movement_02.wav",
+   "sfx/whooshes/cloth_movement_03.wav"
+  ],
+  "fabric_whoosh": [
+   "sfx/whooshes/fabric_whoosh_01.wav",
+   "sfx/whooshes/fabric_whoosh_02.wav",
+   "sfx/whooshes/fabric_whoosh_03.wav"
+  ],
+  "low_whoosh": [
+   "sfx/whooshes/low_whoosh_01.wav",
+   "sfx/whooshes/low_whoosh_02.wav",
+   "sfx/whooshes/low_whoosh_03.wav",
+   "sfx/whooshes/low_whoosh_04.wav"
+  ],
+  "soft_whoosh": [
+   "sfx/whooshes/soft_whoosh_01.wav",
+   "sfx/whooshes/soft_whoosh_02.wav",
+   "sfx/whooshes/soft_whoosh_03.wav",
+   "sfx/whooshes/soft_whoosh_04.wav"
+  ]
+ }
+}
