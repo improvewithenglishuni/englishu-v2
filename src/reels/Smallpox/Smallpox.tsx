@@ -55,7 +55,7 @@ const Hook = () => (
     zoomTo={2.91}
     zoomDur={s(1.2)}
     scar={{x: 0.5837, y: 0.4869}}
-    scarTarget={{x: 540, y: 740}}
+    scarTarget={{x: 540, y: 830}}
     scars={[]}
     marker={{cx: 0.5837, cy: 0.4869, scale: 1.42, rot: 8, at: s(1.28), dur: s(0.8)}}
   />
