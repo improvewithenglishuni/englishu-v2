@@ -10,6 +10,9 @@ or carries information:
   * waggle buzz: a real buzz, pulsed at the waggle rate (~13 Hz), plays exactly while a bee waggles,
     so a short waggle *sounds* short and a long one long (the distance code you can hear)
   * CONVEY: a tiny wing-flick as each letter reaches a follower, rising in pitch
+  * tactile foley (Vox recipe): a real marker on paper when a line draws on, a real paper movement when a
+    paper panel arrives (four different takes, never the same one twice), each J-cut a few frames early;
+    only each scene's hero motion gets a sound (hierarchy and restraint)
   * music: a plucked (Karplus-Strong, string-like) ostinato + soft bowed pad, no drums;
     it drops out in the dark hive so the real hum carries the moment, and resolves on the end card.
 Re-run after re-timing:  python3 scripts/make_audio.py
@@ -114,6 +117,9 @@ mtof = lambda m: 440 * 2 ** ((m - 69) / 12)
 meadow = load('meadow.mp3')
 hum = load('hive-hum.mp3')
 flyby = load('flyby.mp3')
+marker = load('marker.mp3')  # "377124 tubbsmedia marker-lines" (CC0): lines at 0.4-1.7, 3.15-5.1, 6.3-7.6, 8.75-10.25 s
+paper = load('paper.mp3')  # "Book paper pages assorted" (PD): four takes at 0, 1, 2, 3 s (0.8 s each)
+JC = 0.12  # J-cut: sounds lead their visual by ~4 frames
 
 amb = np.zeros(N)
 sfx = np.zeros(N)
@@ -133,7 +139,7 @@ mix5 *= env_lin(len(h5), [(0, 0), (0.6, 1.0), (6.8, 1.0), (7.6, 0)])
 add(amb, mix5, 16.7, 0.95)
 # Callback (beat 7): meadow with the hive faintly underneath (the lens), out on the end card
 m7 = segment(meadow, 6, 5.0, fade=0.5)
-add(amb, m7, 28.0, 0.5)
+add(amb, m7, 28.0 - 0.15, 0.5)  # J-cut back into the park
 h7 = segment(hum, 12, 4.6, fade=0.6)
 add(amb, h7, 28.1, 0.22)
 
@@ -141,6 +147,26 @@ add(amb, h7, 28.1, 0.22)
 fb = segment(flyby, 1.0, 1.45, fade=0.05)
 fb *= env_lin(len(fb), [(0, 0.2), (0.7, 1.0), (1.15, 0.7), (1.45, 0.0)])
 add(sfx, fb, 0.0, 0.9)
+
+# ---------------- tactile foley: paper panels arriving, marker lines drawing ----------------
+def paper_take(k, rate=1.0):
+    t = segment(paper, k * 1.0, 0.8, fade=0.02)
+    if rate != 1.0:
+        t = np.interp(np.arange(0, len(t), rate), np.arange(len(t)), t)
+    return t
+
+
+def marker_line(start, dur):
+    return segment(marker, start, dur, fade=0.05)
+
+
+add(sfx, paper_take(0), 3.0 - JC, 0.55)              # beat 2: the hive frame arrives
+add(sfx, marker_line(0.4, 1.6), 3.13 - JC, 0.45)      # beat 2: the figure-eight draws on (the hero)
+add(sfx, marker_line(3.2, 0.75), 6.27 - JC, 0.4)      # beat 3: sun + flower lines draw on
+add(sfx, paper_take(1), 7.33 - JC, 0.5)               # beat 3: the comb frame arrives
+add(sfx, paper_take(2), 9.63 - JC, 0.45)              # beat 3: short-waggle row
+add(sfx, paper_take(3, 1.08), 10.83 - JC, 0.45)       # beat 3: long-waggle row (pitched take)
+add(sfx, marker_line(6.3, 0.7), 24.0 - JC, 0.4)       # beat 6: the scramble scribble
 
 # ---------------- waggle buzz: plays exactly while a bee waggles ----------------
 buzz_src = bandpass(segment(flyby, 2.0, 4.0, fade=0.0), 150, 2500)
@@ -201,6 +227,13 @@ for k, m in enumerate([57, 64, 69, 72]):
 t_all = np.arange(N) / SR
 mus *= np.clip((DUR - t_all) / 1.5, 0, 1)
 mus *= np.interp(t_all, [0, 16.4, 16.9, 23.4, 24.2, DUR], [1, 1, 0, 0, 1, 1])
+
+
+# frequency pocket: dip the music 4.5 dB around 1-4 kHz so the voice can sit on top without fighting it
+M = np.fft.rfft(mus)
+fr = np.fft.rfftfreq(len(mus), 1 / SR)
+M *= np.where((fr > 1000) & (fr < 4000), 10 ** (-4.5 / 20), 1.0)
+mus = np.fft.irfft(M, len(mus))
 
 
 def norm(x, peak):
