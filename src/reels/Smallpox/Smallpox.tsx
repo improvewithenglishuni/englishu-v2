@@ -64,7 +64,7 @@ const Hook = () => (
 /** 2. What smallpox looked like: a real historical photo, FULL FRAME. */
 const Patient = () => {
   const frame = useCurrentFrame();
-  const z = interpolate(frame, [0, 45], [1.0, 1.06], {extrapolateRight: 'clamp'}); // full-frame image: slow zoom
+  const z = interpolate(frame, [0, 120], [1.0, 1.06], {extrapolateRight: 'clamp'}); // full-frame image: slow zoom
   return (
     <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
       <Img src={patient} style={{...cover, objectPosition: '43% 50%', transform: `scale(${z})`, transformOrigin: '43% 40%'}} />
@@ -75,8 +75,8 @@ const Patient = () => {
 /** 3. 300,000,000 counts up while narrated, then down to 0 while the crowd disappears. */
 const Tally300 = () => (
   <>
-    <Crowd x0={40} y0={70} cols={15} rows={28} dx={72} dy={68} size={66} at={2} vanishFrom={s(1.7)} vanishTo={s(3.3)} />
-    <Tally peak={300000000} x={540} y={830} fontSize={170} at={2} upAt={s(0.1)} upDur={s(1.4)} downAt={s(1.7)} downDur={s(1.6)} />
+    <Crowd x0={40} y0={70} cols={15} rows={28} dx={72} dy={68} size={66} at={2} vanishFrom={s(3.6)} vanishTo={s(5.2)} />
+    <Tally peak={300000000} x={540} y={830} fontSize={170} at={2} upAt={s(0.1)} upDur={s(1.4)} downAt={s(3.6)} downDur={s(1.6)} />
   </>
 );
 
@@ -128,7 +128,7 @@ const JennerPortrait = () => (
 /** 5. Milkmaids: cowpox came from the cows. Old photo, FULL FRAME. */
 const Milkmaids = () => {
   const frame = useCurrentFrame();
-  const z = interpolate(frame, [0, 66], [1.0, 1.07], {extrapolateRight: 'clamp'}); // full-frame image: slow zoom
+  const z = interpolate(frame, [0, 138], [1.0, 1.07], {extrapolateRight: 'clamp'}); // full-frame image: slow zoom
   return (
     <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
       <Img src={milkmaid} style={{...cover, objectPosition: '64% 50%', transform: `scale(${z})`, transformOrigin: '50% 55%'}} />
@@ -143,15 +143,15 @@ const Vaccination = () => {
   const PY = 1090;
   const SZ = 360;
   const off = {x: 0.411 * SZ, y: 0.2375 * SZ};
-  const jab = interpolate(frame, [s(0.7), s(1.0), s(1.55), s(1.95)], [0, 1, 1, 0.6], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const jab = interpolate(frame, [s(1.1), s(1.4), s(1.95), s(2.35)], [0, 1, 1, 0.6], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const tip = {x: PX - 175 + jab * 100, y: PY - 80 + jab * 62};
-  const plungeV = interpolate(frame, [s(1.0), s(1.55)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const plungeV = interpolate(frame, [s(1.4), s(1.95)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
     <>
-      <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={146} heavy at={2} actAt={s(1.0)} hiFrom={0} hiTo={4} gloss="vacca = פרה (לטינית)" />
-      <Person x={PX} y={PY} size={560} tone="ink" glow={frame >= s(1.6) ? '#FDF551' : undefined} at={4} />
-      <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#9A9DAA" liquid="#FDF551" plunge={plungeV} at={s(0.2)} />
-      <Germs cx={PX} cy={PY + 10} rx={200} ry={330} n={12} at={s(1.9)} stagger={2} />
+      <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={146} heavy at={2} actAt={s(1.4)} hiFrom={0} hiTo={4} gloss="vacca = פרה (לטינית)" />
+      <Person x={PX} y={PY} size={560} tone="ink" glow={frame >= s(2.0) ? '#FDF551' : undefined} at={4} />
+      <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#9A9DAA" liquid="#FDF551" plunge={plungeV} at={s(0.6)} />
+      <Germs cx={PX} cy={PY + 10} rx={200} ry={330} n={12} at={s(2.3)} stagger={2} />
     </>
   );
 };
@@ -170,8 +170,8 @@ const Eradicate = () => {
   return (
     <>
       <NameLabel x={540} y={330} line1="ארגון הבריאות העולמי" line2="1967" fontSize={80} at={2} />
-      <ActionWord text="ERADICATE" mode="vanish" color="yellow" hollow x={540} y={820} fontSize={150} at={s(0.5)} fillAt={s(1.9)} fillFromX={DTIP.x + 40} actAt={s(3.7)} />
-      <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#C9CBD6" liquid="#FDF551" plunge={plunge} at={s(1.35)} exitAt={s(4.2)} />
+      <ActionWord text="ERADICATE" mode="vanish" color="yellow" hollow x={540} y={820} fontSize={150} at={s(0.5)} fillAt={s(1.9)} fillFromX={DTIP.x + 40} actAt={s(3.5)} />
+      <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#C9CBD6" liquid="#FDF551" plunge={plunge} at={s(1.35)} exitAt={s(3.4)} />
       <SansHeading text="למגר = לעקור מהשורש" x={540} y={1150} fontSize={84} color="white" dir="rtl" at={s(1.3)} />
     </>
   );
@@ -186,8 +186,8 @@ const Outbreak = () => {
   const inner = ringPositions(CX, CY, 220, 5, 0.3);
   const outer = ringPositions(CX, CY, 400, 9, 0.1);
   const stops = [...inner, ...outer];
-  const t0 = s(0.35);
-  const hop = 6;
+  const t0 = s(3.4);
+  const hop = 5;
   const SIZE = 230;
   const tipOf = (p: {x: number; y: number}) => ({x: p.x - 38, y: p.y - 6});
   const k = Math.max(0, (frame - t0) / hop);
@@ -202,8 +202,8 @@ const Outbreak = () => {
   const visited = (n: number) => frame >= t0 + n * hop + 2;
   return (
     <>
-      <Ring points={outer} color={ui.yellow} at={s(2.9)} duration={22} />
-      <Ring points={inner} color={ui.yellow} at={s(1.5)} duration={22} />
+      <Ring points={outer} color={ui.yellow} at={t0 + 66} duration={22} />
+      <Ring points={inner} color={ui.yellow} at={t0 + 26} duration={22} />
       {outer.map((p, n) => (
         <Person key={`o${n}`} x={p.x} y={p.y} size={150} tone="white" glow={visited(inner.length + n) ? ui.yellow : undefined} at={4 + n} />
       ))}

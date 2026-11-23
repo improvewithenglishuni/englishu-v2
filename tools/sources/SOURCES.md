@@ -55,3 +55,7 @@ Older newsprint-version files (`gillray.jpg`, `ota.jpg`, `tem.jpg`, `vial*.jpg`)
 - v23-27 hook photo (`tools/sources/hook_scar2_source.png` -> `public/assets/vox/hook_scar2_bw.png`): close-up of a round vaccination scar on an upper arm with a pointing finger, 800x650, supplied by Sharon, provenance/licence unverified (looks like a stock photo). NOT yet confirmed that it is a smallpox-vaccine scar. Converted to B/W, upscaled 2x (Lanczos) for the zoom.
 
 - v28 vial drawing supplied by Sharon was tried on the VACCINATION slide and removed in v29 (not used).
+
+## Audio (v33)
+- Voiceover: Sharon's own recording (New Recording 23.m4a), complete takes cut at silences, room tone fill, light high-pass/compression, loudness-normalised. Not published anywhere else.
+- Sound effects and quiet bed: synthesised in code (numpy/scipy), no third-party samples.
