@@ -1,7 +1,6 @@
 """Build the clean, continuous voiceover from Sharon's recordings -> vo/clean/voice.wav + vo/clean/pieces.json
 
-Recordings: vo/rec24.wav (main read, "New Recording 24") and vo/rec25.wav (re-recorded ending, "New Recording 25").
-Only complete, final takes are used (rec24 restarts "והכל קורה..." and "הן קוראות..."; the second takes are used).
+Recording: vo/rec27.wav ("New Recording 27"). Only complete, final takes are used (see LINES).
 
 Edit rules (englishu-reel pipeline):
   * cut only in the gaps, at the quietest 10 ms point, with 15 ms crossfades; never inside a word
@@ -31,18 +30,21 @@ def load(name):
     return np.frombuffer(raw, np.float32).copy()
 
 
-rec = {'rec24': load('rec24.wav'), 'rec25': load('rec25.wav')}
+rec = {'rec27': load('rec27.wav')}
 
+# Current read: "New Recording 27" (complete, final takes only; restarts, "נו." and a stray "ואנחנו" are cut).
+# (Earlier read: recordings 24 + 25; see git history.)
 # (id, recording, start, end, gap AFTER this line in seconds, text)
 LINES = [
-    ('l1', 'rec24', 1.62, 4.98, 0.36, 'דבורה חוזרת לכוורת שלה, ומתחילה לרקוד.'),
-    ('l2', 'rec24', 4.98, 7.85, 0.50, 'זה לא ריקוד של שמחה, אלא כתובת.'),
-    ('l3', 'rec24', 11.30, 19.20, 0.55, 'הזווית של הדבורה מראה את הכיוון ביחס לשמש, ואורך הנענוע? ככל שהוא ארוך יותר, האוכל רחוק יותר.'),
-    ('l4', 'rec24', 21.65, 25.10, 0.55, 'Bees convey precise directions through a dance.'),
-    ('l5', 'rec24', 32.45, 36.45, 0.38, 'והכל קורה בחושך מוחלט, אז איך שאר הדבורים מבינות?'),
-    ('l6', 'rec24', 39.78, 42.45, 0.55, 'הן קוראות את הריקוד עם המחושים שלהן.'),
-    ('l7', 'rec24', 45.38, 48.90, 0.60, 'Scientists worked for years to decipher this dance.'),
-    ('l8', 'rec25', 1.22, 5.45, 0.0, 'הריקוד הוא הוויז של הדבורים, בלי צורך באפליקציה או קליטה.'),
+    ('l1', 'rec27', 0.05, 6.36, 0.30, 'דבורה חוזרת לכוורת שלה ומתחילה לרקוד, אבל זה לא ריקוד של שמחה.'),
+    ('l2', 'rec27', 6.38, 8.75, 0.50, 'זו כתובת.'),
+    ('l3', 'rec27', 23.05, 29.38, 0.30, 'הזווית שלה מראה לה את הכיוון ביחס לשמש, וככל שהנענוע ארוך יותר, האוכל רחוק יותר.'),
+    ('l3b', 'rec27', 29.52, 30.42, 0.22, 'כלומר,'),
+    ('l4', 'rec27', 30.48, 34.12, 0.55, 'Bees convey precise directions through a dance.'),
+    ('l5', 'rec27', 42.88, 46.48, 0.35, 'ובחושך מוחלט, אז איך שאר הדבורים מבינות?'),
+    ('l6', 'rec27', 46.50, 48.92, 0.55, 'הן קוראות את הריקוד עם המחושים.'),
+    ('l7', 'rec27', 50.12, 53.78, 0.60, 'Scientists worked for years to decipher this dance.'),
+    ('l8', 'rec27', 58.48, 63.98, 0.0, 'בקיצור, זה הוויז של הדבורים, בלי אפליקציה ובלי צורך בקליטה.'),
 ]
 MAX_INNER_PAUSE = 0.32  # cap for pauses inside a line
 XF = int(0.015 * SR)  # 15 ms crossfades
@@ -54,11 +56,11 @@ def frame_db(x):
     return 20 * np.log10(np.sqrt((x[:n * HOP].reshape(n, HOP) ** 2).mean(1)) + 1e-9)
 
 
-# room tone: the quietest 0.4 s of rec24, tiled with crossfades
-d24 = frame_db(rec['rec24'])
+# room tone: the quietest 0.4 s of the recording, tiled with crossfades
+d24 = frame_db(rec['rec27'])
 win = 40
 best = min(range(len(d24) - win), key=lambda i: d24[i:i + win].mean())
-tone_src = rec['rec24'][best * HOP:(best + win) * HOP]
+tone_src = rec['rec27'][best * HOP:(best + win) * HOP]
 
 
 def room_tone(n):
@@ -78,7 +80,7 @@ def room_tone(n):
 
 def quietest(x, a, b):
     """Sample index of the quietest 10 ms frame between sample a and b."""
-    a, b = int(a), int(b)
+    a, b = max(0, int(a)), int(b)
     if b - a < HOP * 2:
         return (a + b) // 2
     seg = x[a:b]

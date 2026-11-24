@@ -24,7 +24,8 @@ export const BeeReel: React.FC = () => {
   useFonts();
   const f = useCurrentFrame();
   // the plate dims into the hive for beat 5 (the one dark variant), then comes back
-  const dim = interpolate(f, [sec(16.8), sec(17.2), sec(23.8), sec(24.2)], [0, 0.9, 0.9, 0], {
+  const [d0, d1] = SCENES.s5;
+  const dim = interpolate(f, [sec(d0 - 0.2), sec(d0 + 0.2), sec(d1 - 0.2), sec(d1 + 0.2)], [0, 0.9, 0.9, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });

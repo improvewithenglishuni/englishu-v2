@@ -31,7 +31,7 @@ export const S4Convey: React.FC<{dur: number}> = ({dur}) => {
     {x: 790, y: 1210, r: -70},
   ];
   const T = (i: number) => {
-    const leave = 4 + i * 5;
+    const leave = LEAD + 4 + i * 5;
     const arrive = leave + 15;
     const rise = arrive + 6;
     return {leave, arrive, rise, land: rise + 15};
@@ -128,6 +128,9 @@ export const S4Convey: React.FC<{dur: number}> = ({dur}) => {
   );
 };
 
+/** CONVEY waits for "כלומר," to finish: the first letter leaves the dancer on "Bees". */
+const LEAD = 30;
+
 const bez2 = (t: number, p0: number, p1: number, p2: number) => (1 - t) ** 2 * p0 + 2 * (1 - t) * t * p1 + t ** 2 * p2;
 
 /** Drawn stand-in for the real hive footage: dark comb, a dancer and followers. */
@@ -199,7 +202,7 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
   const out = exitOut(f, dur);
   const push = 1.04 + 0.08 * prog(f, 0, dur);
   const dark = interpolate(f, [0, 20, 56], [0, 0.15, 0.62], {extrapolateRight: 'clamp'});
-  const LENS = 118; // the magnifier opens just before "הן קוראות את הריקוד"
+  const LENS = 111; // the magnifier opens just before "הן קוראות את הריקוד"
   const stick = pop(f, LENS + 4, 12);
   const into = interpolate(f, [0, 8], [0, 1], {extrapolateRight: 'clamp'});
   return (

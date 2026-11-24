@@ -24,11 +24,28 @@ import wave
 import numpy as np
 
 SR = 48000
-DUR = 36.7
+DUR = 39.3
 # Scene starts before (placeholder timing, which the event times below were written against) and after
 # re-timing to the voiceover. M(t) maps an old absolute time to the same moment in the re-timed scene.
 OLD = [0, 3, 6, 13, 17, 24, 28, 32.4, 35.1]
-NEW = [0, 3.55, 6.85, 14.55, 18.45, 25.45, 29.45, 34.0, 36.7]
+NEW = [0, 3.95, 8.7, 15.25, 20.3, 26.85, 30.95, 36.6, 39.3]
+FPS = 30
+S2_DRAW = (4, 70)   # S2: figure-eight draw-on frames (src/scenes/S2S3.tsx)
+S3_SPLIT = 85       # S3: part A (angle) -> part B (distance); part A plays 105 designed frames in SPLIT frames
+S4_LEAD = 30        # S4: CONVEY letters wait for "כלומר,"
+S5_LENS = 111       # S5: magnifier opens
+
+
+def s2(frame):
+    return NEW[1] + frame / FPS
+
+
+def s3a(designed_frame):
+    return NEW[2] + designed_frame * S3_SPLIT / 105 / FPS
+
+
+def s3b(frames_after_split):
+    return NEW[2] + (S3_SPLIT + frames_after_split) / FPS
 
 
 def M(t):
@@ -147,7 +164,8 @@ add(amb, h1, 0.0, 0.6)
 # Dark hive (beat 5): hum swells in muffled, opens up when the antennae lens appears (~20.7 s)
 h5 = segment(hum, 5, 7.6, fade=0.3)
 muff = onepole_lp(h5, 500)
-mix5 = muff * env_lin(len(h5), [(0, 1), (3.75, 1), (4.35, 0.3), (7.6, 0.3)]) + h5 * env_lin(len(h5), [(0, 0), (3.75, 0), (4.35, 0.9), (7.6, 0.9)])
+_o = 0.3 + S5_LENS / FPS  # lens opens, relative to the hum's start
+mix5 = muff * env_lin(len(h5), [(0, 1), (_o - 0.25, 1), (_o + 0.35, 0.3), (7.6, 0.3)]) + h5 * env_lin(len(h5), [(0, 0), (_o - 0.25, 0), (_o + 0.35, 0.9), (7.6, 0.9)])
 mix5 *= env_lin(len(h5), [(0, 0), (0.6, 1.0), (6.8, 1.0), (7.6, 0)])
 add(amb, mix5, NEW[4] - 0.3, 0.95)
 # Callback (beat 7): meadow with the hive faintly underneath (the lens), out on the end card
@@ -174,11 +192,11 @@ def marker_line(start, dur):
 
 
 add(sfx, paper_take(0), M(3.0) - JC, 0.55)              # beat 2: the hive frame arrives
-add(sfx, marker_line(0.4, 1.6), M(3.13) - JC, 0.45)      # beat 2: the figure-eight draws on (the hero)
-add(sfx, marker_line(3.2, 0.75), M(6.27) - JC, 0.4)      # beat 3: sun + flower lines draw on
-add(sfx, paper_take(1), M(7.33) - JC, 0.5)               # beat 3: the comb frame arrives
-add(sfx, paper_take(2), M(9.63) - JC, 0.45)              # beat 3: short-waggle row
-add(sfx, paper_take(3, 1.08), M(10.83) - JC, 0.45)       # beat 3: long-waggle row (pitched take)
+add(sfx, marker_line(0.4, 2.2), s2(S2_DRAW[0]) - JC, 0.45)      # beat 2: the figure-eight draws on (the hero)
+add(sfx, marker_line(3.2, 0.75), s3a(8) - JC, 0.4)      # beat 3: sun + flower lines draw on
+add(sfx, paper_take(1), s3a(40) - JC, 0.5)               # beat 3: the comb frame arrives
+add(sfx, paper_take(2), s3b(4) - JC, 0.45)              # beat 3: short-waggle row
+add(sfx, paper_take(3, 1.08), s3b(40) - JC, 0.45)       # beat 3: long-waggle row (pitched take)
 add(sfx, marker_line(6.3, 0.7), NEW[5] - JC, 0.4)       # beat 6: the scramble scribble
 
 # ---------------- waggle buzz: plays exactly while a bee waggles ----------------
@@ -194,8 +212,15 @@ def waggle_buzz(dur):
 
 
 # beat 2: the figure-eight bee's two waggle runs; beat 3: the angle run, then short vs long run
-for start, dur, g in [(3.13, 0.33, 0.55), (3.93, 0.33, 0.55), (8.07, 1.2, 0.6), (9.9, 0.6, 0.6), (11.1, 1.13, 0.6)]:
-    add(sfx, waggle_buzz(dur), M(start), g)
+_d = (S2_DRAW[1] - S2_DRAW[0]) / FPS
+for start, dur, g in [
+    (s2(S2_DRAW[0]), 0.2 * _d, 0.55),                 # S2: first waggle run of the figure-eight
+    (s2(S2_DRAW[0]) + 0.5 * _d, 0.2 * _d, 0.55),      # S2: second run
+    (s3a(62), s3a(98) - s3a(62), 0.6),                # S3: the angled run on the comb
+    (s3b(12), (30 - 12) / FPS, 0.6),                  # S3: short waggle
+    (s3b(48), (82 - 48) / FPS, 0.6),                  # S3: long waggle
+]:
+    add(sfx, waggle_buzz(dur), start, g)
 
 # ---------------- CONVEY: a wing-flick as each letter reaches a follower ----------------
 for i in range(6):
@@ -205,8 +230,8 @@ for i in range(6):
     rate = 1.0 + 0.08 * i
     grain = np.interp(np.arange(n) * rate, np.arange(len(buzz_src)), buzz_src)[:n]
     grain *= np.sin(np.pi * t / t[-1]) ** 2
-    add(sfx, grain, M(arrive) - 0.02, 0.5)
-add(sfx, pluck(mtof(76), 1.6, 0.4) * 0.5 + pluck(mtof(81), 1.6, 0.4) * 0.4, M(15.17), 0.35)  # word complete
+    add(sfx, grain, M(arrive) + S4_LEAD / FPS - 0.02, 0.5)
+add(sfx, pluck(mtof(76), 1.6, 0.4) * 0.5 + pluck(mtof(81), 1.6, 0.4) * 0.4, M(15.17) + S4_LEAD / FPS, 0.35)  # word complete
 
 # ---------------- DECIPHER: scrambled flutter that settles into a resolved chord ----------------
 fl = np.resize(buzz_src, int(1.6 * SR)) * env_lin(int(1.6 * SR), [(0, 0), (0.2, 0.5), (1.3, 0.35), (1.6, 0)])

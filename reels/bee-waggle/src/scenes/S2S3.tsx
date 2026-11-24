@@ -16,8 +16,9 @@ export const S2Address: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur);
   const frame = pop(f, 0, 14);
-  const draw = prog(f, 4, 52, (t) => t);
-  const pin = pop(f, 50, 9);
+  const DRAW_END = 70; // the figure-eight finishes just before "זו כתובת"
+  const draw = prog(f, 4, DRAW_END, (t) => t);
+  const pin = pop(f, DRAW_END + 3, 9); // the pin lands on "כתובת"
   const center = {x: 540, y: 720};
   const sc = 1.15;
   return (
@@ -116,17 +117,18 @@ const DistanceRow: React.FC<{y: number; s: number; runLen: number; runP: number;
 export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur);
-  const SPLIT = 104; // part A (angle) -> part B (distance), on "ואורך הנענוע?"
+  const SPLIT = 85; // part A (angle) -> part B (distance), on "וככל שהנענוע ארוך יותר"
   const aOut = interpolate(f, [SPLIT - 8, SPLIT], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 
+  const g = (f * 105) / SPLIT; // part A was designed for 105 frames
   // ---- Part A: outside (top) and the same angle on the vertical comb (bottom)
   const P = {x: 540, y: 640};
   const sun = {x: 540, y: 200};
   const flower = polar(P.x, P.y, ANG, 360);
-  const frameS = pop(f, 40, 14);
+  const frameS = pop(g, 40, 14);
   const comb = {x: 540, y: 1235};
   const runEnd = polar(comb.x, comb.y, ANG, 300);
-  const beeP = prog(f, 62, 98);
+  const beeP = prog(g, 62, 98);
   const zz = zigzag(comb.x, comb.y, runEnd.x, runEnd.y, 12, 14);
   const beeIdx = Math.min(zz.length - 1, Math.floor(beeP * (zz.length - 1)));
   const lbl = polar(P.x, P.y, ANG / 2, 170);
@@ -143,29 +145,29 @@ export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
       {f < SPLIT && (
         <AbsoluteFill style={{opacity: aOut}}>
           <svg width={1080} height={1920} style={{position: 'absolute'}}>
-            <Line x1={P.x} y1={P.y - 40} x2={sun.x} y2={sun.y + 80} p={prog(f, 8, 22)} color={DASH.color} w={DASH.width} dash />
-            <Line x1={P.x} y1={P.y - 40} x2={flower.x} y2={flower.y} p={prog(f, 14, 28)} color={C.amber} w={12} />
-            <Arc cx={P.x} cy={P.y - 40} r={130} a={ANG} p={prog(f, 26, 38)} />
+            <Line x1={P.x} y1={P.y - 40} x2={sun.x} y2={sun.y + 80} p={prog(g, 8, 22)} color={DASH.color} w={DASH.width} dash />
+            <Line x1={P.x} y1={P.y - 40} x2={flower.x} y2={flower.y} p={prog(g, 14, 28)} color={C.amber} w={12} />
+            <Arc cx={P.x} cy={P.y - 40} r={130} a={ANG} p={prog(g, 26, 38)} />
           </svg>
-          <Sun size={170} style={{left: sun.x - 85, top: sun.y - 85, transform: `scale(${pop(f, 0)})`}} />
-          <div style={{position: 'absolute', left: P.x - 60, top: P.y - 50, transform: `scale(${pop(f, 3)})`}}>
+          <Sun size={170} style={{left: sun.x - 85, top: sun.y - 85, transform: `scale(${pop(g, 0)})`}} />
+          <div style={{position: 'absolute', left: P.x - 60, top: P.y - 50, transform: `scale(${pop(g, 3)})`}}>
             <HiveBox w={120} />
           </div>
-          <Flower size={104} style={{left: flower.x - 52, top: flower.y - 52, transform: `scale(${pop(f, 12)})`}} />
-          <Hand x={lbl.x} y={lbl.y - 40} size={76} lang="en" s={pop(f, 34, 10)} color={C.amberDeep}>
+          <Flower size={104} style={{left: flower.x - 52, top: flower.y - 52, transform: `scale(${pop(g, 12)})`}} />
+          <Hand x={lbl.x} y={lbl.y - 40} size={76} lang="en" s={pop(g, 34, 10)} color={C.amberDeep}>
             40°
           </Hand>
-          <Arrow x1={P.x + 150} y1={P.y - 60} x2={comb.x + 150} y2={comb.y - 150} bend={-0.35} p={prog(f, 40, 56)} dash color={DASH.color} w={DASH.width} />
+          <Arrow x1={P.x + 150} y1={P.y - 60} x2={comb.x + 150} y2={comb.y - 150} bend={-0.35} p={prog(g, 40, 56)} dash color={DASH.color} w={DASH.width} />
           {/* the comb, standing vertically inside the dark hive */}
           <HiveFrame x={140} y={900} w={800} h={380} seed="s3frame" scale={frameS} r={30} />
           <svg width={1080} height={1920} style={{position: 'absolute', opacity: frameS}}>
-            <Line x1={comb.x} y1={comb.y} x2={comb.x} y2={950} p={prog(f, 46, 58)} color="#fff" w={9} />
+            <Line x1={comb.x} y1={comb.y} x2={comb.x} y2={950} p={prog(g, 46, 58)} color="#fff" w={9} />
             {f > 58 && <polyline points={`${comb.x - 16},${972} ${comb.x},${948} ${comb.x + 16},${972}`} stroke="#fff" strokeWidth={9} fill="none" strokeLinecap="round" strokeLinejoin="round" />}
             <polyline points={zz.slice(0, beeIdx + 1).map(([x, y]) => `${x},${y}`).join(' ')} stroke="#fff" strokeWidth={9} fill="none" strokeLinejoin="round" strokeLinecap={DASH.cap} strokeDasharray={DASH.array} />
-            <Arc cx={comb.x} cy={comb.y} r={110} a={ANG} p={prog(f, 70, 84)} color="#fff" />
+            <Arc cx={comb.x} cy={comb.y} r={110} a={ANG} p={prog(g, 70, 84)} color="#fff" />
           </svg>
-          <Sun size={74} style={{left: comb.x - 37, top: 912, transform: `scale(${pop(f, 56, 10)})`}} />
-          <Hand x={lbl2.x + 14} y={lbl2.y - 24} size={70} lang="en" s={pop(f, 82, 10)} color="#fff" halo={C.ink}>
+          <Sun size={74} style={{left: comb.x - 37, top: 912, transform: `scale(${pop(g, 56, 10)})`}} />
+          <Hand x={lbl2.x + 14} y={lbl2.y - 24} size={70} lang="en" s={pop(g, 82, 10)} color="#fff" halo={C.ink}>
             40°
           </Hand>
           {beeP > 0 && (
