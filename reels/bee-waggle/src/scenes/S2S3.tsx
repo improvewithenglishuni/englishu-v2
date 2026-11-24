@@ -116,7 +116,7 @@ const DistanceRow: React.FC<{y: number; s: number; runLen: number; runP: number;
 export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur);
-  const SPLIT = 105; // part A (angle) -> part B (distance)
+  const SPLIT = 104; // part A (angle) -> part B (distance), on "ואורך הנענוע?"
   const aOut = interpolate(f, [SPLIT - 8, SPLIT], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 
   // ---- Part A: outside (top) and the same angle on the vertical comb (bottom)

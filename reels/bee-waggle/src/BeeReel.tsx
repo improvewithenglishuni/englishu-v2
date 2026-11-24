@@ -50,7 +50,8 @@ export const BeeReel: React.FC = () => {
       </Sequence>
       {scene('end', EndCard)}
       <Grain />
-      <Audio src={staticFile('audio/bed_sfx.wav')} />
+      <Audio src={staticFile('audio/bed_sfx.wav')} volume={0.6} />
+      <Audio src={staticFile('audio/voice.wav')} />
     </AbsoluteFill>
   );
 };

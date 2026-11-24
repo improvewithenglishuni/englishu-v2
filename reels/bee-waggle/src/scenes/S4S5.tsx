@@ -199,7 +199,8 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
   const out = exitOut(f, dur);
   const push = 1.04 + 0.08 * prog(f, 0, dur);
   const dark = interpolate(f, [0, 20, 56], [0, 0.15, 0.62], {extrapolateRight: 'clamp'});
-  const stick = pop(f, 112, 12);
+  const LENS = 118; // the magnifier opens just before "הן קוראות את הריקוד"
+  const stick = pop(f, LENS + 4, 12);
   const into = interpolate(f, [0, 8], [0, 1], {extrapolateRight: 'clamp'});
   return (
     <AbsoluteFill style={{opacity: out}}>
@@ -215,11 +216,11 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
       </AbsoluteFill>
       {/* the dance, sketched over the real footage: the figure-eight drawn around the bee in the centre;
           it stays bright as the hive goes dark (the dance is felt, not seen) */}
-      {f < 116 && (
-        <AbsoluteFill style={{opacity: interpolate(f, [100, 114], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}), filter: 'drop-shadow(0 3px 4px rgba(0,0,0,0.45))'}}>
+      {f < LENS + 8 && (
+        <AbsoluteFill style={{opacity: interpolate(f, [LENS - 8, LENS + 6], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}), filter: 'drop-shadow(0 3px 4px rgba(0,0,0,0.45))'}}>
           <DanceFigure
             size={760}
-            draw={prog(f, 8, 92, (t) => t)}
+            draw={prog(f, 8, LENS - 16, (t) => t)}
             dashed
             pen
             id="s5trace"
@@ -227,7 +228,7 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
           />
         </AbsoluteFill>
       )}
-      {f >= 108 && (
+      {f >= LENS && (
         <>
           <Lens cx={540} cy={720} r={360} s={stick}>
             <OffthreadVideo
@@ -244,7 +245,7 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
                   <circle
                     cx={x}
                     cy={y}
-                    r={105 * pop(f, 120, 12)}
+                    r={105 * pop(f, LENS + 12, 12)}
                     fill="none"
                     stroke={DASH.color}
                     strokeWidth={DASH.width}

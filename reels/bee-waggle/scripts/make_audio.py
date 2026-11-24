@@ -24,7 +24,20 @@ import wave
 import numpy as np
 
 SR = 48000
-DUR = 35.1
+DUR = 36.7
+# Scene starts before (placeholder timing, which the event times below were written against) and after
+# re-timing to the voiceover. M(t) maps an old absolute time to the same moment in the re-timed scene.
+OLD = [0, 3, 6, 13, 17, 24, 28, 32.4, 35.1]
+NEW = [0, 3.55, 6.85, 14.55, 18.45, 25.45, 29.45, 34.0, 36.7]
+
+
+def M(t):
+    for i in range(len(OLD) - 1):
+        if OLD[i] <= t < OLD[i + 1]:
+            return NEW[i] + (t - OLD[i])
+    return t + (NEW[-1] - OLD[-1])
+
+
 N = int(SR * DUR)
 rng = np.random.default_rng(11)
 ROOT = os.path.join(os.path.dirname(__file__), '..')
@@ -127,21 +140,21 @@ mus = np.zeros(N)
 
 # ---------------- ambience ----------------
 # Park (beat 1): meadow, then the "sonic zoom" into the hive as the magnifier opens (~1.3-1.8 s)
-m1 = segment(meadow, 0, 3.2, fade=0.05) * env_lin(int(3.2 * SR), [(0, 0.0), (0.15, 1.0), (1.25, 1.0), (1.9, 0.15), (3.2, 0.0)])
+m1 = segment(meadow, 0, 3.7, fade=0.05) * env_lin(int(3.7 * SR), [(0, 0.0), (0.15, 1.0), (1.25, 1.0), (1.9, 0.15), (3.7, 0.0)])
 add(amb, m1, 0, 0.55)
-h1 = segment(hum, 2, 3.0, fade=0.05) * env_lin(int(3.0 * SR), [(0, 0), (1.25, 0), (1.9, 1), (2.7, 1), (3.0, 0)])
+h1 = segment(hum, 2, 3.6, fade=0.05) * env_lin(int(3.6 * SR), [(0, 0), (1.25, 0), (1.9, 1), (3.3, 1), (3.6, 0)])
 add(amb, h1, 0.0, 0.6)
 # Dark hive (beat 5): hum swells in muffled, opens up when the antennae lens appears (~20.7 s)
 h5 = segment(hum, 5, 7.6, fade=0.3)
 muff = onepole_lp(h5, 500)
-mix5 = muff * env_lin(len(h5), [(0, 1), (3.4, 1), (4.0, 0.3), (7.6, 0.3)]) + h5 * env_lin(len(h5), [(0, 0), (3.4, 0), (4.0, 0.9), (7.6, 0.9)])
+mix5 = muff * env_lin(len(h5), [(0, 1), (3.75, 1), (4.35, 0.3), (7.6, 0.3)]) + h5 * env_lin(len(h5), [(0, 0), (3.75, 0), (4.35, 0.9), (7.6, 0.9)])
 mix5 *= env_lin(len(h5), [(0, 0), (0.6, 1.0), (6.8, 1.0), (7.6, 0)])
-add(amb, mix5, 16.7, 0.95)
+add(amb, mix5, NEW[4] - 0.3, 0.95)
 # Callback (beat 7): meadow with the hive faintly underneath (the lens), out on the end card
-m7 = segment(meadow, 6, 5.0, fade=0.5)
-add(amb, m7, 28.0 - 0.15, 0.5)  # J-cut back into the park
-h7 = segment(hum, 12, 4.6, fade=0.6)
-add(amb, h7, 28.1, 0.22)
+m7 = segment(meadow, 6, 5.6, fade=0.5)
+add(amb, m7, NEW[6] - 0.15, 0.5)  # J-cut back into the park
+h7 = segment(hum, 12, 4.7, fade=0.6)
+add(amb, h7, NEW[6] + 0.1, 0.22)
 
 # ---------------- the forager flies in (beat 1) ----------------
 fb = segment(flyby, 1.0, 1.45, fade=0.05)
@@ -160,13 +173,13 @@ def marker_line(start, dur):
     return segment(marker, start, dur, fade=0.05)
 
 
-add(sfx, paper_take(0), 3.0 - JC, 0.55)              # beat 2: the hive frame arrives
-add(sfx, marker_line(0.4, 1.6), 3.13 - JC, 0.45)      # beat 2: the figure-eight draws on (the hero)
-add(sfx, marker_line(3.2, 0.75), 6.27 - JC, 0.4)      # beat 3: sun + flower lines draw on
-add(sfx, paper_take(1), 7.33 - JC, 0.5)               # beat 3: the comb frame arrives
-add(sfx, paper_take(2), 9.63 - JC, 0.45)              # beat 3: short-waggle row
-add(sfx, paper_take(3, 1.08), 10.83 - JC, 0.45)       # beat 3: long-waggle row (pitched take)
-add(sfx, marker_line(6.3, 0.7), 24.0 - JC, 0.4)       # beat 6: the scramble scribble
+add(sfx, paper_take(0), M(3.0) - JC, 0.55)              # beat 2: the hive frame arrives
+add(sfx, marker_line(0.4, 1.6), M(3.13) - JC, 0.45)      # beat 2: the figure-eight draws on (the hero)
+add(sfx, marker_line(3.2, 0.75), M(6.27) - JC, 0.4)      # beat 3: sun + flower lines draw on
+add(sfx, paper_take(1), M(7.33) - JC, 0.5)               # beat 3: the comb frame arrives
+add(sfx, paper_take(2), M(9.63) - JC, 0.45)              # beat 3: short-waggle row
+add(sfx, paper_take(3, 1.08), M(10.83) - JC, 0.45)       # beat 3: long-waggle row (pitched take)
+add(sfx, marker_line(6.3, 0.7), NEW[5] - JC, 0.4)       # beat 6: the scramble scribble
 
 # ---------------- waggle buzz: plays exactly while a bee waggles ----------------
 buzz_src = bandpass(segment(flyby, 2.0, 4.0, fade=0.0), 150, 2500)
@@ -182,7 +195,7 @@ def waggle_buzz(dur):
 
 # beat 2: the figure-eight bee's two waggle runs; beat 3: the angle run, then short vs long run
 for start, dur, g in [(3.13, 0.33, 0.55), (3.93, 0.33, 0.55), (8.07, 1.2, 0.6), (9.9, 0.6, 0.6), (11.1, 1.13, 0.6)]:
-    add(sfx, waggle_buzz(dur), start, g)
+    add(sfx, waggle_buzz(dur), M(start), g)
 
 # ---------------- CONVEY: a wing-flick as each letter reaches a follower ----------------
 for i in range(6):
@@ -192,26 +205,26 @@ for i in range(6):
     rate = 1.0 + 0.08 * i
     grain = np.interp(np.arange(n) * rate, np.arange(len(buzz_src)), buzz_src)[:n]
     grain *= np.sin(np.pi * t / t[-1]) ** 2
-    add(sfx, grain, arrive - 0.02, 0.5)
-add(sfx, pluck(mtof(76), 1.6, 0.4) * 0.5 + pluck(mtof(81), 1.6, 0.4) * 0.4, 15.17, 0.35)  # word complete
+    add(sfx, grain, M(arrive) - 0.02, 0.5)
+add(sfx, pluck(mtof(76), 1.6, 0.4) * 0.5 + pluck(mtof(81), 1.6, 0.4) * 0.4, M(15.17), 0.35)  # word complete
 
 # ---------------- DECIPHER: scrambled flutter that settles into a resolved chord ----------------
 fl = np.resize(buzz_src, int(1.6 * SR)) * env_lin(int(1.6 * SR), [(0, 0), (0.2, 0.5), (1.3, 0.35), (1.6, 0)])
 fl *= 0.6 + 0.4 * rng.standard_normal(len(fl)).clip(-1, 1)
-add(sfx, onepole_lp(fl, 1800), 24.55, 0.35)
+add(sfx, onepole_lp(fl, 1800), M(24.55), 0.35)
 for k, m in enumerate([69, 73, 76]):
-    add(sfx, pluck(mtof(m), 2.0, 0.35), 26.13 + k * 0.05, 0.3)
+    add(sfx, pluck(mtof(m), 2.0, 0.35), M(26.13) + k * 0.05, 0.3)
 
 # ---------------- music: OFF (Sharon didn't like the composed bed) ----------------
 # Set MUSIC = True to bring the plucked/bowed bed back, or better: drop in a licensed documentary track
 # (Musicbed / Artlist / Epidemic) or add music in the Instagram app at upload.
 MUSIC = False
 # Without music, a very quiet low-passed hive hum keeps the explainer beats from going dead silent.
-for a, b in [(2.9, 16.9), (23.9, 28.3)]:
+for a, b in [(NEW[1] - 0.1, NEW[4] + 0.15), (NEW[5] - 0.1, NEW[6] + 0.3)]:
     bed = onepole_lp(segment(hum, 3, b - a, fade=0.6), 420)
     add(amb, bed, a, 0.22)
 # end card: the meadow carries on and fades out
-add(amb, segment(meadow, 11, 2.9, fade=1.2), 32.2, 0.4)
+add(amb, segment(meadow, 11, 2.9, fade=1.2), NEW[7] - 0.1, 0.4)
 
 bpm = 92
 beat = 60 / bpm

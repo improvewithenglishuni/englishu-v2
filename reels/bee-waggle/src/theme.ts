@@ -54,17 +54,17 @@ export const MEDIA = {
   dancer: 'media/dancer.mp4', // red-dot dancer with followers, antennae moment in beat 5
 };
 
-// Placeholder timing (seconds) until the real voiceover is recorded.
-// Each scene: [start, end]. Re-time these to the recording; everything else follows.
+// Timing locked to Sharon's voiceover (vo/clean/voice.wav, from New Recording 24 + 25).
+// Each scene: [start, end] in seconds. Subtitle phrases follow what she actually says.
 export const SCENES = {
-  s1: [0, 3.0],
-  s2: [3.0, 6.0],
-  s3: [6.0, 13.0],
-  s4: [13.0, 17.0],
-  s5: [17.0, 24.0],
-  s6: [24.0, 28.0],
-  s7: [28.0, 32.4],
-  end: [32.4, 35.1],
+  s1: [0, 3.55],
+  s2: [3.55, 6.85],
+  s3: [6.85, 14.55],
+  s4: [14.55, 18.45],
+  s5: [18.45, 25.45],
+  s6: [25.45, 29.45],
+  s7: [29.45, 34.0],
+  end: [34.0, 36.7],
 } as const;
 
 export const TOTAL_SEC = SCENES.end[1];
@@ -73,23 +73,23 @@ export type Sub = {from: number; to: number; text: string; lang?: 'he' | 'en'; k
 
 // Subtitle phrases (absolute seconds). English lines stay until the scene changes.
 export const SUBS: Sub[] = [
-  {from: 0.15, to: 1.6, text: 'דבורה חוזרת לכוורת...'},
-  {from: 1.6, to: 3.0, text: 'ומתחילה לרקוד.'},
-  {from: 3.1, to: 4.4, text: 'זה לא ריקוד של שמחה.'},
-  {from: 4.4, to: 6.0, text: 'זו כתובת.'},
-  {from: 6.1, to: 8.0, text: 'הזווית של הדבורה מראה את הכיוון,'},
-  {from: 8.0, to: 9.5, text: 'ביחס לשמש.'},
-  {from: 9.6, to: 10.8, text: 'ואורך הנענוע?'},
-  {from: 10.8, to: 11.9, text: 'ככל שהוא ארוך יותר,'},
-  {from: 11.9, to: 13.0, text: 'האוכל רחוק יותר.'},
-  {from: 13.15, to: 17.0, text: 'Bees convey precise directions through a dance.', lang: 'en', key: 'convey'},
-  {from: 17.15, to: 19.1, text: 'והכול קורה בחושך מוחלט.'},
-  {from: 19.1, to: 21.0, text: 'אז איך שאר הדבורים מבינות?'},
-  {from: 21.0, to: 22.5, text: 'הן קוראות את הריקוד'},
-  {from: 22.5, to: 24.0, text: 'עם המחושים.'},
-  {from: 24.15, to: 28.0, text: 'Scientists worked for years to decipher this dance.', lang: 'en', key: 'decipher'},
-  {from: 28.15, to: 29.9, text: 'בפעם הבאה שתראו דבורה, תזכרו:'},
-  {from: 29.9, to: 32.4, text: 'ייתכן שהיא רק עכשיו קיבלה כתובת.'},
+  {from: 0.05, to: 1.85, text: 'דבורה חוזרת לכוורת שלה,'},
+  {from: 1.85, to: 3.55, text: 'ומתחילה לרקוד.'},
+  {from: 3.6, to: 5.6, text: 'זה לא ריקוד של שמחה,'},
+  {from: 5.6, to: 6.85, text: 'אלא כתובת.'},
+  {from: 6.95, to: 8.6, text: 'הזווית של הדבורה מראה'},
+  {from: 8.6, to: 10.3, text: 'את הכיוון ביחס לשמש,'},
+  {from: 10.3, to: 11.6, text: 'ואורך הנענוע?'},
+  {from: 11.6, to: 12.75, text: 'ככל שהוא ארוך יותר,'},
+  {from: 12.75, to: 14.55, text: 'האוכל רחוק יותר.'},
+  {from: 14.85, to: 18.45, text: 'Bees convey precise directions through a dance.', lang: 'en', key: 'convey'},
+  {from: 18.7, to: 20.55, text: 'והכול קורה בחושך מוחלט,'},
+  {from: 20.55, to: 22.6, text: 'אז איך שאר הדבורים מבינות?'},
+  {from: 22.65, to: 23.95, text: 'הן קוראות את הריקוד'},
+  {from: 23.95, to: 25.45, text: 'עם המחושים שלהן.'},
+  {from: 25.6, to: 29.45, text: 'Scientists worked for years to decipher this dance.', lang: 'en', key: 'decipher'},
+  {from: 29.7, to: 31.65, text: 'הריקוד הוא הוויז של הדבורים,'},
+  {from: 31.65, to: 34.0, text: 'בלי צורך באפליקציה או קליטה.'},
 ];
 
 export const sec = (s: number) => Math.round(s * FPS);
