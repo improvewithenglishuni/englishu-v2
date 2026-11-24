@@ -136,9 +136,12 @@ def shimmer(d):
     tt=T(d);e=np.sin(np.pi*np.minimum(1,tt/d))**2
     return (sum(np.sin(2*np.pi*f*tt+i)*0.2 for i,f in enumerate([523,659,784,1047]))*e)
 put(sfx,37.46,shimmer(0.9),0.35); put(sfx,52.72,shimmer(1.3),0.4)
-for at,r_ in [(46.83,1),(47.93,0)]:
+for at,r_ in [(46.83,1),(48.24,0)]:
     tt=T(0.7);put(sfx,at,bp(noise(0.7),500,3500)*np.sin(np.pi*tt/0.7)**2,0.35 if r_ else 0.3)  # two soft whooshes
 tt=T(0.5);put(sfx,49.77,np.sin(2*np.pi*(95*np.exp(-tt*5)+45)*tt)*np.exp(-tt*9)+bp(noise(0.5),300,2500)*np.exp(-tt*35)*0.5,0.9)  # stamp
+shutter(9.54,0.3)                                                                      # quick cut to the patient photo
+for k,at_ in enumerate([42.14,42.39,42.64,42.89,47.64]):                                 # continent labels and the Somalia tag pop in
+    tt=T(0.12);put(sfx,at_,(bp(noise(0.12),900,3500)*np.exp(-tt*45)+np.sin(2*np.pi*(260-20*k)*tt)*np.exp(-tt*35)*0.5),0.35 if k<4 else 0.5)
 sfx=lp(sfx,12000); sfx*=0.22/(np.abs(sfx).max()+1e-9)
 # ---------- outro ----------
 def tone(f,t0,dur,amp,dec=2.2):
@@ -160,5 +163,5 @@ mus*=0.05/rms(mus)
 ve=uniform_filter1d(np.abs(vo),int(0.05*sr)); duck=1-0.62*np.clip(ve/0.07,0,1); duck=uniform_filter1d(duck,int(0.25*sr))
 mix=vo+sfx+mus*duck+out+ch+spk
 mix/=max(1,np.abs(mix).max()/0.95)
-w.write('/home/claude/vo2/mix8.wav',sr,(mix*32767).astype(np.int16))
+w.write('/home/claude/vo2/mix9.wav',sr,(mix*32767).astype(np.int16))
 print('music rms',rms(mus),'voice rms',rms(vo))
