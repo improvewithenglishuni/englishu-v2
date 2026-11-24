@@ -151,7 +151,8 @@ const Vaccination = () => {
   const plungeV = interpolate(frame, [s(1.6), s(2.15)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
     <>
-      <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={470} fontSize={146} heavy at={2} actAt={s(1.6)} hiFrom={0} hiTo={4} gloss="vacca = פרה (לטינית)" />
+      <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={520} fontSize={146} heavy at={2} actAt={s(1.6)} hiFrom={0} hiTo={4} gloss="vacca = פרה (לטינית)" glossScale={0.5} glossGap={0.95} />
+      <SansHeading text="חיסון" x={540} y={560} fontSize={120} color="heading" dir="rtl" at={s(1.6)} />
       <Person x={PX} y={PY} size={560} tone="ink" glow={frame >= s(2.2) ? '#FDF551' : undefined} at={4} />
       <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#9A9DAA" liquid="#FDF551" plunge={plungeV} at={s(0.6)} />
       <Germs cx={PX} cy={PY + 10} rx={200} ry={330} n={12} at={s(2.5)} stagger={2} />

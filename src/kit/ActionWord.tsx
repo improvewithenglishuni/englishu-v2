@@ -52,6 +52,8 @@ export const ActionWord: React.FC<{
   /** small line under the word, e.g. "vacca = פרה" */
   gloss?: string;
   glossDir?: 'rtl' | 'ltr';
+  glossScale?: number;
+  glossGap?: number;
   exitAt?: number;
   /** vanish mode: outline-only letters that fill like liquid from the point `fillFromX` starting at `fillAt` */
   hollow?: boolean;
@@ -59,7 +61,7 @@ export const ActionWord: React.FC<{
   fillFromX?: number;
   /** bolder letters (weight 900 + thin stroke) */
   heavy?: boolean;
-}> = ({text, x, y, fontSize = 150, mode = 'uproot', color = 'white', at = 0, actAt = 40, hiFrom = 0, hiTo = 0, gloss, glossDir = 'rtl', exitAt, hollow = false, fillAt = 0, fillFromX = 540, heavy = false}) => {
+}> = ({text, x, y, fontSize = 150, mode = 'uproot', color = 'white', at = 0, actAt = 40, hiFrom = 0, hiTo = 0, gloss, glossDir = 'rtl', glossScale = 0.36, glossGap = 0.2, exitAt, hollow = false, fillAt = 0, fillFromX = 540, heavy = false}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const ui = useUi();
@@ -203,7 +205,7 @@ export const ActionWord: React.FC<{
           })}
         </div>
         {gloss && mode === 'pop' ? (
-          <div dir={glossDir} style={{textAlign: 'center', marginTop: fontSize * 0.2, fontFamily: SANS, fontWeight: 700, fontSize: fontSize * 0.36, color: hiTo > hiFrom ? '#E5500F' : main, opacity: clamp01((frame - actAt) / 8)}}>{gloss}</div>
+          <div dir={glossDir} style={{textAlign: 'center', marginTop: fontSize * glossGap, fontFamily: SANS, fontWeight: 700, fontSize: fontSize * glossScale, color: hiTo > hiFrom ? '#E5500F' : main, opacity: clamp01((frame - actAt) / 8)}}>{gloss}</div>
         ) : null}
       </Place>
     </>

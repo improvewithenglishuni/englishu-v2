@@ -150,14 +150,21 @@ for f,a in [(110,.5),(220,.4),(277.2,.28),(329.6,.28),(440,.22),(554.4,.14),(659
 a0,pk=55.0,56.89
 oenv=np.where(tb<a0,0,np.where(tb<pk,((tb-a0)/(pk-a0))**2,np.exp(-(tb-pk)*1.1)))*np.clip((59.65-tb)/1.0,0,1)
 ch=lp(ch*oenv,1800)*0.05
-spk=sum(tone(f,56.89+0.05*i,1.6,0.05,3.0) for i,f in enumerate([659.3,830.6,987.8]))
+spk=np.zeros(N,np.float32)  # final sparkle removed
 # ---------- mix ----------
 sr_,v=w.read('/home/claude/vo2/vo_final_new2.wav'); v=v.astype(np.float32)/32768
 vo=np.zeros(N,np.float32); vo[:len(v)]=v
 rms=lambda x:np.sqrt(np.mean(x[np.abs(x)>1e-4]**2))
 mus*=0.05/rms(mus)
+# soft intro bed: a quiet Am drone that fades in from the first frame and hands over to the pad at ~3.4-5 s
+ib=np.zeros(N,np.float32)
+for f,a in [(110,.5),(164.8,.3),(220,.35),(329.6,.18)]: ib+=np.sin(2*np.pi*f*tb)*a*(1+0.15*np.sin(2*np.pi*0.35*tb+f))
+ie=np.clip(tb/1.2,0,1)**1.5*np.clip((5.2-tb)/1.8,0,1)
+ib=lp(ib*ie,1400)
+ib*=0.8*rms(mus[int(3.8*sr):int(5.0*sr)])/(rms(ib[int(0.8*sr):int(2.8*sr)])+1e-9)
+mus=mus+ib
 ve=uniform_filter1d(np.abs(vo),int(0.05*sr)); duck=1-0.62*np.clip(ve/0.07,0,1); duck=uniform_filter1d(duck,int(0.25*sr))
 mix=vo+sfx+mus*duck+out+ch+spk
 mix/=max(1,np.abs(mix).max()/0.95)
-w.write('/home/claude/vo2/mix11.wav',sr,(mix*32767).astype(np.int16))
+w.write('/home/claude/vo2/mix12.wav',sr,(mix*32767).astype(np.int16))
 print('music rms',rms(mus),'voice rms',rms(vo))
