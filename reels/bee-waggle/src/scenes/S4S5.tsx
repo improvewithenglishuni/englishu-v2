@@ -214,20 +214,6 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
           style={{background: `radial-gradient(ellipse at 50% 42%, rgba(20,12,5,${dark * 0.55}) 20%, rgba(20,12,5,${Math.min(0.95, dark * 1.4)}) 75%)`}}
         />
       </AbsoluteFill>
-      {/* the dance, sketched over the real footage: the figure-eight drawn around the bee in the centre;
-          it stays bright as the hive goes dark (the dance is felt, not seen) */}
-      {f < LENS + 8 && (
-        <AbsoluteFill style={{opacity: interpolate(f, [LENS - 8, LENS + 6], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}), filter: 'drop-shadow(0 3px 4px rgba(0,0,0,0.45))'}}>
-          <DanceFigure
-            size={760}
-            draw={prog(f, 8, LENS - 16, (t) => t)}
-            dashed
-            pen
-            id="s5trace"
-            style={{left: 540 - 380, top: 760 - 380, transform: `scale(${1.35 * push})`}}
-          />
-        </AbsoluteFill>
-      )}
       {f >= LENS && (
         <>
           <Lens cx={540} cy={720} r={360} s={stick}>
