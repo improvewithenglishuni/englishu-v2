@@ -13,7 +13,7 @@ Target words: **ATTRIBUTE** (B2/C1, verb: לייחס) and **MISCONCEPTION** (C1,
 8. שלחו את זה למי שבטוח שהוא מבין באוכל סיני.
 9. ותשאלו אותו: מאיפה העוגייה?
 
-## Scene table (v3: David Libre, Vox Atlas maps, no caption sentences, manila tag)
+## Scene table (v4: Vox banner on Oakland 1942, no Hagiwara/Chinatown labels, real fortune slip)
 | Seconds | On screen | Image type |
 |---|---|---|
 | 0.0–4.2 | Sharon's restaurant photo (full frame, slow zoom) while the question lands; ~2.2 s to think; then the broken cookie pops in (no zoom ring) | Full-frame photo + cutout |
@@ -25,7 +25,7 @@ Target words: **ATTRIBUTE** (B2/C1, verb: לייחס) and **MISCONCEPTION** (C1,
 | 19.0–24.5 | Dorothea Lange, Oakland 1942 (Japanese-American store closed) → Chinatown fortune-cookie factory | Two full-frame photos, slow zoom |
 | 24.5–29.0 | MISCONCEPTION; a "CHINA" tag peels off the cookie and falls; gloss תפיסה מוטעית | Cutout, dark plate |
 | 29.0–32.2 | The cookie cracks in two, crumbs fly (real crunch sound) | Cutouts |
-| 32.2–35.5 | Callback to the hook slip: "מחכה לך פטור מאנגלית באמירנט / ציון: 134" | Drawn slip + cutouts |
+| 32.2–35.5 | Callback to the hook slip: a fortune slip in red serif ink, "אתם עתידים לקבל פטור מאנגלית / Lucky numbers: 134" | Drawn slip + cutouts |
 | 35.5–38.2 | End card | Brand |
 
 ## Accuracy notes

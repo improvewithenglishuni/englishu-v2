@@ -2,6 +2,8 @@
 // with real photos, real footage, sound and the end card.
 import React from 'react';
 import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import '@fontsource/tinos/hebrew-400.css';
+import '@fontsource/tinos/latin-400.css';
 import {Arc, C, FONT, Grain, KeyWord, Label, Plate, Sticker, Subtitle, clamp, lerp, prog, qPoint, usePop} from './kit';
 import {BaseMap, MAP, MapArrow, MapLabel, chinaProj, pacificProj} from './maps';
 
@@ -37,14 +39,49 @@ export const LINES: {from: number; to: number; text: string; ltr?: boolean; hl?:
 ];
 
 // Full-bleed real photo: the ONLY kind of image that gets a slow zoom (about 6% over the scene).
-const FullPhoto: React.FC<{src: string; dur: number}> = ({src, dur}) => {
+const FullPhoto: React.FC<{src: string; dur: number; children?: React.ReactNode}> = ({src, dur, children}) => {
   const f = useCurrentFrame();
   const z = interpolate(f, [0, dur], [1, 1.06], clamp);
   return (
     <AbsoluteFill style={{overflow: 'hidden', background: C.dark}}>
-      <Img src={staticFile(`img/${src}`)} style={{width: 1080, height: 1920, transform: `scale(${z})`}} />
+      <AbsoluteFill style={{transform: `scale(${z})`}}>
+        <Img src={staticFile(`img/${src}`)} style={{width: 1080, height: 1920}} />
+        {children}
+      </AbsoluteFill>
       <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 70%, rgba(20,20,30,0.45) 100%)'}} />
     </AbsoluteFill>
+  );
+};
+
+// Vox-style callout: yellow outline box drawn around the target + a yellow banner with a pointer.
+const Callout: React.FC<{box: [number, number, number, number]; text: string; above?: boolean; delay?: number}> = ({box, text, above = true, delay = 0}) => {
+  const f = useCurrentFrame();
+  const [x, y, w, h] = box;
+  const draw = prog(f, delay, delay + 12);
+  const ban = usePop(delay + 10, 14);
+  const Y = '#F2C230';
+  const bannerY = above ? y - 34 : y + h + 34;
+  return (
+    <>
+      <svg width={1080} height={1920} style={{position: 'absolute', left: 0, top: 0}}>
+        <rect x={x} y={y} width={w} height={h} fill="none" stroke={Y} strokeWidth={9} pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - draw} style={{filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.35))'}} />
+      </svg>
+      <div
+        style={{
+          position: 'absolute',
+          left: x + w / 2,
+          top: bannerY,
+          transform: `translate(-50%, ${above ? '-100%' : '0'}) scale(${ban})`,
+          transformOrigin: above ? '50% 100%' : '50% 0%',
+          opacity: Math.min(1, ban * 2),
+        }}
+      >
+        <div dir="rtl" style={{background: Y, color: '#1E1D1A', fontFamily: FONT, fontWeight: 700, fontSize: 76, lineHeight: 1, padding: '16px 34px 14px', whiteSpace: 'nowrap', boxShadow: '0 6px 12px rgba(0,0,0,0.35)'}}>
+          {text}
+        </div>
+        <div style={{position: 'absolute', left: '50%', [above ? 'bottom' : 'top']: -26, marginLeft: -24, width: 0, height: 0, borderLeft: '24px solid transparent', borderRight: '24px solid transparent', [above ? 'borderTop' : 'borderBottom']: `28px solid ${Y}`}} />
+      </div>
+    </>
   );
 };
 
@@ -146,9 +183,6 @@ const Attribute: React.FC = () => {
     <AbsoluteFill>
       <Plate />
       <Sticker src="press.png" x={470} y={420} w={840} rot={-1.5} delay={0} />
-      <Label x={470} y={180} size={44} delay={4} rot={-2}>
-        {'מקוטו הגיווארה'}
-      </Label>
       <Sticker src="cookie.png" x={810} y={1210} w={310} rot={8} delay={6} />
       <div style={{opacity: 1 - prog(f, 42, 54)}}>
         <Arc d={`M ${p0[0]} ${p0[1]} Q ${p1[0]} ${p1[1]} ${hole[0]} ${hole[1]}`} p={prog(f, 10, 38)} />
@@ -263,18 +297,13 @@ const War: React.FC = () => {
   return (
     <AbsoluteFill>
       {f < cut ? (
-        <>
-          <FullPhoto src="full_lange.jpg" dur={cut} />
-          <Label x={540} y={1250} size={48} delay={8} rot={-1.5}>
-            {'אוקלנד, 1942'}
-          </Label>
-        </>
+        <FullPhoto src="full_lange.jpg" dur={cut}>
+          {/* the SOLD sign on the store: Oakland, 1942 */}
+          <Callout box={[270, 156, 600, 250]} text="אוקלנד, 1942" above={false} delay={8} />
+        </FullPhoto>
       ) : (
         <Sequence from={cut} layout="none">
           <FullPhoto src="full_ggfc.jpg" dur={SCENES.war[1] - SCENES.war[0] - cut} />
-          <Label x={540} y={200} size={48} delay={8} rot={1.5}>
-            {"צ'יינה טאון"}
-          </Label>
         </Sequence>
       )}
     </AbsoluteFill>
@@ -383,41 +412,37 @@ const Crack: React.FC = () => {
 const Slip: React.FC = () => {
   const f = useCurrentFrame();
   const up = usePop(2, 16);
-  const l1 = Math.floor(lerp(f, 14, 40, 0, 1) * 15);
-  const l2 = Math.floor(lerp(f, 40, 56, 0, 1) * 13);
-  const words1 = 'פטור מאנגלית';
-  const shown = words1.slice(0, Math.floor(lerp(f, 12, 48, 0, words1.length, (x) => x)));
-  const score = usePop(54, 10);
-  const mark = prog(f, 62, 74);
-  void l1;
-  void l2;
+  const ink = '#C2303A';
+  const line1 = 'אתם עתידים לקבל פטור מאנגלית';
+  const shown = line1.slice(0, Math.floor(lerp(f, 12, 46, 0, line1.length, (x) => x)));
+  const lucky = prog(f, 50, 58);
   return (
     <AbsoluteFill>
       <Plate />
       <Img src={staticFile('img/half_left.png')} style={{position: 'absolute', left: -50, top: 1000, width: 520, transform: 'rotate(-10deg)', filter: 'drop-shadow(0 12px 14px rgba(0,0,0,0.3))'}} />
       <Img src={staticFile('img/half_right.png')} style={{position: 'absolute', left: 740, top: 840, width: 360, transform: 'rotate(14deg)', filter: 'drop-shadow(0 12px 14px rgba(0,0,0,0.3))'}} />
+      {/* the slip: long thin strip, slightly curled from the cookie, fine paper grain */}
       <div
         style={{
           position: 'absolute',
           left: 540,
-          top: 640 + (1 - up) * 700,
-          transform: `translate(-50%, -50%) rotate(${-3 + (1 - up) * 10}deg)`,
-          width: 860,
-          height: 330,
-          background: '#FBFAF4',
-          boxShadow: '0 16px 26px rgba(0,0,0,0.28)',
-          clipPath: 'polygon(0 3%, 100% 0, 99% 97%, 1% 100%)',
+          top: 660 + (1 - up) * 700,
+          transform: `translate(-50%, -50%) rotate(${-4 + (1 - up) * 10}deg)`,
+          width: 1000,
+          height: 250,
+          background: 'linear-gradient(180deg, #F3F1EA 0%, #FFFFFF 18%, #FBFAF6 80%, #E9E6DD 100%)',
+          boxShadow: '0 14px 22px rgba(0,0,0,0.25), inset 0 0 0 1px rgba(0,0,0,0.05)',
+          borderRadius: 4,
+          fontFamily: '"Tinos"',
+          color: ink,
+          textAlign: 'center',
         }}
       >
-        <div style={{position: 'absolute', left: 0, right: 0, top: 0, height: 14, background: '#C9CFDF', opacity: 0.7}} />
-        <div dir="rtl" style={{position: 'absolute', left: 40, right: 40, top: 46, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 84, lineHeight: 1.3, color: '#2E3A6E'}}>
+        <div dir="rtl" style={{position: 'absolute', left: 30, right: 30, top: 44, fontSize: 60, fontWeight: 400, lineHeight: 1.2}}>
           {shown}
         </div>
-        <div style={{position: 'absolute', left: 0, right: 0, top: 170, display: 'flex', justifyContent: 'center', transform: `scale(${score})`}}>
-          <div dir="rtl" style={{position: 'relative', fontFamily: FONT, fontWeight: 700, fontSize: 96, color: '#2E3A6E', padding: '0 22px'}}>
-            <div style={{position: 'absolute', left: 0, top: 10, bottom: 6, width: `${mark * 100}%`, background: C.yellow, zIndex: -1, transform: 'skew(-6deg)'}} />
-            134
-          </div>
+        <div dir="ltr" style={{position: 'absolute', left: 30, right: 30, top: 152, fontSize: 46, fontWeight: 400, opacity: lucky, letterSpacing: 1}}>
+          Lucky numbers: 134
         </div>
       </div>
     </AbsoluteFill>

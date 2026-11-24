@@ -134,7 +134,7 @@ def main():
 
     # --- Full-frame photos (these, and only these, get the slow zoom) --------
     full(R('rest_flavor.jpg'), 0.24).save(f'{OUT}/full_restaurant.jpg', quality=92)
-    full(R('lange_full.jpg'), 0.52, zoom=1.0).save(f'{OUT}/full_lange.jpg', quality=92)
+    full(R('lange_full.jpg'), 0.42, zoom=1.0).save(f'{OUT}/full_lange.jpg', quality=92)
     full(R('ggfc.jpg'), 0.36).save(f'{OUT}/full_ggfc.jpg', quality=92)
 
     # --- Video: Japanese Tea Garden gate, Golden Gate Park, cropped to 9:16 ---
