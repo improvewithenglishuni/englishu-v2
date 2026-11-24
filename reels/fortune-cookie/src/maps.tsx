@@ -45,16 +45,17 @@ export const BaseMap: React.FC<{proj: GeoProjection; fills?: Record<string, stri
 };
 
 // Bold map label: white letters with a dark outline (or dark on light).
-export const MapLabel: React.FC<{x: number; y: number; text: string; size?: number; dark?: boolean; o?: number}> = ({
+export const MapLabel: React.FC<{x: number; y: number; text: string; size?: number; dark?: boolean; o?: number; ltr?: boolean}> = ({
   x,
   y,
   text,
   size = 84,
   dark,
   o = 1,
+  ltr,
 }) => (
   <div
-    dir="rtl"
+    dir={ltr ? 'ltr' : 'rtl'}
     style={{
       position: 'absolute',
       left: x,

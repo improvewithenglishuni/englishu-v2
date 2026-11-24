@@ -4,8 +4,10 @@ import React from 'react';
 import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import '@fontsource/tinos/hebrew-400.css';
 import '@fontsource/tinos/latin-400.css';
+import '@fontsource/oswald/latin-700.css';
 import {Arc, C, FONT, Grain, KeyWord, Label, Plate, Sticker, Subtitle, clamp, lerp, prog, qPoint, usePop} from './kit';
-import {BaseMap, MAP, MapArrow, MapLabel, chinaProj, pacificProj} from './maps';
+import {geoPath} from 'd3-geo';
+import {BaseMap, MAP, MapArrow, MapLabel, chinaProj, country, pacificProj} from './maps';
 
 // ---- Timeline (frames @30fps), taken from mock-up v1. Retime to the voiceover.
 // v2: the hook is 1 s longer (restaurant + thinking time before the cookie), D shifts everything after it.
@@ -53,35 +55,17 @@ const FullPhoto: React.FC<{src: string; dur: number; children?: React.ReactNode}
   );
 };
 
-// Vox-style callout: yellow outline box drawn around the target + a yellow banner with a pointer.
-const Callout: React.FC<{box: [number, number, number, number]; text: string; above?: boolean; delay?: number}> = ({box, text, above = true, delay = 0}) => {
-  const f = useCurrentFrame();
-  const [x, y, w, h] = box;
-  const draw = prog(f, delay, delay + 12);
-  const ban = usePop(delay + 10, 14);
+// Vox-style place banner (like "TAHRIR SQUARE"): solid yellow bar, bold condensed caps, pointer below.
+const Banner: React.FC<{text: string; x?: number; y: number; delay?: number}> = ({text, x = 540, y, delay = 0}) => {
+  const ban = usePop(delay, 14);
   const Y = '#F2C230';
-  const bannerY = above ? y - 34 : y + h + 34;
   return (
-    <>
-      <svg width={1080} height={1920} style={{position: 'absolute', left: 0, top: 0}}>
-        <rect x={x} y={y} width={w} height={h} fill="none" stroke={Y} strokeWidth={9} pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - draw} style={{filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.35))'}} />
-      </svg>
-      <div
-        style={{
-          position: 'absolute',
-          left: x + w / 2,
-          top: bannerY,
-          transform: `translate(-50%, ${above ? '-100%' : '0'}) scale(${ban})`,
-          transformOrigin: above ? '50% 100%' : '50% 0%',
-          opacity: Math.min(1, ban * 2),
-        }}
-      >
-        <div dir="rtl" style={{background: Y, color: '#1E1D1A', fontFamily: FONT, fontWeight: 700, fontSize: 76, lineHeight: 1, padding: '16px 34px 14px', whiteSpace: 'nowrap', boxShadow: '0 6px 12px rgba(0,0,0,0.35)'}}>
-          {text}
-        </div>
-        <div style={{position: 'absolute', left: '50%', [above ? 'bottom' : 'top']: -26, marginLeft: -24, width: 0, height: 0, borderLeft: '24px solid transparent', borderRight: '24px solid transparent', [above ? 'borderTop' : 'borderBottom']: `28px solid ${Y}`}} />
+    <div style={{position: 'absolute', left: x, top: y, transform: `translate(-50%, -100%) scale(${ban})`, transformOrigin: '50% 100%', opacity: Math.min(1, ban * 2)}}>
+      <div style={{background: Y, color: '#1B1B1B', fontFamily: '"Oswald"', fontWeight: 700, fontSize: 104, lineHeight: 1, letterSpacing: 3, padding: '14px 36px 12px', whiteSpace: 'nowrap', boxShadow: '0 6px 14px rgba(0,0,0,0.35)', textTransform: 'uppercase'}}>
+        {text}
       </div>
-    </>
+      <div style={{position: 'absolute', left: '50%', bottom: -34, marginLeft: -30, width: 0, height: 0, borderLeft: '30px solid transparent', borderRight: '30px solid transparent', borderTop: `36px solid ${Y}`}} />
+    </div>
   );
 };
 
@@ -105,6 +89,8 @@ const China: React.FC = () => {
   const f = useCurrentFrame();
   const proj = chinaProj();
   const c = proj([104, 34]) as number[];
+  const bb = geoPath(proj).bounds(country('156'));
+  const mid = [(bb[0][0] + bb[1][0]) / 2, (bb[0][1] + bb[1][1]) / 2];
   const lab = usePop(4);
   const cookies = [
     {d: 14, x0: c[0] - 140, xEnd: -220, r: -260},
@@ -114,7 +100,6 @@ const China: React.FC = () => {
   return (
     <AbsoluteFill>
       <BaseMap proj={proj} fills={{'156': MAP.red}} />
-      <MapLabel x={c[0]} y={c[1] + 40} text="סין" size={120} o={Math.min(1, lab * 1.5)} />
       {cookies.map((k, i) => {
         const t = f - k.d;
         if (t < 0) return null;
@@ -132,6 +117,8 @@ const China: React.FC = () => {
           />
         );
       })}
+      {/* label in front of the cookies */}
+      <MapLabel x={mid[0]} y={mid[1]} text="CHINA" size={120} ltr o={Math.min(1, lab * 1.5)} />
     </AbsoluteFill>
   );
 };
@@ -299,7 +286,7 @@ const War: React.FC = () => {
       {f < cut ? (
         <FullPhoto src="full_lange.jpg" dur={cut}>
           {/* the SOLD sign on the store: Oakland, 1942 */}
-          <Callout box={[270, 156, 600, 250]} text="אוקלנד, 1942" above={false} delay={8} />
+          <Banner text="Oakland, 1942" y={880} delay={8} />
         </FullPhoto>
       ) : (
         <Sequence from={cut} layout="none">
