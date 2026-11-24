@@ -1,76 +1,64 @@
 // Fortune cookies Reel (ATTRIBUTE, MISCONCEPTION) — rebuild of fortune-cookie-mockup-v1
 // with real photos, real footage, sound and the end card.
 import React from 'react';
-import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Arc, C, FONT, Grain, KeyWord, Label, Plate, Sticker, Subtitle, clamp, lerp, prog, qPoint, usePop} from './kit';
 import {ChinaMap, PacificMap, pacificProj} from './maps';
 
 // ---- Timeline (frames @30fps), taken from mock-up v1. Retime to the voiceover.
+// v2: the hook is 1 s longer (restaurant + thinking time before the cookie), D shifts everything after it.
+const D = 30;
 export const SCENES = {
-  hook: [0, 96],
-  china: [96, 180],
-  y1878: [180, 285],
-  attribute: [285, 405],
-  garden: [405, 477],
-  voyage: [477, 540],
-  war: [540, 705],
-  misconception: [705, 840],
-  crack: [840, 936],
-  slip: [936, 1035],
-  end: [1035, 1116],
+  hook: [0, 96 + D],
+  china: [96 + D, 180 + D],
+  y1878: [180 + D, 285 + D],
+  attribute: [285 + D, 405 + D],
+  garden: [405 + D, 477 + D],
+  voyage: [477 + D, 540 + D],
+  war: [540 + D, 705 + D],
+  misconception: [705 + D, 840 + D],
+  crack: [840 + D, 936 + D],
+  slip: [936 + D, 1035 + D],
+  end: [1035 + D, 1116 + D],
 } as const;
-export const TOTAL = 1116; // 37.2 s
+export const TOTAL = 1116 + D; // 38.2 s
 
 // ---- Recording script = subtitles (from the mock-up, unchanged)
 export const LINES: {from: number; to: number; text: string; ltr?: boolean; hl?: string}[] = [
-  {from: 0, to: 96, text: 'מה הדבר הכי "סיני" במסעדה סינית, שבכלל לא סיני?'},
-  {from: 96, to: 180, text: 'עוגיות מזל, fortune cookies. בסין כמעט לא מכירים אותן.'},
-  {from: 180, to: 285, text: 'זה התחיל ביפן, לפני יותר ממאה שנה: קרקרים עם פתק בפנים.'},
-  {from: 285, to: 405, text: 'Historians attribute the fortune cookie to Japanese immigrants.', ltr: true, hl: 'attribute'},
-  {from: 405, to: 540, text: 'בסן פרנסיסקו הגישו אותה לצד תה, בגן תה יפני.'},
-  {from: 540, to: 705, text: 'ואז באה מלחמת העולם השנייה: מאפיות יפניות נסגרו, ויצרנים סיניים כנראה השתלטו על השוק.'},
-  {from: 705, to: 840, text: "It's a common misconception that the fortune cookie is Chinese.", ltr: true, hl: 'misconception'},
-  {from: 840, to: 936, text: 'שלחו את זה למי שבטוח שהוא מבין באוכל סיני.'},
-  {from: 936, to: 1035, text: 'ותשאלו אותו: מאיפה העוגייה?'},
+  {from: 0, to: 96 + D, text: 'מה הדבר הכי "סיני" במסעדה סינית, שבכלל לא סיני?'},
+  {from: 96 + D, to: 180 + D, text: 'עוגיות מזל, fortune cookies. בסין כמעט לא מכירים אותן.'},
+  {from: 180 + D, to: 285 + D, text: 'זה התחיל ביפן, לפני יותר ממאה שנה: קרקרים עם פתק בפנים.'},
+  {from: 285 + D, to: 405 + D, text: 'Historians attribute the fortune cookie to Japanese immigrants.', ltr: true, hl: 'attribute'},
+  {from: 405 + D, to: 540 + D, text: 'בסן פרנסיסקו הגישו אותה לצד תה, בגן תה יפני.'},
+  {from: 540 + D, to: 705 + D, text: 'ואז באה מלחמת העולם השנייה: מאפיות יפניות נסגרו, ויצרנים סיניים כנראה השתלטו על השוק.'},
+  {from: 705 + D, to: 840 + D, text: "It's a common misconception that the fortune cookie is Chinese.", ltr: true, hl: 'misconception'},
+  {from: 840 + D, to: 936 + D, text: 'שלחו את זה למי שבטוח שהוא מבין באוכל סיני.'},
+  {from: 936 + D, to: 1035 + D, text: 'ותשאלו אותו: מאיפה העוגייה?'},
 ];
 
+// Full-bleed real photo: the ONLY kind of image that gets a slow zoom (about 6% over the scene).
+const FullPhoto: React.FC<{src: string; dur: number}> = ({src, dur}) => {
+  const f = useCurrentFrame();
+  const z = interpolate(f, [0, dur], [1, 1.06], clamp);
+  return (
+    <AbsoluteFill style={{overflow: 'hidden', background: C.dark}}>
+      <Img src={staticFile(`img/${src}`)} style={{width: 1080, height: 1920, transform: `scale(${z})`}} />
+      <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 70%, rgba(20,20,30,0.45) 100%)'}} />
+    </AbsoluteFill>
+  );
+};
+
 // ======================================================================
-// 1. HOOK: the real cookie, then a zoom onto the slip with a yellow glow ring
+// 1. HOOK: a typical Chinese restaurant while the question lands; a beat to think; then the cookie
+const COOKIE_IN = 66; // ~2.2 s of restaurant alone (question + thinking time)
 const Hook: React.FC = () => {
   const f = useCurrentFrame();
-  const z = lerp(f, 24, 62, 0, 1);
-  const s = 1 + 1.4 * z;
-  // slip centre inside the sticker (sticker at x 70..1010, top 260)
-  const P = [698, 538]; // the slip's printed text, in sticker space
-  const target = [540, 640];
-  const ring = prog(f, 56, 70);
+  const dim = prog(f, COOKIE_IN - 6, COOKIE_IN + 8);
   return (
     <AbsoluteFill>
-      <Plate />
-      <AbsoluteFill
-        style={{
-          transformOrigin: `${P[0]}px ${P[1]}px`,
-          transform: `translate(${(target[0] - P[0]) * z}px, ${(target[1] - P[1]) * z}px) scale(${s})`,
-        }}
-      >
-        <Sticker src="broken.png" x={540} y={300 + 432} w={940} rot={-2} delay={0} />
-      </AbsoluteFill>
-      {ring > 0 && (
-        <div
-          style={{
-            position: 'absolute',
-            left: target[0] - 270,
-            top: target[1] - 270,
-            width: 540,
-            height: 540,
-            borderRadius: '50%',
-            border: `16px solid ${C.yellow}`,
-            boxShadow: `0 0 40px 10px ${C.yellow}AA, inset 0 0 30px 6px ${C.yellow}88`,
-            transform: `scale(${0.7 + 0.3 * ring})`,
-            opacity: ring,
-          }}
-        />
-      )}
+      <FullPhoto src="full_restaurant.jpg" dur={SCENES.hook[1]} />
+      <AbsoluteFill style={{background: `rgba(25,22,28,${0.38 * dim})`}} />
+      {f >= COOKIE_IN - 2 && <Sticker src="broken.png" x={540} y={820} w={860} rot={-3} delay={COOKIE_IN} />}
     </AbsoluteFill>
   );
 };
@@ -140,14 +128,25 @@ const Y1878: React.FC = () => {
 // 4. ATTRIBUTE: the word rides a tag from the cookie to Hagiwara's press and pins the origin on it
 const Attribute: React.FC = () => {
   const f = useCurrentFrame();
-  const p0 = [790, 1060];
-  const p1 = [880, 520];
-  const p2 = [470, 690];
+  const {fps} = useVideoConfig();
+  // the tag rides the arc from the cookie, then hangs off the press photo on a red string
+  const anchor = [205, 588]; // pin on the photo's lower edge
+  const hole = [236, 800]; // where the tag's hole ends up (hangs below the pin)
+  const p0 = [810, 1130];
+  const p1 = [900, 560];
   const ride = lerp(f, 14, 40, 0, 1);
-  const pt = qPoint(ride, p0, p1, p2);
-  const land = usePop(40, 9);
+  const pt = qPoint(ride, p0, p1, hole);
+  const landed = f >= 40;
+  const t = (f - 40) / fps;
+  const swing = landed ? 9 * Math.exp(-2.2 * t) * Math.sin(t * 7.5) : 0;
+  const tie = prog(f, 38, 46);
   const gloss = usePop(52);
-  const tagScale = 1 + 0.12 * Math.sin(Math.min(1, land) * Math.PI);
+  const rot = landed ? 13 + swing : -4 + 8 * Math.sin(ride * 6); // at rest the free end droops
+  const sc = 0.5 + 0.5 * Math.min(1, ride * 2);
+  // string: from the pin down to the tag's hole, sagging a little
+  const sx = anchor[0], sy = anchor[1];
+  const ex = sx + (pt.x - sx) * tie, ey = sy + (pt.y - sy) * tie;
+  const string = `M ${sx} ${sy} Q ${(sx + ex) / 2 - 30} ${(sy + ey) / 2 + 20} ${ex} ${ey}`;
   return (
     <AbsoluteFill>
       <Plate />
@@ -155,33 +154,54 @@ const Attribute: React.FC = () => {
       <Label x={470} y={175} size={34} delay={4} rot={-2}>
         {'המכבש המקורי של מקוטו הגיווארה, מהגר יפני (בערך 1914)'}
       </Label>
-      <Sticker src="cookie.png" x={790} y={1120} w={330} rot={8} delay={6} />
-      <Arc d={`M ${p0[0]} ${p0[1]} Q ${p1[0]} ${p1[1]} ${p2[0]} ${p2[1]}`} p={prog(f, 10, 38)} />
-      {/* the word on a paper tag */}
+      <Sticker src="cookie.png" x={810} y={1210} w={310} rot={8} delay={6} />
+      <Arc d={`M ${p0[0]} ${p0[1]} Q ${p1[0]} ${p1[1]} ${hole[0]} ${hole[1]}`} p={prog(f, 10, 38)} />
+      {/* pin on the photo */}
+      <div style={{position: 'absolute', left: sx - 13, top: sy - 13, width: 26, height: 26, borderRadius: '50%', background: C.stamp, border: '4px solid #fbfbf8', boxShadow: '0 3px 6px rgba(0,0,0,0.35)', opacity: tie > 0 ? 1 : 0}} />
+      {/* red string */}
+      {tie > 0 && (
+        <svg width={1080} height={1920} style={{position: 'absolute', left: 0, top: 0}}>
+          <path d={string} stroke="rgba(0,0,0,0.18)" strokeWidth={6} fill="none" transform="translate(3,5)" />
+          <path d={string} stroke={C.stamp} strokeWidth={5} fill="none" strokeLinecap="round" />
+        </svg>
+      )}
+      {/* the word on a price tag; its hole is the transform origin so it swings from the string */}
       <div
         style={{
           position: 'absolute',
-          left: pt.x,
+          left: pt.x - 46,
           top: pt.y,
-          transform: `translate(-50%, -50%) rotate(${ride < 1 ? -4 + 8 * Math.sin(ride * 6) : -3}deg) scale(${(0.5 + 0.5 * Math.min(1, ride * 2)) * tagScale})`,
-          background: C.dark,
-          padding: '18px 34px 18px 70px',
-          borderRadius: 14,
-          clipPath: 'polygon(0 50%, 12% 0, 100% 0, 100% 100%, 12% 100%)',
-          boxShadow: '0 10px 18px rgba(0,0,0,0.25)',
+          transformOrigin: '46px 0px',
+          transform: `translateY(-50%) rotate(${rot}deg) scale(${sc})`,
           opacity: f < 12 ? 0 : 1,
+          filter: 'drop-shadow(0 10px 12px rgba(0,0,0,0.28))',
         }}
       >
-        <div style={{position: 'absolute', left: 34, top: '50%', width: 22, height: 22, marginTop: -11, borderRadius: '50%', background: C.light}} />
-        <KeyWord text="ATTRIBUTE" size={92} color="#fff" style={{WebkitTextStroke: '0px', textShadow: 'none', letterSpacing: 3}} />
+        <div
+          style={{
+            position: 'relative',
+            background: C.dark,
+            padding: '18px 34px 18px 80px',
+            clipPath: 'polygon(0 50%, 14% 0, 100% 0, 100% 100%, 14% 100%)',
+          }}
+        >
+          <div style={{position: 'absolute', left: 34, top: '50%', width: 24, height: 24, marginTop: -12, borderRadius: '50%', background: C.light, boxShadow: `inset 0 0 0 4px ${C.stamp}`}} />
+          <KeyWord text="ATTRIBUTE" size={92} color="#fff" style={{WebkitTextStroke: '0px', textShadow: 'none', letterSpacing: 3}} />
+        </div>
+        {/* loose end of the string before it is tied */}
+        {!landed && f >= 12 && (
+          <svg width={80} height={80} style={{position: 'absolute', left: 0, top: '50%', overflow: 'visible'}}>
+            <path d="M 46 0 q -30 10 -40 40" stroke={C.stamp} strokeWidth={5} fill="none" strokeLinecap="round" />
+          </svg>
+        )}
       </div>
       <div
         dir="rtl"
         style={{
           position: 'absolute',
-          left: 0,
-          right: 0,
-          top: 840,
+          left: 80,
+          width: 520,
+          top: 1010,
           textAlign: 'center',
           fontFamily: FONT,
           fontWeight: 900,
@@ -245,23 +265,26 @@ const Voyage: React.FC = () => {
   );
 };
 
-// 7. WAR: 1942 Lange photo (Japanese-American business closed) -> Chinese-American cookie factory
+// 7. WAR: two full-frame photos — Lange, Oakland 1942 -> a Chinatown fortune-cookie factory
 const War: React.FC = () => {
   const f = useCurrentFrame();
+  const cut = 78;
   return (
     <AbsoluteFill>
-      <Plate />
-      <Sticker src="lange.png" x={520} y={520} w={880} rot={-2} delay={0} />
-      <Label x={520} y={1000} size={34} delay={10} rot={1.5}>
-        {'אוקלנד, 1942: עסק של משפחה יפנית נסגר בעקבות צו הפינוי'}
-      </Label>
-      {f >= 76 && (
+      {f < cut ? (
         <>
-          <Sticker src="ggfc.png" x={600} y={1010} w={820} rot={2.5} delay={78} from="right" />
-          <Label x={560} y={1390} size={34} delay={92} rot={-1.5}>
-            {"מפעל עוגיות מזל בצ'יינה טאון, סן פרנסיסקו"}
+          <FullPhoto src="full_lange.jpg" dur={cut} />
+          <Label x={540} y={1250} size={36} delay={8} rot={-1.5}>
+            {'אוקלנד, 1942: עסק של משפחה יפנית נסגר בעקבות צו הפינוי'}
           </Label>
         </>
+      ) : (
+        <Sequence from={cut} layout="none">
+          <FullPhoto src="full_ggfc.jpg" dur={SCENES.war[1] - SCENES.war[0] - cut} />
+          <Label x={540} y={200} size={36} delay={8} rot={1.5}>
+            {"מפעל עוגיות מזל בצ'יינה טאון, סן פרנסיסקו"}
+          </Label>
+        </Sequence>
       )}
     </AbsoluteFill>
   );
@@ -497,27 +520,25 @@ const EndCard: React.FC = () => {
 // ======================================================================
 // Sound design (VOX rules: sparse, J-cut 2 frames early, max two soft whooshes)
 const SFX: {at: number; src: string; v: number}[] = [
-  {at: 0, src: 'sfx/soft_thump_reveal_01.wav', v: 0.28},
-  {at: 22, src: 'sfx/soft_whoosh_01.wav', v: 0.16}, // whoosh 1 of 2 (hook zoom)
-  {at: 54, src: 'sfx/sparkle_soft_01.wav', v: 0.22},
-  {at: 94, src: 'sfx/paper_movement_01.wav', v: 0.2},
-  {at: 96 + 22, src: 'sfx/book_slide_on_desk_01.wav', v: 0.1},
-  {at: 178, src: 'sfx/page_turn_01.wav', v: 0.22},
-  {at: 180 + 12, src: 'sfx/marker_stroke_01.wav', v: 0.14},
-  {at: 283, src: 'sfx/book_slide_on_desk_02.wav', v: 0.2},
-  {at: 285 + 38, src: 'sfx/tape_press_01.wav', v: 0.3},
-  {at: 403, src: 'audio/pour_tea.wav', v: 0.12},
-  {at: 477 + 2, src: 'sfx/marker_stroke_02.wav', v: 0.14},
-  {at: 477 + 28, src: 'sfx/paper_movement_02.wav', v: 0.18},
-  {at: 538, src: 'sfx/camera_shutter_mechanical_01.wav', v: 0.2},
-  {at: 540 + 76, src: 'sfx/book_slide_on_desk_03.wav', v: 0.2},
-  {at: 703, src: 'sfx/soft_thump_reveal_02.wav', v: 0.25},
-  {at: 705 + 42, src: 'sfx/paper_movement_03.wav', v: 0.22},
-  {at: 840 + 22, src: 'audio/crunch_a.wav', v: 0.55},
-  {at: 934, src: 'sfx/paper_shuffle_01.wav', v: 0.14},
-  {at: 936 + 60, src: 'sfx/marker_stroke_03.wav', v: 0.16},
-  {at: 1033, src: 'sfx/soft_whoosh_02.wav', v: 0.16}, // whoosh 2 of 2 (end card)
-  {at: 1035 + 8, src: 'sfx/stamp_thud_01.wav', v: 0.2},
+  {at: COOKIE_IN - 2, src: 'sfx/soft_thump_reveal_01.wav', v: 0.3}, // the cookie lands
+  {at: 94 + D, src: 'sfx/paper_movement_01.wav', v: 0.2},
+  {at: 96 + 22 + D, src: 'sfx/book_slide_on_desk_01.wav', v: 0.1},
+  {at: 178 + D, src: 'sfx/page_turn_01.wav', v: 0.22},
+  {at: 180 + 12 + D, src: 'sfx/marker_stroke_01.wav', v: 0.14},
+  {at: 283 + D, src: 'sfx/book_slide_on_desk_02.wav', v: 0.2},
+  {at: 285 + 38 + D, src: 'sfx/tape_press_01.wav', v: 0.3},
+  {at: 403 + D, src: 'audio/pour_tea.wav', v: 0.12},
+  {at: 477 + 2 + D, src: 'sfx/marker_stroke_02.wav', v: 0.14},
+  {at: 477 + 28 + D, src: 'sfx/paper_movement_02.wav', v: 0.18},
+  {at: 538 + D, src: 'sfx/camera_shutter_mechanical_01.wav', v: 0.2},
+  {at: 540 + 76 + D, src: 'sfx/camera_shutter_mechanical_02.wav', v: 0.16},
+  {at: 703 + D, src: 'sfx/soft_thump_reveal_02.wav', v: 0.25},
+  {at: 705 + 42 + D, src: 'sfx/paper_movement_03.wav', v: 0.22},
+  {at: 840 + 22 + D, src: 'audio/crunch_a.wav', v: 0.55},
+  {at: 934 + D, src: 'sfx/paper_shuffle_01.wav', v: 0.14},
+  {at: 936 + 60 + D, src: 'sfx/marker_stroke_03.wav', v: 0.16},
+  {at: 1033 + D, src: 'sfx/soft_whoosh_02.wav', v: 0.16}, // whoosh 2 of 2 (end card)
+  {at: 1035 + 8 + D, src: 'sfx/stamp_thud_01.wav', v: 0.2},
 ];
 
 const SCENE_COMPONENTS: [keyof typeof SCENES, React.FC][] = [

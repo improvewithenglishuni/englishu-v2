@@ -67,6 +67,17 @@ def torn(img, max_side=1300, border=14, jag=7):
     return paper
 
 
+def full(path, cx, cy=0.5, zoom=1.0):
+    """Full-bleed 9:16 crop (1080x1920 plus 8% margin for the slow zoom), centred on (cx, cy) in 0..1."""
+    im = Image.open(path).convert('RGB')
+    W, H = im.size
+    h = int(min(H, W * 16 / 9) / zoom)
+    w = int(h * 9 / 16)
+    x = int(min(max(cx * W - w / 2, 0), W - w))
+    y = int(min(max(cy * H - h / 2, 0), H - h))
+    return im.crop((x, y, x + w, y + h)).resize((1080, 1920), Image.LANCZOS)
+
+
 def cutout(path, model):
     from rembg import remove
     im = Image.open(path).convert('RGB')
@@ -120,6 +131,11 @@ def main():
     torn(Image.open(R('tg_postcard.jpg')), 1300).save(f'{OUT}/tg_postcard.png')
     torn(ImageOps.grayscale(Image.open(R('lange_grocer.jpg'))).convert('RGB'), 1300).save(f'{OUT}/lange.png')
     torn(muted(Image.open(R('ggfc.jpg'))), 1300).save(f'{OUT}/ggfc.png')
+
+    # --- Full-frame photos (these, and only these, get the slow zoom) --------
+    full(R('rest_flavor.jpg'), 0.24).save(f'{OUT}/full_restaurant.jpg', quality=92)
+    full(R('lange_full.jpg'), 0.52, zoom=1.0).save(f'{OUT}/full_lange.jpg', quality=92)
+    full(R('ggfc.jpg'), 0.36).save(f'{OUT}/full_ggfc.jpg', quality=92)
 
     # --- Video: Japanese Tea Garden gate, Golden Gate Park, cropped to 9:16 ---
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', '3.4', '-t', '3.6', '-i', R('teagarden.webm'),
