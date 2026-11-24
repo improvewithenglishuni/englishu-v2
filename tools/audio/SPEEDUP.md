@@ -1,1 +1,1 @@
-v39 = v38 sped up uniformly x1.06 after rendering (ffmpeg setpts=PTS/1.06,fps=30 + atempo=1.06). Scene timings in timing.ts / Root.tsx stay in v38 (unsped) time; divide by 1.06 for the final video.
+v40 = unsped timeline in timing.ts/Root.tsx, then ffmpeg setpts=PTS/1.08,fps=30 + atempo=1.08 (replaces the x1.06 of v39). Pauses between lines trimmed to 0.14-0.5 s in the voice build.

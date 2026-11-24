@@ -163,7 +163,7 @@ export const ScarSticker: React.FC<{
   /** the camera pans while zooming so the `scar` point of the sticker ends up at this frame point */
   scarTarget?: {x: number; y: number};
   /** red felt-tip marker loop (baked texture, drawn on): centre as fractions of the sticker, scale 1 = about 64 sticker px radius, rot in degrees */
-  marker?: {cx: number; cy: number; scale?: number; rot?: number; at: number; dur?: number};
+  marker?: {cx: number; cy: number; scale?: number; scaleX?: number; scaleY?: number; rot?: number; at: number; dur?: number};
   exitAt?: number;
 }> = ({src, x, y, width, rotate = -5, at = 0, scarAt = 12, zoomFrom = 1, zoomTo = 1.28, zoomDur = 60, scar = {x: 0.5, y: 0.5}, aspect = 1202 / 960, scars = [[0.469, 0.408], [0.504, 0.491], [0.529, 0.552]], scarTarget, marker, exitAt}) => {
   const frame = useCurrentFrame();
@@ -209,7 +209,7 @@ export const ScarSticker: React.FC<{
                 );
               })}
             </defs>
-            <g transform={`translate(${marker.cx * width} ${marker.cy * h}) rotate(${marker.rot ?? 0}) scale(${marker.scale ?? 1})`} style={{mixBlendMode: 'multiply', isolation: 'isolate'}}>
+            <g transform={`translate(${marker.cx * width} ${marker.cy * h}) rotate(${marker.rot ?? 0}) scale(${marker.scaleX ?? marker.scale ?? 1} ${marker.scaleY ?? marker.scale ?? 1})`} style={{mixBlendMode: 'multiply', isolation: 'isolate'}}>
               <g style={{isolation: 'isolate'}}>
                 <image href={staticFile('assets/vox/marker_a.png')} x={-100} y={-100} width={200} height={200} mask={`url(#mma${mkId})`} />
                 <image href={staticFile('assets/vox/marker_b.png')} x={-100} y={-100} width={200} height={200} mask={`url(#mmb${mkId})`} style={{mixBlendMode: 'multiply'}} />

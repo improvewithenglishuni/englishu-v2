@@ -57,7 +57,7 @@ const Hook = () => (
     scar={{x: 0.5837, y: 0.4869}}
     scarTarget={{x: 540, y: 830}}
     scars={[]}
-    marker={{cx: 0.5837, cy: 0.4869, scale: 1.42, rot: 8, at: s(1.28), dur: s(0.8)}}
+    marker={{cx: 0.5837, cy: 0.4869, scaleX: 1.8, scaleY: 1.55, rot: 8, at: s(1.28), dur: s(0.9)}}
   />
 );
 
@@ -75,8 +75,8 @@ const Patient = () => {
 /** 3. 300,000,000 counts up while narrated, then down to 0 while the crowd disappears. */
 const Tally300 = () => (
   <>
-    <Crowd x0={40} y0={70} cols={15} rows={28} dx={72} dy={68} size={66} at={2} vanishFrom={s(3.6)} vanishTo={s(5.2)} />
-    <Tally peak={300000000} x={540} y={830} fontSize={170} at={2} upAt={s(0.1)} upDur={s(1.4)} downAt={s(3.6)} downDur={s(1.6)} />
+    <Crowd x0={40} y0={70} cols={15} rows={28} dx={72} dy={68} size={66} at={2} vanishFrom={s(3.44)} vanishTo={s(5.04)} />
+    <Tally peak={300000000} x={540} y={830} fontSize={170} at={2} upAt={s(0.1)} upDur={s(1.4)} downAt={s(3.44)} downDur={s(1.6)} />
   </>
 );
 
@@ -186,7 +186,7 @@ const Outbreak = () => {
   const inner = ringPositions(CX, CY, 220, 5, 0.3);
   const outer = ringPositions(CX, CY, 400, 9, 0.1);
   const stops = [...inner, ...outer];
-  const t0 = s(4.2);
+  const t0 = s(3.87);
   const hop = 5;
   const SIZE = 230;
   const tipOf = (p: {x: number; y: number}) => ({x: p.x - 38, y: p.y - 6});
@@ -246,8 +246,8 @@ const Victory = () => {
   const C = {x: 540, y: 830};
   const ez = (v: number) => (v < 0.5 ? 2 * v * v : 1 - Math.pow(-2 * v + 2, 2) / 2);
   // dots thin out s(0.5)..s(1.9) until a couple are left near the Horn of Africa; then the camera dives into Somalia
-  const zin = ez(Math.min(1, Math.max(0, (frame - s(5.5)) / s(0.7))));
-  const zout = ez(Math.min(1, Math.max(0, (frame - s(6.6)) / s(0.7))));
+  const zin = ez(Math.min(1, Math.max(0, (frame - s(5.14)) / s(0.7))));
+  const zout = ez(Math.min(1, Math.max(0, (frame - s(6.24)) / s(0.7))));
   const m = zin * (1 - zout);
   const z = 1 + 2.5 * m;
   return (
@@ -255,18 +255,18 @@ const Victory = () => {
       <div style={{position: 'absolute', inset: 0, transformOrigin: '0 0', transform: `translate(${S.x + (C.x - S.x) * m}px, ${S.y + (C.y - S.y) * m}px) scale(${z}) translate(${-S.x}px, ${-S.y}px)`}}>
         <WorldMap
           box={{x: 0, y: 520, w: 1080}}
-          highlight={{Somalia: {at: s(5.4), off: s(7.1)}}}
+          highlight={{Somalia: {at: s(5.04), off: s(6.74)}}}
           dots={caseDots.dots}
           dotsAt={s(0.15)}
-          dotsFade={[s(3.0), s(4.7)]}
-          dotsKeep={{count: 3, near: caseDots.somalia as [number, number], off: s(4.8)}}
-          lastCase={{x: caseDots.somalia[0], y: caseDots.somalia[1], at: s(5.4), off: s(7.1)}}
-          greyAt={s(6.6)}
+          dotsFade={[s(3.15), s(4.28)]}
+          dotsKeep={{count: 3, near: caseDots.somalia as [number, number], off: s(4.38)}}
+          lastCase={{x: caseDots.somalia[0], y: caseDots.somalia[1], at: s(5.04), off: s(6.74)}}
+          greyAt={s(6.24)}
           at={4}
         />
       </div>
-      <Stamp text="ERADICATED" x={540} y={800} fontSize={124} rotate={-8} heavy color="#C4302A" at={s(7.9)} />
-      <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(7.2)} />
+      <Stamp text="ERADICATED" x={540} y={800} fontSize={124} rotate={-8} heavy color="#C4302A" at={s(7.23)} />
+      <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(6.47)} />
     </>
   );
 };
