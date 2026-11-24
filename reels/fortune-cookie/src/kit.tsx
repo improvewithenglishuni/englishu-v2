@@ -1,12 +1,13 @@
 // Shared kit for the fortune-cookie Reel: Vox plates, grain, stickers, labels, subtitles.
 import React from 'react';
 import {AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig, Easing} from 'remotion';
-import '@fontsource/rubik/hebrew-500.css';
-import '@fontsource/rubik/hebrew-700.css';
-import '@fontsource/rubik/hebrew-900.css';
-import '@fontsource/rubik/latin-500.css';
-import '@fontsource/rubik/latin-700.css';
-import '@fontsource/rubik/latin-900.css';
+// One typeface: David Libre, the David-like serif for historical topics (Hebrew + Latin)
+import '@fontsource/david-libre/hebrew-400.css';
+import '@fontsource/david-libre/hebrew-500.css';
+import '@fontsource/david-libre/hebrew-700.css';
+import '@fontsource/david-libre/latin-400.css';
+import '@fontsource/david-libre/latin-500.css';
+import '@fontsource/david-libre/latin-700.css';
 
 // Vox plates (Nov 2026 look). Brand navy/red/cream: logo and end card ONLY.
 export const C = {
@@ -22,7 +23,7 @@ export const C = {
   red: '#B01F25',
   cream: '#F5F0E5',
 };
-export const FONT = 'Rubik';
+export const FONT = '"David Libre"';
 
 export const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
 export const ease = Easing.bezier(0.22, 1, 0.36, 1);
@@ -194,7 +195,7 @@ export const Subtitle: React.FC<{text: string; ltr?: boolean; hl?: string}> = ({
   );
 };
 
-// Big English key word: white, dark outline, Rubik 900.
+// Big English key word: white, dark outline, David Libre 700.
 export const KeyWord: React.FC<{text: string; size?: number; color?: string; style?: React.CSSProperties}> = ({
   text,
   size = 120,
@@ -204,7 +205,7 @@ export const KeyWord: React.FC<{text: string; size?: number; color?: string; sty
   <div
     style={{
       fontFamily: FONT,
-      fontWeight: 900,
+      fontWeight: 700,
       fontSize: size,
       color,
       letterSpacing: 2,

@@ -7,7 +7,7 @@
     "still": "remotion still FortuneReel"
   },
   "dependencies": {
-    "@fontsource/rubik": "5.1.0",
+    "@fontsource/david-libre": "5.2.5",
     "@remotion/cli": "4.0.242",
     "@types/d3-geo": "^3.1.0",
     "d3-geo": "^3.1.1",

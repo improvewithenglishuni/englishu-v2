@@ -3,7 +3,7 @@
 import React from 'react';
 import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Arc, C, FONT, Grain, KeyWord, Label, Plate, Sticker, Subtitle, clamp, lerp, prog, qPoint, usePop} from './kit';
-import {ChinaMap, PacificMap, pacificProj} from './maps';
+import {BaseMap, MAP, MapArrow, MapLabel, chinaProj, pacificProj} from './maps';
 
 // ---- Timeline (frames @30fps), taken from mock-up v1. Retime to the voiceover.
 // v2: the hook is 1 s longer (restaurant + thinking time before the cookie), D shifts everything after it.
@@ -66,26 +66,27 @@ const Hook: React.FC = () => {
 // 2. CHINA: cookies drop onto China and bounce off it ("barely known there")
 const China: React.FC = () => {
   const f = useCurrentFrame();
+  const proj = chinaProj();
+  const c = proj([104, 34]) as number[];
+  const lab = usePop(4);
   const cookies = [
-    {d: 14, x0: 420, xEnd: -220, r: -260},
-    {d: 22, x0: 640, xEnd: 1300, r: 300},
-    {d: 30, x0: 520, xEnd: -260, r: -320},
+    {d: 14, x0: c[0] - 140, xEnd: -220, r: -260},
+    {d: 22, x0: c[0] + 90, xEnd: 1300, r: 300},
+    {d: 30, x0: c[0] - 20, xEnd: -260, r: -320},
   ];
   return (
     <AbsoluteFill>
-      <Plate />
-      <ChinaMap x={140} y={260} w={800} h={700} />
-      <Label x={560} y={1000} size={58} delay={4} rot={-2}>
-        סין
-      </Label>
-      {cookies.map((c, i) => {
-        const t = f - c.d;
+      <BaseMap proj={proj} fills={{'156': MAP.red}} />
+      <MapLabel x={c[0]} y={c[1] + 40} text="סין" size={120} o={Math.min(1, lab * 1.5)} />
+      {cookies.map((k, i) => {
+        const t = f - k.d;
         if (t < 0) return null;
-        // fall to the map (y 560), bounce, then fly off
+        // fall onto China, bounce, then fly off
         const fall = Math.min(1, t / 10);
-        const y = t < 10 ? -200 + 760 * fall * fall : 560 - 900 * ((t - 10) / 30) + 1300 * ((t - 10) / 30) ** 2;
-        const x = t < 10 ? c.x0 : c.x0 + (c.xEnd - c.x0) * Math.min(1, (t - 10) / 32);
-        const rot = t < 10 ? 0 : (c.r * (t - 10)) / 32;
+        const y0 = c[1] - 40;
+        const y = t < 10 ? -200 + (y0 + 200) * fall * fall : y0 - 900 * ((t - 10) / 30) + 1300 * ((t - 10) / 30) ** 2;
+        const x = t < 10 ? k.x0 : k.x0 + (k.xEnd - k.x0) * Math.min(1, (t - 10) / 32);
+        const rot = t < 10 ? 0 : (k.r * (t - 10)) / 32;
         return (
           <Img
             key={i}
@@ -94,9 +95,6 @@ const China: React.FC = () => {
           />
         );
       })}
-      <Label x={540} y={1260} size={52} delay={36} rot={1.5} ltr>
-        fortune cookies
-      </Label>
     </AbsoluteFill>
   );
 };
@@ -117,9 +115,6 @@ const Y1878: React.FC = () => {
         היום
       </div>
       <KeyWord text="1878" size={140} style={{position: 'absolute', right: 110, top: 960, transform: `scale(${pop})`, transformOrigin: 'right bottom'}} />
-      <Label x={540} y={1300} size={38} delay={34} rot={1}>
-        {'איור יפני מ-1878: אופה מכין קרקרי מזל'}
-      </Label>
       <Sticker src="tsujiura.png" x={860} y={240} w={180} rot={7} delay={52} />
     </AbsoluteFill>
   );
@@ -151,11 +146,13 @@ const Attribute: React.FC = () => {
     <AbsoluteFill>
       <Plate />
       <Sticker src="press.png" x={470} y={420} w={840} rot={-1.5} delay={0} />
-      <Label x={470} y={175} size={34} delay={4} rot={-2}>
-        {'המכבש המקורי של מקוטו הגיווארה, מהגר יפני (בערך 1914)'}
+      <Label x={470} y={180} size={44} delay={4} rot={-2}>
+        {'מקוטו הגיווארה'}
       </Label>
       <Sticker src="cookie.png" x={810} y={1210} w={310} rot={8} delay={6} />
-      <Arc d={`M ${p0[0]} ${p0[1]} Q ${p1[0]} ${p1[1]} ${hole[0]} ${hole[1]}`} p={prog(f, 10, 38)} />
+      <div style={{opacity: 1 - prog(f, 42, 54)}}>
+        <Arc d={`M ${p0[0]} ${p0[1]} Q ${p1[0]} ${p1[1]} ${hole[0]} ${hole[1]}`} p={prog(f, 10, 38)} />
+      </div>
       {/* pin on the photo */}
       <div style={{position: 'absolute', left: sx - 13, top: sy - 13, width: 26, height: 26, borderRadius: '50%', background: C.stamp, border: '4px solid #fbfbf8', boxShadow: '0 3px 6px rgba(0,0,0,0.35)', opacity: tie > 0 ? 1 : 0}} />
       {/* red string */}
@@ -169,29 +166,31 @@ const Attribute: React.FC = () => {
       <div
         style={{
           position: 'absolute',
-          left: pt.x - 46,
+          left: pt.x - 45,
           top: pt.y,
-          transformOrigin: '46px 0px',
+          transformOrigin: '45px 0px',
           transform: `translateY(-50%) rotate(${rot}deg) scale(${sc})`,
           opacity: f < 12 ? 0 : 1,
           filter: 'drop-shadow(0 10px 12px rgba(0,0,0,0.28))',
         }}
       >
+        {/* manila shipping tag: clipped corners at the hole end, red reinforced eyelet */}
         <div
           style={{
             position: 'relative',
-            background: C.dark,
-            padding: '18px 34px 18px 80px',
-            clipPath: 'polygon(0 50%, 14% 0, 100% 0, 100% 100%, 14% 100%)',
+            background: 'linear-gradient(170deg, #EBDCB2 0%, #E2CF9C 55%, #D8C38C 100%)',
+            padding: '22px 40px 20px 96px',
+            clipPath: 'polygon(0 22%, 9% 0, 100% 0, 100% 100%, 9% 100%, 0 78%)',
           }}
         >
-          <div style={{position: 'absolute', left: 34, top: '50%', width: 24, height: 24, marginTop: -12, borderRadius: '50%', background: C.light, boxShadow: `inset 0 0 0 4px ${C.stamp}`}} />
-          <KeyWord text="ATTRIBUTE" size={92} color="#fff" style={{WebkitTextStroke: '0px', textShadow: 'none', letterSpacing: 3}} />
+          <div style={{position: 'absolute', left: 22, top: '50%', width: 46, height: 46, marginTop: -23, borderRadius: '50%', background: '#B7322B', boxShadow: 'inset 0 -2px 3px rgba(0,0,0,0.3)'}} />
+          <div style={{position: 'absolute', left: 36, top: '50%', width: 18, height: 18, marginTop: -9, borderRadius: '50%', background: C.light, boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.35)'}} />
+          <KeyWord text="ATTRIBUTE" size={96} color="#2F2A22" style={{WebkitTextStroke: '0px', textShadow: 'none', letterSpacing: 2}} />
         </div>
         {/* loose end of the string before it is tied */}
         {!landed && f >= 12 && (
           <svg width={80} height={80} style={{position: 'absolute', left: 0, top: '50%', overflow: 'visible'}}>
-            <path d="M 46 0 q -30 10 -40 40" stroke={C.stamp} strokeWidth={5} fill="none" strokeLinecap="round" />
+            <path d="M 45 0 q -30 10 -40 40" stroke={C.stamp} strokeWidth={5} fill="none" strokeLinecap="round" />
           </svg>
         )}
       </div>
@@ -204,7 +203,7 @@ const Attribute: React.FC = () => {
           top: 1010,
           textAlign: 'center',
           fontFamily: FONT,
-          fontWeight: 900,
+          fontWeight: 700,
           fontSize: 92,
           color: C.charcoal,
           transform: `scale(${gloss})`,
@@ -227,9 +226,6 @@ const Garden: React.FC = () => {
         <OffthreadVideo src={staticFile('img/teagarden.mp4')} muted style={{width: 1080, height: 1920}} />
       </AbsoluteFill>
       <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,0) 70%, rgba(20,20,30,0.45) 100%)'}} />
-      <Label x={540} y={190} size={44} delay={4} rot={-2}>
-        {'גן התה היפני, סן פרנסיסקו'}
-      </Label>
     </AbsoluteFill>
   );
 };
@@ -240,27 +236,22 @@ const Voyage: React.FC = () => {
   const proj = pacificProj();
   const jp = proj([139.7, 35.7]) as number[];
   const sf = proj([-122.4, 37.8]) as number[];
-  const ctrl = [(jp[0] + sf[0]) / 2, jp[1] - 330];
+  const ctrl = [(jp[0] + sf[0]) / 2, jp[1] - 360];
   const p = prog(f, 4, 30);
   const pt = qPoint(p, jp, ctrl, sf);
+  const l1 = usePop(0);
+  const l2 = usePop(26);
   return (
     <AbsoluteFill>
-      <Plate />
-      <PacificMap />
-      <Arc d={`M ${jp[0]} ${jp[1]} Q ${ctrl[0]} ${ctrl[1]} ${sf[0]} ${sf[1]}`} p={p} />
-      <div style={{position: 'absolute', left: jp[0] - 14, top: jp[1] - 14, width: 28, height: 28, borderRadius: '50%', background: C.coral, border: '5px solid #fff'}} />
-      <div style={{position: 'absolute', left: sf[0] - 14, top: sf[1] - 14, width: 28, height: 28, borderRadius: '50%', background: C.coral, border: '5px solid #fff', opacity: p > 0.95 ? 1 : 0}} />
+      <BaseMap proj={proj} fills={{'392': MAP.red, '840': MAP.blue}} />
+      <MapArrow from={[jp[0] + 30, jp[1] - 20]} ctrl={ctrl} to={[sf[0] - 34, sf[1] - 22]} p={p} />
       <Img
         src={staticFile('img/cookie.png')}
-        style={{position: 'absolute', left: pt.x - 60, top: pt.y - 58, width: 120, transform: `rotate(${pt.a}deg)`, opacity: p > 0 && p < 1 ? 1 : 0, filter: 'drop-shadow(0 6px 8px rgba(0,0,0,0.3))'}}
+        style={{position: 'absolute', left: pt.x - 60, top: pt.y - 58, width: 120, transform: `rotate(${pt.a}deg)`, opacity: p > 0 && p < 0.97 ? 1 : 0, filter: 'drop-shadow(0 6px 8px rgba(0,0,0,0.3))'}}
       />
-      <Label x={jp[0] + 30} y={jp[1] + 90} size={42} delay={0} rot={-3}>
-        יפן
-      </Label>
-      <Label x={sf[0] - 60} y={sf[1] + 90} size={42} delay={26} rot={2}>
-        סן פרנסיסקו
-      </Label>
-      <Sticker src="tg_postcard.png" x={600} y={1150} w={700} rot={2.5} delay={30} from="up" />
+      <MapLabel x={jp[0] + 10} y={jp[1] + 120} text="יפן" size={88} o={Math.min(1, l1 * 1.5)} />
+      <MapLabel x={sf[0] - 150} y={sf[1] + 120} text="סן פרנסיסקו" size={72} o={Math.min(1, l2 * 1.5)} />
+      <Sticker src="tg_postcard.png" x={560} y={1230} w={680} rot={2.5} delay={30} from="up" />
     </AbsoluteFill>
   );
 };
@@ -274,15 +265,15 @@ const War: React.FC = () => {
       {f < cut ? (
         <>
           <FullPhoto src="full_lange.jpg" dur={cut} />
-          <Label x={540} y={1250} size={36} delay={8} rot={-1.5}>
-            {'אוקלנד, 1942: עסק של משפחה יפנית נסגר בעקבות צו הפינוי'}
+          <Label x={540} y={1250} size={48} delay={8} rot={-1.5}>
+            {'אוקלנד, 1942'}
           </Label>
         </>
       ) : (
         <Sequence from={cut} layout="none">
           <FullPhoto src="full_ggfc.jpg" dur={SCENES.war[1] - SCENES.war[0] - cut} />
-          <Label x={540} y={200} size={36} delay={8} rot={1.5}>
-            {"מפעל עוגיות מזל בצ'יינה טאון, סן פרנסיסקו"}
+          <Label x={540} y={200} size={48} delay={8} rot={1.5}>
+            {"צ'יינה טאון"}
           </Label>
         </Sequence>
       )}
@@ -307,7 +298,7 @@ const Misconception: React.FC = () => {
       </div>
       <div
         dir="rtl"
-        style={{position: 'absolute', left: 0, right: 0, top: 380, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 76, color: C.yellow, transform: `scale(${gloss})`, opacity: Math.min(1, gloss * 2)}}
+        style={{position: 'absolute', left: 0, right: 0, top: 380, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 76, color: C.yellow, transform: `scale(${gloss})`, opacity: Math.min(1, gloss * 2)}}
       >
         תפיסה מוטעית
       </div>
@@ -322,7 +313,7 @@ const Misconception: React.FC = () => {
             background: C.coral,
             color: '#fff',
             fontFamily: FONT,
-            fontWeight: 900,
+            fontWeight: 700,
             fontSize: 70,
             letterSpacing: 6,
             padding: '10px 36px',
@@ -394,9 +385,7 @@ const Slip: React.FC = () => {
   const up = usePop(2, 16);
   const l1 = Math.floor(lerp(f, 14, 40, 0, 1) * 15);
   const l2 = Math.floor(lerp(f, 40, 56, 0, 1) * 13);
-  const t1 = 'מחכה לך פטור';
-  const t2 = 'מאנגלית באמירנט';
-  const words1 = `${t1} ${t2}`;
+  const words1 = 'פטור מאנגלית';
   const shown = words1.slice(0, Math.floor(lerp(f, 12, 48, 0, words1.length, (x) => x)));
   const score = usePop(54, 10);
   const mark = prog(f, 62, 74);
@@ -421,13 +410,13 @@ const Slip: React.FC = () => {
         }}
       >
         <div style={{position: 'absolute', left: 0, right: 0, top: 0, height: 14, background: '#C9CFDF', opacity: 0.7}} />
-        <div dir="rtl" style={{position: 'absolute', left: 40, right: 40, top: 46, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 58, lineHeight: 1.3, color: '#2E3A6E'}}>
+        <div dir="rtl" style={{position: 'absolute', left: 40, right: 40, top: 46, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 84, lineHeight: 1.3, color: '#2E3A6E'}}>
           {shown}
         </div>
-        <div style={{position: 'absolute', left: 0, right: 0, top: 210, display: 'flex', justifyContent: 'center', transform: `scale(${score})`}}>
-          <div dir="rtl" style={{position: 'relative', fontFamily: FONT, fontWeight: 900, fontSize: 64, color: '#2E3A6E', padding: '0 18px'}}>
+        <div style={{position: 'absolute', left: 0, right: 0, top: 170, display: 'flex', justifyContent: 'center', transform: `scale(${score})`}}>
+          <div dir="rtl" style={{position: 'relative', fontFamily: FONT, fontWeight: 700, fontSize: 96, color: '#2E3A6E', padding: '0 22px'}}>
             <div style={{position: 'absolute', left: 0, top: 10, bottom: 6, width: `${mark * 100}%`, background: C.yellow, zIndex: -1, transform: 'skew(-6deg)'}} />
-            ציון: 134
+            134
           </div>
         </div>
       </div>
@@ -469,7 +458,7 @@ const EndCard: React.FC = () => {
           <Img src={staticFile('img/logo-cut.png')} style={{width: 480, display: 'block'}} />
           <div style={{position: 'absolute', left: 150, top: -18, width: 170, height: 46, background: 'rgba(230,220,190,0.8)', transform: 'rotate(-4deg)'}} />
         </div>
-        <div dir="rtl" style={{position: 'absolute', width: 1080, top: 900, textAlign: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 92, color: C.navy, transform: `scale(${h1})`}}>
+        <div dir="rtl" style={{position: 'absolute', width: 1080, top: 900, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 92, color: C.navy, transform: `scale(${h1})`}}>
           עוד עובדה מעניינת.
         </div>
         <div style={{position: 'absolute', left: 120, top: 1040, width: 840, height: 130, overflow: 'hidden'}}>
@@ -481,7 +470,7 @@ const EndCard: React.FC = () => {
               background: C.navy,
               color: C.cream,
               fontFamily: FONT,
-              fontWeight: 900,
+              fontWeight: 700,
               fontSize: 76,
               display: 'flex',
               alignItems: 'center',
@@ -505,10 +494,10 @@ const EndCard: React.FC = () => {
             fontFamily: FONT,
           }}
         >
-          <div dir="rtl" style={{fontWeight: 800, fontSize: 58, color: C.navy}}>
+          <div dir="rtl" style={{fontWeight: 700, fontSize: 58, color: C.navy}}>
             לעוד כאלה ← עקבו
           </div>
-          <div dir="ltr" style={{fontWeight: 800, fontSize: 52, color: C.red, marginTop: 6}}>
+          <div dir="ltr" style={{fontWeight: 700, fontSize: 52, color: C.red, marginTop: 6}}>
             @improve.with.englishu
           </div>
         </div>

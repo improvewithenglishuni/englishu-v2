@@ -13,10 +13,10 @@ Target words: **ATTRIBUTE** (B2/C1, verb: לייחס) and **MISCONCEPTION** (C1,
 8. שלחו את זה למי שבטוח שהוא מבין באוכל סיני.
 9. ותשאלו אותו: מאיפה העוגייה?
 
-## Scene table (v2)
+## Scene table (v3: David Libre, Vox Atlas maps, no caption sentences, manila tag)
 | Seconds | On screen | Image type |
 |---|---|---|
-| 0.0–4.2 | Chinese restaurant (full frame, slow zoom) while the question lands; ~2.2 s to think; then the broken cookie pops in (no zoom ring) | Full-frame photo + cutout |
+| 0.0–4.2 | Sharon's restaurant photo (full frame, slow zoom) while the question lands; ~2.2 s to think; then the broken cookie pops in (no zoom ring) | Full-frame photo + cutout |
 | 4.2–7.0 | Map of China; cookies drop on it and bounce away; "fortune cookies" label | Map + cutouts |
 | 7.0–10.5 | 1878 Japanese print of a senbei baker; timeline 1878 → today (right to left); tsujiura senbei sticker | Archival clipping, dark plate |
 | 10.5–14.5 | ATTRIBUTE rides a tag from the cookie to Hagiwara's original press (c. 1914), where it hangs like a price tag on a red string; gloss לייחס | Photo clipping + cutout |
