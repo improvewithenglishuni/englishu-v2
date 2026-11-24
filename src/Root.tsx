@@ -69,7 +69,7 @@ export const RemotionRoot: React.FC = () => (
       schema={smallpoxSchema}
       defaultProps={{
         theme: 'vox',
-        voiceover: 'assets/smallpox_audio_v35.wav',
+        voiceover: 'assets/smallpox_audio_v36.wav',
         subtitles: [
           {text: 'שמתם לב שלסבא או סבתא יש צלקת על הזרוע?', from: s(0.2), to: s(3.5)},
           {text: 'זה כנראה בגלל שחיסנו אותם נגד מחלה שנקראת smallpox', from: s(3.5), to: s(7.5)},

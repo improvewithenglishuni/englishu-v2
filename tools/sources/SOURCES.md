@@ -59,3 +59,4 @@ Older newsprint-version files (`gillray.jpg`, `ota.jpg`, `tem.jpg`, `vial*.jpg`)
 ## Audio (v33)
 - Voiceover: Sharon's own recording (New Recording 23.m4a), complete takes cut at silences, room tone fill, light high-pass/compression, loudness-normalised. Not published anywhere else.
 - Sound effects and quiet bed: synthesised in code (numpy/scipy), no third-party samples.
+- v36: music bed rewritten as a sectioned, synthesized score (code, `tools/audio/smallpox_build_audio.py`); no third-party audio.
