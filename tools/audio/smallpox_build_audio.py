@@ -12,64 +12,90 @@ def put(buf,at,sig,g=1.0):
     i=int(at*sr)
     if i>=len(buf) or i<0: return
     sig=sig*g; j=min(len(buf),i+len(sig)); buf[i:j]+=sig[:j-i]
-# ---------- instruments ----------
-def pluck(f,dur=0.9,dec=5.0):
-    t=T(dur); s=(np.sin(2*np.pi*f*t)+0.35*np.sin(4*np.pi*f*t)*np.exp(-t*9)+0.12*np.sin(6*np.pi*f*t)*np.exp(-t*14))
-    return (s*np.exp(-t*dec)*np.minimum(1,t/0.004)).astype(np.float32)
-def bass(f,dur=1.4):
-    t=T(dur); return (np.sin(2*np.pi*f*t)*np.exp(-t*2.2)*np.minimum(1,t/0.01)).astype(np.float32)
-def padn(f,dur):
-    t=T(dur); s=sum(np.sin(2*np.pi*f*(1+d)*t+k) for k,d in enumerate([-0.004,0,0.004]))
-    e=np.minimum(1,t/(0.35*dur))*np.minimum(1,(dur-t)/(0.4*dur)); return (s*e/3).astype(np.float32)
-def hat(): return (hp(noise(0.05),6500)*np.exp(-T(0.05)*90)).astype(np.float32)
-def kick():
-    t=T(0.3); return (np.sin(2*np.pi*(50+70*np.exp(-t*30))*t)*np.exp(-t*12)).astype(np.float32)
-def shaker(): return (bp(noise(0.09),4000,9000)*np.exp(-T(0.09)*45)).astype(np.float32)
-CH={'Am':([110,220,261.6,329.6],[440,523.3,659.3,784]),'F':([87.3,174.6,220,261.6],[349.2,440,523.3,698.5]),
-    'C':([130.8,261.6,329.6,392],[523.3,659.3,784,1046.5]),'G':([98,196,246.9,293.7],[392,493.9,587.3,784]),
-    'Dm':([73.4,146.8,174.6,220],[293.7,349.2,440,587.3]),'Em':([82.4,164.8,196,246.9],[329.6,392,493.9,659.3])}
-music=np.zeros(N,np.float32)
-def section(t0,t1,bpm,prog,plucks,bassn,perc,amp=1.0,octave=0):
-    beat=60/bpm; bar=4*beat; n=int(np.ceil((t1-t0)/bar)); buf=np.zeros(N,np.float32)
-    for b in range(n):
-        name=prog[b%len(prog)]; low,hi=CH[name]; bt=t0+b*bar
-        put(buf,bt,padn(low[2],bar+0.4),0.16*amp)
-        if bassn: put(buf,bt,bass(low[0]),0.5*amp); put(buf,bt+2*beat,bass(low[0]),0.32*amp)
-        pat=[0,1.5,2,3,3.5][:plucks] if plucks<=5 else [0,0.5,1,1.5,2,2.5,3,3.5]
-        for k,p in enumerate(pat):
-            tone=hi[(k*2+b)%4]*(2 if octave else 1)
-            put(buf,bt+p*beat,pluck(tone),(0.22 if k%2==0 else 0.15)*amp*rng.uniform(.8,1))
-        if perc>=1:
-            for k in range(8): put(buf,bt+k*beat/2,shaker(),(0.08 if k%2 else 0.12)*amp)
-        if perc>=2:
-            put(buf,bt,kick(),0.5*amp); put(buf,bt+2*beat,kick(),0.38*amp)
-            for k in range(4): put(buf,bt+k*beat+beat/2,hat(),0.08*amp)
-    m=(tb>=t0)&(tb<t1); out=np.zeros(N,np.float32); out[m]=buf[m]
-    return out
-# arrangement (starts after the hook question, as in the reference)
-A=section(3.5,13.8,92,['Am','F','C','G'],3,True,0,0.9)          # curious, sparse
-B=section(13.8,26.9,100,['C','G','Am','F'],5,True,1,1.0)         # history: Jenner / vaccination, light shaker
-C=section(26.9,32.7,84,['Dm','Am'],2,False,0,0.9)               # eradicate: sparse, tense
-D=section(32.7,41.9,116,['Am','F','C','G'],8,True,2,1.0)         # outbreak + chart: driving
-E=section(41.9,46.4,92,['Dm','Am','F','G'],3,True,0,0.85)        # map / Somalia
-F=section(46.4,49.9,100,['C','G','Am','F'],5,True,0,1.0,1)       # victory: warm, brighter
-fadein=lambda t0,d:np.clip((tb-t0)/d,0,1)
-def dip(x,c,w,depth=1.0): return x*(1-depth*np.exp(-((tb-c)/w)**2))
-mus=(A+B+C+D+E+F)
-# dropouts: transitions and dramatic pauses (silence/hole in the music)
-env=np.ones(N,np.float32)
-def hole(t0,t1,r=0.06):
-    global env
-    env*= 1-np.clip(np.minimum((tb-t0)/r,(t1-tb)/r),0,1)*((tb>=t0-r)&(tb<=t1+r))
-hole(13.55,13.85)      # into Jenner
-hole(26.75,27.05)      # into the English sentence
-hole(30.05,30.75,0.05) # dust: music drops out, ERADICATE vanishes into silence
-hole(32.45,32.9)       # switch to the driving track
-hole(41.75,42.0)       # into the map
-hole(45.95,46.5,0.05)  # hold before the stamp thud
-mus*=env*fadein(3.4,0.6)
-mus*=np.clip((52.4-tb)/1.0,0,1)*np.where(tb<49.9,1.0,np.clip(1-(tb-49.9)/2.4,0,1))  # hand over to the outro
-mus=lp(mus,6000)
+# ---------- continuous score: one tempo, one key, one bar grid, layers glide in and out ----------
+from scipy.signal import fftconvolve
+BPM=90; BEAT=60/BPM; BAR=4*BEAT; G0=30.4-10*BAR          # bar 10 lands exactly on the dust moment (30.4 s); bar 16 on the stamp (46.4 s)
+def bar_t(n): return G0+n*BAR
+PAD={'Am':[110,164.8,220,261.6,329.6],'F':[87.3,130.8,174.6,220,261.6],'Dm':[73.4,110,146.8,174.6,220],
+     'E':[82.4,123.5,164.8,207.7,246.9],'C':[65.4,130.8,196,261.6,329.6]}
+ARP={'Am':[220,261.6,329.6,440],'F':[174.6,220,261.6,349.2],'Dm':[293.7,349.2,440,587.3],
+     'E':[329.6,415.3,493.9,659.3],'C':[261.6,329.6,392,523.3]}
+ROOT={'Am':55,'F':43.65,'Dm':73.4/2*1.0,'E':41.2,'C':65.4}
+PROG=['Am','F','Am','E','Am','F','Dm','E','Dm','E','Am','F','Dm','E','Am','E','F','C','E']   # bars 0..18
+def curve(pts):
+    tt=[p[0] for p in pts]; vv=[p[1] for p in pts]
+    c=np.interp(tb,tt,vv).astype(np.float32); return uniform_filter1d(c,int(0.6*sr))
+def at(c,t): return float(c[min(N-1,max(0,int(t*sr)))])
+c_pad=curve([(3.3,0),(6,.55),(26,.6),(29,.45),(30.4,.7),(33,.6),(45.5,.6),(46.4,.8),(50,.7),(52.4,.0),(60,0)])
+c_arp=curve([(3.4,0),(5,.5),(13.5,.55),(14.5,.8),(26.9,.7),(28.3,.4),(29.6,0),(31.2,0),(31.6,.35),(32.7,.8),(41.9,.7),(44.2,.45),(45.9,0),(46.6,.55),(49.9,.55),(51.0,0),(60,0)])
+c_dens=curve([(0,0),(9,0),(11,1),(28,1),(29,0),(31.8,0),(32.7,1),(44,1),(45,0),(46.6,0),(47.5,1),(60,1)])
+c_bass=curve([(0,0),(13,0),(14,.55),(28.5,.55),(29.8,.2),(30.3,.2),(31.2,.6),(45.8,.6),(46.4,.8),(50,.6),(52,0),(60,0)])
+c_kick=curve([(0,0),(14,0),(15,.25),(26.5,.25),(27.5,.12),(29.5,.0),(32.4,0),(33.2,.5),(41.5,.5),(42.5,.28),(45.9,.28),(46.2,0),(60,0)])
+c_hat=curve([(0,0),(32.4,0),(33.4,.3),(41.5,.3),(42.5,.12),(44.0,.18),(46.0,.38),(46.3,0),(60,0)])
+def tonebuf(f,dur,kind):
+    t=T(dur)
+    if kind=='pluck': s=np.sin(2*np.pi*f*t)+0.3*np.sin(4*np.pi*f*t)*np.exp(-t*8)+0.1*np.sin(6*np.pi*f*t)*np.exp(-t*14); return (s*np.exp(-t*4.5)*np.minimum(1,t/0.006)).astype(np.float32)
+    if kind=='bass': return (np.sin(2*np.pi*f*t)*np.exp(-t*1.6)*np.minimum(1,t/0.015)).astype(np.float32)
+pluck_l=np.zeros(N,np.float32); pad_l=np.zeros(N,np.float32); bass_l=np.zeros(N,np.float32); perc_l=np.zeros(N,np.float32)
+nb=len(PROG)
+for n in range(-1,nb+1):
+    ch=PROG[min(max(n,0),nb-1)]; t0=bar_t(n)
+    # pad: each chord lives from half a second before its bar to half a second after, raised-cosine overlap
+    pd=BAR+1.2; tt=T(pd); win=np.sin(np.pi*np.clip(tt/pd,0,1))**2
+    s=sum(np.sin(2*np.pi*f*tt+k)*(0.9**k) for k,f in enumerate(PAD[ch]))*win/3
+    put(pad_l,t0-0.6,s.astype(np.float32),1.0)
+for n in range(0,nb):
+    ch=PROG[n]; t0=bar_t(n)
+    for k,idx in enumerate([0,1,2,3,2,1,2,1]):
+        t=t0+k*BEAT/2
+        if k%2==1 and at(c_dens,t)<0.5: continue
+        g=at(c_arp,t)*(1.0 if k%2==0 else 0.7)*(1.2 if k==0 else 1)
+        if at(c_arp,t)<0.03: continue
+        f=ARP[ch][idx]*(2 if (t>46.5 and t<51) else 1)
+        put(pluck_l,t,tonebuf(f,0.9,'pluck'),g*0.5)
+    for k in (0,2):
+        t=t0+k*BEAT; g=at(c_bass,t)*(1 if k==0 else 0.6)
+        if g>0.03: put(bass_l,t,tonebuf(ROOT[ch]*2 if ROOT[ch]<50 else ROOT[ch],1.5,'bass'),g*0.7)
+    for k in range(4):
+        t=t0+k*BEAT
+        gk=at(c_kick,t)*(1 if k in (0,2) else (0.0 if at(c_kick,t)<0.4 else 0.6))
+        if gk>0.03:
+            kt=T(0.3); put(perc_l,t,(np.sin(2*np.pi*(48+60*np.exp(-kt*30))*kt)*np.exp(-kt*13)).astype(np.float32),gk*0.9)
+    for k in range(8):
+        t=t0+k*BEAT/2; gh=at(c_hat,t)*(0.7 if k%2 else 1.0)
+        if gh>0.03: put(perc_l,t,(hp(noise(0.05),6500)*np.exp(-T(0.05)*90)).astype(np.float32),gh*0.18)
+    if 44.0<=t0+BAR and t0>=44.0 and t0<46.4:  # extra 16ths in the final bar before the stamp
+        for k in range(16):
+            t=t0+k*BEAT/4
+            if t>44.2: put(perc_l,t,(hp(noise(0.03),7000)*np.exp(-T(0.03)*120)).astype(np.float32),0.05+0.07*(t-44.2)/2.2)
+# risers: tension that builds, then releases
+def riser(t0,t1,top=2400):
+    d=t1-t0; tt=T(d); p=(tt/d)
+    n=noise(d); sweep=np.zeros(len(tt),np.float32)
+    for a,b in [(0,0.25),(0.25,0.5),(0.5,0.75),(0.75,1.0)]:
+        i0,i1=int(a*len(tt)),int(b*len(tt)); fc=300+(top-300)*((a+b)/2)**2
+        sweep[i0:i1]=bp(n[i0:i1],fc*0.6,min(fc*1.6,9000),2)
+    glide=np.sin(2*np.pi*np.cumsum(180+900*p**2)/sr)*0.25
+    env=(p**2)*np.minimum(1,(d-tt)/0.02)
+    return ((sweep*0.9+glide)*env).astype(np.float32)
+rise_l=np.zeros(N,np.float32)
+put(rise_l,28.3,riser(28.3,30.4),0.9)
+put(rise_l,44.2,riser(44.2,46.4),0.9)
+def boom(at_,dur=1.8):
+    t=T(dur); b=np.sin(2*np.pi*(38+30*np.exp(-t*6))*t)*np.exp(-t*2.2)+bp(noise(dur),80,500)*np.exp(-t*6)*0.4
+    put(rise_l,at_,b.astype(np.float32),0.9)
+boom(30.4)                                                    # the word disintegrates; the pad opens up after it
+# gently blend with a short synthetic room (no hard digital edge)
+ir=(noise(1.1)*np.exp(-T(1.1)*3.6)); ir[:int(0.012*sr)]=0
+def wet(x,mix=0.28): 
+    y=fftconvolve(x,ir/np.abs(ir).sum()*4.0)[:len(x)]; return x*(1-mix)+y*mix
+pad_l*=c_pad; bass_l*=1.0
+mus=wet(pad_l*0.9+pluck_l*1.0)+bass_l*0.7+perc_l*0.8+rise_l*0.6
+mus=lp(mus,5500)
+
+mus*=fadein(3.3,0.9) if False else np.clip((tb-3.2)/1.0,0,1)
+mus*=np.where(tb<49.9,1.0,np.clip(1-(tb-49.9)/2.6,0,1))*np.clip((53.2-tb)/0.8,0,1)
+
 # ---------- SFX (sparse, tied to visuals) ----------
 sfx=np.zeros(N,np.float32)
 d=0.8;tt=T(d);e=np.minimum(1,tt/0.06)*np.minimum(1,(d-tt)/0.1)
