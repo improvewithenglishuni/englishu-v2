@@ -144,7 +144,7 @@ def bowed(freqs, dur):
 
 mtof = lambda m: 440 * 2 ** ((m - 69) / 12)
 
-meadow = load('meadow.mp3')
+meadow = onepole_lp(load('meadow.mp3'), 7000)  # tame the recording's hiss
 hum = load('hive-hum.mp3')
 flyby = load('flyby.mp3')
 marker = load('marker.mp3')  # "377124 tubbsmedia marker-lines" (CC0): lines at 0.4-1.7, 3.15-5.1, 6.3-7.6, 8.75-10.25 s
@@ -243,11 +243,16 @@ for k, m in enumerate([69, 73, 76]):
 # ---------------- music: OFF (Sharon didn't like the composed bed) ----------------
 # Set MUSIC = True to bring the plucked/bowed bed back, or better: drop in a licensed documentary track
 # (Musicbed / Artlist / Epidemic) or add music in the Instagram app at upload.
-MUSIC = False
-# Without music, a very quiet low-passed hive hum keeps the explainer beats from going dead silent.
-for a, b in [(NEW[1] - 0.1, NEW[4] + 0.15), (NEW[5] - 0.1, NEW[6] + 0.3)]:
-    bed = onepole_lp(segment(hum, 3, b - a, fade=0.6), 420)
-    add(amb, bed, a, 0.22)
+MUSIC = False  # the old composed bed stays off
+# Licensed music bed: Epidemic Sound "Musical, Loop, Synth Sequence, Soft, Mellow" (via Higgsfield's Epidemic
+# catalog). Warm, low synth sequence with nothing above ~1 kHz: no hats or ticks, and it sits under her voice.
+music = load('music.mp3')
+bed_m = segment(music, 0.0, DUR, fade=0.0)
+t_m = np.arange(len(bed_m)) / SR
+bed_m *= np.interp(t_m,
+                   [0, 0.6, NEW[4] - 0.4, NEW[4] + 0.4, NEW[5] - 0.4, NEW[5] + 0.3, NEW[7], DUR - 1.6, DUR],
+                   [0, 1.0, 1.0, 0.45, 0.45, 1.0, 1.0, 1.15, 0])  # softer in the dark hive, lifts on the end card
+
 # end card: the meadow carries on and fades out
 add(amb, segment(meadow, 11, 2.9, fade=1.2), NEW[7] - 0.1, 0.4)
 
@@ -289,7 +294,7 @@ def norm(x, peak):
     return x / m * peak if m > 0 else x
 
 
-mix = norm(amb, 0.22) + norm(sfx, 0.26) + (norm(mus, 0.17) if MUSIC else 0)
+mix = norm(amb, 0.2) + norm(sfx, 0.24) + norm(bed_m, 0.2) + (norm(mus, 0.17) if MUSIC else 0)
 mix = np.tanh(mix * 1.2) / 1.2
 st = np.stack([mix, mix], 1)
 os.makedirs(os.path.join(ROOT, 'public', 'audio'), exist_ok=True)

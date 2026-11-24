@@ -183,14 +183,16 @@ with wave.open(tmp, 'wb') as w:
 # cleanup chain: air puffs/plosives (100 Hz HP + dynamic low cut), light denoise, de-ess, gentle compression,
 # a touch of presence, broadcast loudness. Tempo 1.04 (pitch kept) keeps the read lively without rushing.
 chain = ','.join([
-    'highpass=f=100:poles=2',
-    'afftdn=nr=6:nf=-75',
+    'highpass=f=100:poles=2',              # air puffs / plosive thumps
+    'afftdn=nr=14:nf=-48:tn=1',            # noise reduction that tracks the room's noise profile (moderate: no warble)
     'lowpass=f=14500',
     'atempo=1.04',
     'deesser=i=0.35',
     'acompressor=threshold=-22dB:ratio=2.2:attack=10:release=150:makeup=1',
     'equalizer=f=3200:t=q:w=1.0:g=1.5',
     'loudnorm=I=-16:TP=-1.5:LRA=11',
+    # gentle downward expander: pushes the room tone down between phrases without chopping word edges
+    'agate=threshold=0.018:ratio=2.5:range=0.06:attack=6:release=220:knee=6:detection=rms',
 ])
 final = os.path.join(VO, 'clean', 'voice.wav')
 subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', tmp, '-af', chain, '-ar', str(SR), '-ac', '1', final], check=True)
