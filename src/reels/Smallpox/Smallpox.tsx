@@ -28,6 +28,7 @@ import {
   World,
   WorldMap,
 } from '../../kit';
+import {Globe} from '../../kit/Globe';
 import type {SmallpoxProps} from './schema';
 import {T} from './timing';
 import caseDots from './caseDots.json';
@@ -73,22 +74,13 @@ const Patient = () => {
 };
 
 /** 3. 300,000,000 counts up while narrated, then down to 0 while the crowd disappears. */
-const Tally300 = () => {
-  const frame = useCurrentFrame();
-  const flash = frame >= s(2.0) && frame < s(2.9);
-  const fz = interpolate(frame, [s(2.0), s(2.9)], [1.1, 1.17], {extrapolateRight: 'clamp', extrapolateLeft: 'clamp'});
-  return (
+const Tally300 = () => (
   <>
     <Crowd x0={40} y0={70} cols={15} rows={28} dx={72} dy={68} size={66} at={2} vanishFrom={s(3.44)} vanishTo={s(5.04)} />
     <Tally peak={300000000} x={540} y={830} fontSize={170} at={2} upAt={s(0.1)} upDur={s(1.4)} downAt={s(3.44)} downDur={s(1.6)} />
-    {flash ? (
-      <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
-        <Img src={patient} style={{...cover, objectPosition: '62% 38%', transform: `scale(${fz})`, transformOrigin: '62% 38%'}} />
-      </div>
-    ) : null}
+    <Globe x={540} y={1200} r={270} at={s(2.9)} />
   </>
-  );
-};
+);
 
 /** A date typed onto the image with a typewriter: letters strike one by one, uneven ink, speckled. */
 loadFont({family: 'Special Elite', url: staticFile('fonts/special-elite-latin-400-normal.woff2'), weight: '400'});
@@ -257,7 +249,7 @@ const Victory = () => {
   const ez = (v: number) => (v < 0.5 ? 2 * v * v : 1 - Math.pow(-2 * v + 2, 2) / 2);
   // dots thin out s(0.5)..s(1.9) until a couple are left near the Horn of Africa; then the camera dives into Somalia
   const zin = ez(Math.min(1, Math.max(0, (frame - s(5.14)) / s(0.7))));
-  const zout = ez(Math.min(1, Math.max(0, (frame - s(6.55)) / s(0.7))));
+  const zout = ez(Math.min(1, Math.max(0, (frame - s(6.24)) / s(0.7))));
   const m = zin * (1 - zout);
   const z = 1 + 2.5 * m;
   return (
@@ -265,23 +257,18 @@ const Victory = () => {
       <div style={{position: 'absolute', inset: 0, transformOrigin: '0 0', transform: `translate(${S.x + (C.x - S.x) * m}px, ${S.y + (C.y - S.y) * m}px) scale(${z}) translate(${-S.x}px, ${-S.y}px)`}}>
         <WorldMap
           box={{x: 0, y: 520, w: 1080}}
-          highlight={{Somalia: {at: s(5.04), off: s(7.05)}}}
+          highlight={{Somalia: {at: s(5.04), off: s(6.74)}}}
           dots={caseDots.dots}
           dotsAt={s(0.15)}
           dotsFade={[s(3.15), s(4.28)]}
           dotsKeep={{count: 3, near: caseDots.somalia as [number, number], off: s(4.38)}}
-          lastCase={{x: caseDots.somalia[0], y: caseDots.somalia[1], at: s(5.04), off: s(7.05)}}
-          greyAt={s(6.55)}
+          lastCase={{x: caseDots.somalia[0], y: caseDots.somalia[1], at: s(5.04), off: s(6.74)}}
+          greyAt={s(6.24)}
           at={4}
         />
       </div>
-      <SansHeading text="אמריקה" x={250} y={1130} fontSize={70} color="white" dir="rtl" width={420} at={s(0.4)} exitAt={s(3.1)} />
-      <SansHeading text="אירופה" x={560} y={470} fontSize={70} color="white" dir="rtl" width={420} at={s(0.65)} exitAt={s(3.1)} />
-      <SansHeading text="אפריקה" x={640} y={1080} fontSize={70} color="white" dir="rtl" width={420} at={s(0.9)} exitAt={s(3.1)} />
-      <SansHeading text="אסיה" x={850} y={470} fontSize={70} color="white" dir="rtl" width={420} at={s(1.15)} exitAt={s(3.1)} />
-      <NameLabel x={540} y={1120} line1="סומליה" line2="אוקטובר 1977" fontSize={84} rotate={-2} at={s(5.9)} exitAt={s(6.6)} />
       <Stamp text="ERADICATED" x={540} y={800} fontSize={124} rotate={-8} heavy color="#C4302A" at={s(7.23)} />
-      <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(6.9)} />
+      <SansHeading text="1980" x={540} y={1290} fontSize={190} color="white" dir="ltr" at={s(6.47)} />
     </>
   );
 };
@@ -302,7 +289,7 @@ const FlexArm = () => {
   const H = 1184 * SC;
   const PIV = {x: 1080 * SC, y: 987 * SC}; // elbow pivot inside the art
   const L = -245;
-  const T = 401;
+  const T = 331;
   const tx = -400 * (1 - easeOut(pop(0, s(0.9)))); // arm pushes in from the left
   const angle = 80 * (1 - back(pop(s(0.15), s(0.95)))); // forearm swings from pointing right to upright
   const img: React.CSSProperties = {position: 'absolute', left: 0, top: 0, width: W, height: H, display: 'block'};

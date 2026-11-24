@@ -61,4 +61,4 @@ Older newsprint-version files (`gillray.jpg`, `ota.jpg`, `tem.jpg`, `vial*.jpg`)
 - Sound effects and quiet bed: synthesised in code (numpy/scipy), no third-party samples.
 - v36: music bed rewritten as a sectioned, synthesized score (code, `tools/audio/smallpox_build_audio.py`); no third-party audio.
 - v38: voiceover rebuilt from Sharon's New Recording 26 (complete takes, room-tone joins, plosive + de-ess cleanup); build scripts in `tools/audio/`. Music/SFX synthesized in code.
-- v41 map callout: last natural smallpox case, Merca, Somalia, October 1977 (US National Library of Medicine exhibition "Smallpox: A Great and Terrible Scourge"; CDC History of Smallpox). Continent labels are plain names.
+- v42: globe is drawn from the Natural Earth land data in the world-atlas package (same source as the map); no new sources.
