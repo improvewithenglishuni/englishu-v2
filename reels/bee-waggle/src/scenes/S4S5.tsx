@@ -6,6 +6,7 @@ import {DanceFigure} from '../components/dance';
 import {Comb, Label, keyWordStyle} from '../components/props';
 import {Hand, Lens} from '../components/explain';
 import {exitOut, pop, prog} from '../components/anim';
+import DANCER_TRACK from '../data/dancer-track.json';
 
 const bez = (t: number, p0: number, p1: number, p2: number, p3: number) =>
   (1 - t) ** 3 * p0 + 3 * (1 - t) ** 2 * t * p1 + 3 * (1 - t) * t ** 2 * p2 + t ** 3 * p3;
@@ -212,6 +213,20 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
           style={{background: `radial-gradient(ellipse at 50% 42%, rgba(20,12,5,${dark * 0.55}) 20%, rgba(20,12,5,${Math.min(0.95, dark * 1.4)}) 75%)`}}
         />
       </AbsoluteFill>
+      {/* the dance, sketched over the real footage: the figure-eight drawn around the bee in the centre;
+          it stays bright as the hive goes dark (the dance is felt, not seen) */}
+      {f < 116 && (
+        <AbsoluteFill style={{opacity: interpolate(f, [100, 114], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}), filter: 'drop-shadow(0 3px 4px rgba(0,0,0,0.45))'}}>
+          <DanceFigure
+            size={760}
+            draw={prog(f, 8, 92, (t) => t)}
+            dashed
+            pen
+            id="s5trace"
+            style={{left: 540 - 380, top: 760 - 380, transform: `scale(${1.35 * push})`}}
+          />
+        </AbsoluteFill>
+      )}
       {f >= 108 && (
         <>
           <Lens cx={540} cy={720} r={360} s={stick}>
@@ -220,6 +235,26 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
               muted
               style={{width: '100%', height: '100%', objectFit: 'cover', transform: 'scale(1.06)'}}
             />
+            {/* the red-dot dancer, tracked frame by frame (src/data/dancer-track.json, from scripts/track_dancer.py) */}
+            {(() => {
+              const [tx, ty] = DANCER_TRACK[Math.min(DANCER_TRACK.length - 1, f)];
+              const x = 360 + (tx - 360) * 1.06, y = 360 + (ty - 360) * 1.06;
+              return (
+                <svg width={720} height={720} style={{position: 'absolute', left: 0, top: 0, filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.5))'}}>
+                  <circle
+                    cx={x}
+                    cy={y}
+                    r={105 * pop(f, 120, 12)}
+                    fill="none"
+                    stroke={DASH.color}
+                    strokeWidth={DASH.width}
+                    strokeDasharray={DASH.array}
+                    strokeLinecap={DASH.cap}
+                    transform={`rotate(${f * 2} ${x} ${y})`}
+                  />
+                </svg>
+              );
+            })()}
           </Lens>
         </>
       )}

@@ -18,10 +18,11 @@ export const DanceFigure: React.FC<{
   color?: string;
   stroke?: number;
   dashed?: boolean;
+  pen?: boolean; // a glowing pen tip at the drawing head (for sketching over real footage)
   beeSize?: number;
   style?: React.CSSProperties;
   id?: string;
-}> = ({size = 760, draw, beeAt = null, color = C.amber, stroke = 16, dashed, beeSize = 60, style, id = 'df'}) => {
+}> = ({size = 760, draw, beeAt = null, color = C.amber, stroke = 16, dashed, pen, beeSize = 60, style, id = 'df'}) => {
   const d = useMemo(() => dancePathD(), []);
   const len = useMemo(() => getLength(d), [d]);
   let bee: React.ReactNode = null;
@@ -65,6 +66,15 @@ export const DanceFigure: React.FC<{
           filter={`url(#${id}-rough)`}
         />
       )}
+      {pen && draw > 0.001 && draw < 0.999 && (() => {
+        const q = getPointAtLength(d, Math.max(0.01, draw * len));
+        return (
+          <g>
+            <circle cx={q.x} cy={q.y} r={22} fill="#fff" opacity={0.25} />
+            <circle cx={q.x} cy={q.y} r={9} fill="#fff" />
+          </g>
+        );
+      })()}
       {bee}
     </svg>
   );
