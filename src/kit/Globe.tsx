@@ -5,6 +5,7 @@ import {feature} from 'topojson-client';
 import world from 'world-atlas/countries-110m.json';
 import type {FeatureCollection, Geometry} from 'geojson';
 import {clamp01, exitFactor, pop, SETTLE} from './motion';
+import {useUi} from './theme';
 
 const land = feature(world as never, (world as never as {objects: {land: never}}).objects.land) as unknown as FeatureCollection<Geometry>;
 const grat = geoGraticule10();
@@ -13,6 +14,7 @@ const grat = geoGraticule10();
 export const Globe: React.FC<{x: number; y: number; r: number; at?: number; exitAt?: number; degPerFrame?: number; startLon?: number; tilt?: number}> = ({x, y, r, at = 0, exitAt, degPerFrame = 1.8, startLon = -20, tilt = -18}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const ui = useUi();
   const k = clamp01(pop(frame, at, fps, SETTLE)) * exitFactor(frame, exitAt, fps);
   const id = React.useId().replace(/:/g, '');
   const d = useMemo(() => {
@@ -32,10 +34,9 @@ export const Globe: React.FC<{x: number; y: number; r: number; at?: number; exit
           </radialGradient>
         </defs>
         <circle cx={r} cy={r} r={r - 4} fill="#2F3140" />
-        <path d={d.grat} fill="none" stroke="#5A5D70" strokeWidth={1.4} opacity={0.55} />
-        <path d={d.land} fill="#D4D5DE" stroke="#2F3140" strokeWidth={1.2} />
+        <path d={d.grat} fill="none" stroke="#5A5D70" strokeWidth={1.2} opacity={0.22} />
+        <path d={d.land} fill={ui.land} stroke="#2F3140" strokeWidth={1.2} />
         <circle cx={r} cy={r} r={r - 4} fill={`url(#sh${id})`} />
-        <circle cx={r} cy={r} r={r - 4} fill="none" stroke="#B9BDD0" strokeWidth={3} opacity={0.7} />
       </svg>
     </div>
   );

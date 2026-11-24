@@ -58,7 +58,7 @@ const Hook = () => (
     scar={{x: 0.5837, y: 0.4869}}
     scarTarget={{x: 540, y: 830}}
     scars={[]}
-    marker={{cx: 0.5587, cy: 0.4869, scaleX: 2.07, scaleY: 1.78, rot: 8, at: s(1.28), dur: s(0.9)}}
+    marker={{cx: 0.589, cy: 0.4869, scaleX: 2.07, scaleY: 1.78, rot: 8, at: s(1.28), dur: s(0.9)}}
   />
 );
 
@@ -69,6 +69,7 @@ const Patient = () => {
   return (
     <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
       <Img src={patient} style={{...cover, objectPosition: '43% 50%', transform: `scale(${z})`, transformOrigin: '43% 40%'}} />
+      <NameLabel x={540} y={1190} line1="SMALLPOX" dir="ltr" fontSize={120} rotate={-2} at={s(3.1)} />
     </div>
   );
 };

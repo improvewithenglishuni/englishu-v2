@@ -21,7 +21,7 @@ rng = np.random.default_rng(11)
 
 # ---- centre line -----------------------------------------------------------------------------
 RX, RY = 64.0, 62.0
-PHI0, SWEEP = 200.0, 462.0  # degrees (screen angles, y down; increasing = clockwise)
+PHI0, SWEEP = 268.0, 462.0  # degrees (screen angles, y down; increasing = clockwise)
 n = 9000
 phi = np.radians(PHI0 + np.linspace(0, SWEEP, n))
 t = np.linspace(0, 1, n)

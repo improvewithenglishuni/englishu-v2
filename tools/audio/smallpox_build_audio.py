@@ -83,7 +83,6 @@ def riser(t0,t1,top=2400):
     return ((sweep*0.9+glide)*env).astype(np.float32)
 rise_l=np.zeros(N,np.float32)
 put(rise_l,28.72,riser(28.72,30.87),0.9)
-put(rise_l,47.07,riser(47.07,49.77),0.9)
 def boom(at_,dur=1.8):
     t=T(dur); b=np.sin(2*np.pi*(38+30*np.exp(-t*6))*t)*np.exp(-t*2.2)+bp(noise(dur),80,500)*np.exp(-t*6)*0.4
     put(rise_l,at_,b.astype(np.float32),0.9)
@@ -145,13 +144,13 @@ def tone(f,t0,dur,amp,dec=2.2):
     t=T(dur);s=(np.sin(2*np.pi*f*t)+0.25*np.sin(4*np.pi*f*t)*np.exp(-t*3))*np.exp(-t*dec)*np.minimum(1,t/0.02)*amp
     o=np.zeros(N,np.float32);i=int(t0*sr);o[i:i+len(s)]=s[:N-i];return o
 out=np.zeros(N,np.float32)
-for f,t0 in [(440,54.57),(554.4,54.92),(659.3,55.27),(880,55.62),(1108.7,55.97)]: out+=tone(f,t0,2.0,0.055)
+for f,t0 in [(330,54.57),(415.3,54.92),(493.9,55.27),(659.3,55.62),(880,55.97)]: out+=tone(f,t0,2.0,0.055)
 ch=np.zeros(N,np.float32)
 for f,a in [(110,.5),(220,.4),(277.2,.28),(329.6,.28),(440,.22),(554.4,.14),(659.3,.1)]: ch+=np.sin(2*np.pi*f*tb)*a
 a0,pk=55.0,56.89
 oenv=np.where(tb<a0,0,np.where(tb<pk,((tb-a0)/(pk-a0))**2,np.exp(-(tb-pk)*1.1)))*np.clip((59.65-tb)/1.0,0,1)
 ch=lp(ch*oenv,1800)*0.05
-spk=sum(tone(f,56.89+0.05*i,1.6,0.05,3.0) for i,f in enumerate([1760,2217,2637]))
+spk=sum(tone(f,56.89+0.05*i,1.6,0.05,3.0) for i,f in enumerate([659.3,830.6,987.8]))
 # ---------- mix ----------
 sr_,v=w.read('/home/claude/vo2/vo_final_new2.wav'); v=v.astype(np.float32)/32768
 vo=np.zeros(N,np.float32); vo[:len(v)]=v
@@ -160,5 +159,5 @@ mus*=0.05/rms(mus)
 ve=uniform_filter1d(np.abs(vo),int(0.05*sr)); duck=1-0.62*np.clip(ve/0.07,0,1); duck=uniform_filter1d(duck,int(0.25*sr))
 mix=vo+sfx+mus*duck+out+ch+spk
 mix/=max(1,np.abs(mix).max()/0.95)
-w.write('/home/claude/vo2/mix10.wav',sr,(mix*32767).astype(np.int16))
+w.write('/home/claude/vo2/mix11.wav',sr,(mix*32767).astype(np.int16))
 print('music rms',rms(mus),'voice rms',rms(vo))
