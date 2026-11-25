@@ -4,7 +4,7 @@ wav, trim, outp = sys.argv[1], float(sys.argv[2]), sys.argv[3]
 sr,x=w.read(wav); x=x.astype(np.float32)/32768
 SPD=1.1655  # 1.11 x 1.05
 L=60/(240/2.3625)/2
-cuts=[3.12,7.30,10.82,22.68,26.70,32.32,34.74,41.59,52.20]
+cuts=[3.1106,7.245,10.7888,22.6013,26.7356,32.3466,34.7091,41.5012,52.1325]
 n=int(0.012*sr); Ls=int(round(L*sr))
 fo=np.linspace(1,0,n)[:,None] if x.ndim>1 else np.linspace(1,0,n); fi=1-fo
 PRECUT = len(sys.argv) > 4 and sys.argv[4] == 'precut'   # audio already cut before ducking (smooth music)

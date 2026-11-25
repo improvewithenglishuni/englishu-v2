@@ -164,7 +164,7 @@ ib=lp(ib*ie,1400)
 ib*=0.8*rms(mus[int(3.8*sr):int(5.0*sr)])/(rms(ib[int(0.8*sr):int(2.8*sr)])+1e-9)
 mus=mus+ib
 # ---- beat-aligned gap cuts applied to every stem BEFORE ducking, so the duck curve stays smooth ----
-CUTS=[3.12,7.30,10.82,22.68,26.70,32.32,34.74,41.59,52.20]; LC=BEAT/2
+CUTS=[3.1106,7.245,10.7888,22.6013,26.7356,32.3466,34.7091,41.5012,52.1325]; LC=BEAT/2
 def cut(x):
     n=int(0.03*sr); Ls=int(round(LC*sr)); fo=np.linspace(1,0,n).astype(np.float32); fi=1-fo
     out=[];prev=0

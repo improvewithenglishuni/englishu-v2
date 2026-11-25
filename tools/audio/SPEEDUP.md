@@ -5,3 +5,5 @@ v44: global speed 1.11 (voice +~3%), and the silent gaps between scenes (windows
 v46: replaced the 2.2x gap windows with beat-aligned cuts (one 8th note = 60/BPM/2 = 0.295 s removed from the middle of each gap, 12 ms crossfade, so the music grid never shifts) at unsped 3.12, 7.30, 10.82, 22.68, 26.70, 32.32, 34.74, 41.59, 52.20; then x1.11 over everything; the final 1.11 s (unsped) of the hold is cut with a 0.7 s fade-out. Result 50.3 s.
 
 v51: do NOT use ffmpeg loudnorm on the final mix (its dynamic mode rides the gain by ~2 dB and pumps in the pauses). Use a fixed gain + limiter: ffmpeg -af "volume=2.44dB,alimiter=limit=0.84:attack=5:release=60:level=disabled" on mix13_cut.wav -> out/precut.wav, then tools/audio/smallpox_final_cut.py out/precut.wav 2.22 out/NAME.mp4 precut (speed 1.1655).
+
+v52: cut points snapped to the music's eighth-note grid (G0 + m*0.29531 s; G0 = 30.87 - 10 bars) so every splice lands on a note onset: 3.1106, 7.245, 10.7888, 22.6013, 26.7356, 32.3466, 34.7091, 41.5012, 52.1325. Cutting mid-note (v46-v51) chopped a decaying note and made an audible bump at ~18.7 s and ~33.9 s of the final.
