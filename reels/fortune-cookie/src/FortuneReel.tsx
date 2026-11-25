@@ -4,6 +4,8 @@ import React from 'react';
 import {AbsoluteFill, Audio, Easing, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import '@fontsource/tinos/hebrew-400.css';
 import '@fontsource/tinos/latin-400.css';
+import '@fontsource/tinos/latin-400-italic.css';
+import '@fontsource/tinos/latin-700-italic.css';
 import '@fontsource/oswald/latin-700.css';
 import {Arc, C, FONT, Grain, KeyWord, Label, Plate, Sticker, Subtitle, clamp, lerp, prog, qPoint, usePop} from './kit';
 import {geoPath} from 'd3-geo';
@@ -74,7 +76,7 @@ const Banner: React.FC<{text: string; x?: number; y: number; delay?: number}> = 
 // ======================================================================
 // 1. HOOK: the restaurant while the question lands; a "?" pops up, wobbles as if thinking,
 // then squashes, spins and turns into the fortune cookie.
-const COOKIE_IN = 86; // the morph lands here; MISCONCEPTION opens on the same cookie (match cut)
+const COOKIE_IN = 64; // the morph lands here; the cookie then stays on screen until the cut
 const Q_IN = 28; // the ? appears at 0.93 s, as in mock-up v4
 const Hook: React.FC = () => {
   const f = useCurrentFrame();
@@ -86,9 +88,7 @@ const Hook: React.FC = () => {
   const qPop = spring({frame: f - Q_IN, fps, config: {damping: 9, stiffness: 180, mass: 0.7}});
   const think = f - Q_IN;
   // it appears, gets highlighted, and only then starts to wobble as if thinking
-  const hl1 = prog(f, Q_IN + 8, Q_IN + 15);
-  const hl2 = prog(f, Q_IN + 15, Q_IN + 22);
-  const live = prog(f, Q_IN + 22, Q_IN + 28);
+  const live = prog(f, Q_IN + 4, Q_IN + 10);
   const wobble = 9 * Math.sin(think / 4.5) * live;
   const bob = 14 * Math.sin(think / 6) * live;
   const squash = interpolate(f, [COOKIE_IN - 20, COOKIE_IN - 14, COOKIE_IN - 11], [0, 1, 0], clamp); // anticipation
@@ -102,33 +102,18 @@ const Hook: React.FC = () => {
   return (
     <AbsoluteFill>
       <FullPhoto src="full_restaurant.jpg" dur={SCENES.hook[1]} />
-      <AbsoluteFill style={{background: `rgba(30,30,40,${0.55 * dim})`}} />
+      <AbsoluteFill style={{background: `rgba(25,22,28,${0.4 * dim})`}} />
       {f >= Q_IN && f < COOKIE_IN && (
         <div
           style={{
             position: 'absolute',
             left: cx,
-            top: cy + (900 - cy) * spin + bob * (1 - spin),
+            top: cy + bob * (1 - spin),
             width: 0,
             height: 0,
             transform: `rotate(${qRot}deg) scale(${qScale * (1 + 0.18 * squash)}, ${qScale * (1 - 0.22 * squash)})`,
           }}
         >
-          {/* yellow highlighter, two passes drawn right to left behind the "?" */}
-          <svg width={700} height={760} style={{position: 'absolute', left: -350, top: -380, overflow: 'visible', opacity: 1 - spin}}>
-            {[
-              {d: 'M 535 290 C 440 280, 320 300, 175 286', p: hl1},
-              {d: 'M 528 470 C 420 482, 300 462, 168 478', p: hl2},
-            ].map((h, k) => (
-              <path key={k} d={h.d} stroke="#FDF551" strokeWidth={215} strokeLinecap="butt" strokeOpacity={0.88} fill="none" pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - h.p} style={{filter: 'url(#rough)'}} />
-            ))}
-            <defs>
-              <filter id="rough" filterUnits="userSpaceOnUse" x={-100} y={-100} width={900} height={960}>
-                <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves={2} seed={4} />
-                <feDisplacementMap in="SourceGraphic" scale={26} />
-              </filter>
-            </defs>
-          </svg>
           <div
             style={{
               position: 'absolute',
@@ -156,18 +141,18 @@ const Hook: React.FC = () => {
           return (
             <div
               key={k}
-              style={{position: 'absolute', left: 540 + Math.cos(a) * r - 9, top: 900 + Math.sin(a) * r - 9, width: 18, height: 18, borderRadius: '50%', background: '#F2C230', opacity: 1 - burst, transform: `scale(${1 - 0.6 * burst})`}}
+              style={{position: 'absolute', left: cx + Math.cos(a) * r - 9, top: cy + Math.sin(a) * r - 9, width: 18, height: 18, borderRadius: '50%', background: '#F2C230', opacity: 1 - burst, transform: `scale(${1 - 0.6 * burst})`}}
             />
           );
         })}
       {f >= COOKIE_IN - 2 && (
         <Img
-          src={staticFile('img/cookie.png')}
+          src={staticFile('img/broken.png')}
           style={{
             position: 'absolute',
-            left: 540 - 310,
-            top: 900 - 287,
-            width: 620,
+            left: cx - 430,
+            top: cy - 398,
+            width: 860,
             transform: `rotate(${cRot}deg) scale(${0.25 + 0.75 * cPop})`,
             filter: 'drop-shadow(0 14px 18px rgba(20,20,35,0.45))',
           }}
@@ -226,12 +211,12 @@ const Y1878: React.FC = () => {
       <Plate dark />
       <Sticker src="print1878.png" x={540} y={560} w={960} rot={-1.5} delay={0} />
       {/* timeline: right to left */}
-      <div style={{position: 'absolute', left: 120 + 840 * (1 - line), top: 1150, width: 840 * line, height: 6, background: C.paper, borderRadius: 3}} />
+      <div style={{position: 'absolute', left: 120 + 840 * (1 - line), top: 1150, width: 840 * line, height: 6, background: C.charcoal, borderRadius: 3}} />
       <div style={{position: 'absolute', left: 900 - 22, top: 1131, width: 44, height: 44, borderRadius: '50%', background: C.coral, transform: `scale(${pop})`}} />
-      <div style={{position: 'absolute', left: 120, top: 1180, fontFamily: FONT, fontWeight: 500, fontSize: 40, color: '#C9CCDA', opacity: line}}>
+      <div style={{position: 'absolute', left: 120, top: 1180, fontFamily: FONT, fontWeight: 500, fontSize: 40, color: '#6E6A62', opacity: line}}>
         היום
       </div>
-      <KeyWord text="1878" size={140} style={{position: 'absolute', right: 110, top: 960, transform: `scale(${pop})`, transformOrigin: 'right bottom'}} />
+      <KeyWord text="1878" size={140} color="#151515" style={{WebkitTextStroke: "0px", textShadow: "none", position: 'absolute', right: 110, top: 960, transform: `scale(${pop})`, transformOrigin: 'right bottom'}} />
       <Sticker src="tsujiura.png" x={860} y={240} w={180} rot={7} delay={52} />
     </AbsoluteFill>
   );
@@ -400,46 +385,63 @@ const War: React.FC = () => {
 // 8. MISCONCEPTION: the "CHINA" tag peels off the cookie and falls
 const Misconception: React.FC = () => {
   const f = useCurrentFrame();
-  const word = usePop(10);
-  const gloss = usePop(30);
-  const fall = Math.max(0, f - 60);
-  const tagIn = interpolate(f, [2, 8, 11], [2.2, 0.92, 1], clamp); // slapped on after the cut
-  const tagY = 860 + 0.9 * fall * fall;
-  const tagRot = -12 + (fall > 0 ? Math.min(70, fall * 4) : 0) + Math.sin(f / 3) * (fall > 0 ? 6 : 0);
-  const wobble = f > 50 && f < 60 ? Math.sin((f - 50) * 2.2) * 5 : 0;
+  const word = usePop(6);
+  const gloss = usePop(18);
+  const quote = usePop(2, 16);
+  const made = usePop(12, 16);
+  const strike = prog(f, 40, 52); // red marker through "Made In China"
+  const fall = Math.max(0, f - 50); // ...and the tag falls off the cookie
+  const tagY = 1120 + 0.9 * fall * fall;
+  const tagRot = -10 + (fall > 0 ? Math.min(80, fall * 4) : 0) + Math.sin(f / 3) * (fall > 0 ? 6 : 0);
+  const wobble = f > 42 && f < 50 ? Math.sin((f - 42) * 2.2) * 5 : 0;
+  const serif = '"Tinos"';
+  const ink = '#151515';
   return (
     <AbsoluteFill>
-      <Plate dark />
-      <div style={{position: 'absolute', left: 0, right: 0, top: 230, display: 'flex', justifyContent: 'center', transform: `scale(${word})`, opacity: Math.min(1, word * 2)}}>
-        <KeyWord text="MISCONCEPTION" size={104} />
+      <Plate />
+      {/* target word + gloss */}
+      <div style={{position: 'absolute', left: 0, right: 0, top: 150, display: 'flex', justifyContent: 'center', transform: `scale(${word})`, opacity: Math.min(1, word * 2)}}>
+        <KeyWord text="MISCONCEPTION" size={100} color={ink} style={{WebkitTextStroke: '0px', textShadow: 'none', letterSpacing: 2}} />
       </div>
-      <div
-        dir="rtl"
-        style={{position: 'absolute', left: 0, right: 0, top: 380, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 76, color: C.yellow, transform: `scale(${gloss})`, opacity: Math.min(1, gloss * 2)}}
-      >
+      <div dir="rtl" style={{position: 'absolute', left: 0, right: 0, top: 270, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 70, color: C.stamp, transform: `scale(${gloss})`, opacity: Math.min(1, gloss * 2)}}>
         תפיסה מוטעית
       </div>
-      <Sticker src="cookie.png" x={540} y={900} w={620} rot={-3} delay={0} from="none" />
+      {/* "Fortune Cookie" / Made In China (struck through) */}
+      <div style={{position: 'absolute', left: 0, right: 0, top: 430, textAlign: 'center', fontFamily: serif, fontStyle: 'italic', fontWeight: 700, fontSize: 168, lineHeight: 0.98, color: ink, opacity: Math.min(1, quote * 2), transform: `translateY(${(1 - quote) * 30}px)`}}>
+        {'\u201CFortune'}
+        <br />
+        {'Cookie\u201D'}
+      </div>
+      <div style={{position: 'absolute', left: 0, right: 0, top: 800, display: 'flex', justifyContent: 'center', opacity: Math.min(1, made * 2)}}>
+        <div style={{position: 'relative', fontFamily: serif, fontStyle: 'italic', fontWeight: 400, fontSize: 84, color: '#2A2724', padding: '0 10px'}}>
+          Made In China
+          <svg width={560} height={60} style={{position: 'absolute', left: -20, top: 34, overflow: 'visible'}}>
+            <path d="M 4 34 C 140 24, 330 30, 552 18" stroke="#D2322D" strokeWidth={9} strokeLinecap="round" fill="none" pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - strike} opacity={0.92} />
+          </svg>
+        </div>
+      </div>
+      <Sticker src="cookie.png" x={540} y={1170} w={560} rot={-3} delay={0} from="none" />
       {tagY < 2100 && (
         <div
           style={{
             position: 'absolute',
-            left: 540,
+            left: 560,
             top: tagY,
-            transform: `translate(-50%, -50%) rotate(${tagRot + wobble}deg) scale(${tagIn})`,
-            background: C.coral,
-            color: '#fff',
-            fontFamily: FONT,
+            transform: `translate(-50%, -50%) rotate(${tagRot + wobble}deg)`,
+            background: C.paper,
+            color: '#C2303A',
+            fontFamily: serif,
+            fontStyle: 'italic',
             fontWeight: 700,
-            fontSize: 70,
-            letterSpacing: 6,
-            padding: '10px 36px',
-            boxShadow: '0 10px 16px rgba(0,0,0,0.3)',
-            border: '5px solid #fbfbf8',
+            fontSize: 50,
+            padding: '8px 26px',
+            border: '3px solid #C2303A',
+            boxShadow: '0 8px 14px rgba(0,0,0,0.25)',
+            whiteSpace: 'nowrap',
           }}
         >
-          CHINA
-          <div style={{position: 'absolute', left: -20, top: -18, width: 90, height: 34, background: 'rgba(235,225,195,0.85)', transform: 'rotate(-28deg)', opacity: fall > 0 ? 0 : 1}} />
+          Made in China
+          <div style={{position: 'absolute', left: -16, top: -16, width: 80, height: 28, background: 'rgba(235,225,195,0.85)', transform: 'rotate(-28deg)', opacity: fall > 0 ? 0 : 1}} />
         </div>
       )}
     </AbsoluteFill>
@@ -623,11 +625,10 @@ const EndCard: React.FC = () => {
 // Sound design (VOX rules: sparse, J-cut 2 frames early, max two soft whooshes)
 const SFX: {at: number; src: string; v: number}[] = [
   {at: Q_IN - 2, src: 'sfx/soft_thump_reveal_03.wav', v: 0.22}, // the question mark pops up
-  {at: Q_IN + 7, src: 'sfx/marker_stroke_02.wav', v: 0.16}, // highlighter on the ?
   {at: COOKIE_IN - 8, src: 'sfx/sparkle_soft_02.wav', v: 0.2}, // the ? spins into the cookie
   {at: COOKIE_IN - 1, src: 'sfx/soft_thump_reveal_01.wav', v: 0.3}, // the cookie lands
-  {at: at('misconception', 4), src: 'sfx/tape_press_01.wav', v: 0.24}, // CHINA tag slapped on
-  {at: at('misconception', 56), src: 'sfx/paper_movement_03.wav', v: 0.22}, // CHINA tag peels off
+  {at: at('misconception', 38), src: 'sfx/marker_stroke_02.wav', v: 0.18}, // red line through Made In China
+  {at: at('misconception', 48), src: 'sfx/paper_movement_03.wav', v: 0.22}, // the tag falls off
   {at: at('china', -2), src: 'sfx/paper_movement_01.wav', v: 0.2},
   {at: at('china', 22), src: 'sfx/book_slide_on_desk_01.wav', v: 0.1},
   {at: at('y1878', -2), src: 'sfx/page_turn_01.wav', v: 0.22},

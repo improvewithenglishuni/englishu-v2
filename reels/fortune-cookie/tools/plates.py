@@ -70,3 +70,44 @@ def make(name, base, band, dots, band_top):
 make('plate_light', '#EDEEF3', '#A1ACCA', '#A1ACCA', 1490)
 make('plate_dark', '#3A3C4A', '#2B2C37', '#55586B', 1490)
 print('plates ok')
+
+
+# ---- v9: cream recycled-paper plate (Sharon's reference): fibrous mottling, specks, faint creases
+def cream():
+    base = np.array([239, 235, 226], np.float32)
+    m = 6 * noise(60, 40) + 6 * noise(14, 5) + 8 * noise(3, 0.9) + 3 * noise(1, 0)
+    img = base[None, None, :] + m[..., None]
+    im = Image.fromarray(img.clip(0, 255).astype(np.uint8))
+    d = ImageDraw.Draw(im, 'RGBA')
+    # fibres: short thin hairs
+    for _ in range(2600):
+        x, y = rng.uniform(0, W), rng.uniform(0, H)
+        a = rng.uniform(0, np.pi)
+        L = rng.uniform(3, 16)
+        c = int(rng.uniform(90, 170))
+        d.line((x, y, x + L * np.cos(a), y + L * np.sin(a)), fill=(c, c - 4, c - 10, int(rng.uniform(25, 80))), width=1)
+    # specks
+    for _ in range(420):
+        x, y = rng.uniform(0, W), rng.uniform(0, H)
+        r = rng.uniform(0.5, 1.8)
+        c = int(rng.uniform(60, 150))
+        d.ellipse((x - r, y - r, x + r, y + r), fill=(c, c - 5, c - 12, int(rng.uniform(35, 110))))
+    # faint creases: a light ridge with a soft shadow beside it
+    cre = Image.new('L', (W, H), 0)
+    sh = Image.new('L', (W, H), 0)
+    dc, ds = ImageDraw.Draw(cre), ImageDraw.Draw(sh)
+    for _ in range(5):
+        x0, y0 = rng.uniform(-200, W), rng.uniform(-200, H)
+        ang = rng.uniform(-0.9, 0.9) + np.pi / 6
+        L = rng.uniform(700, 1800)
+        pts = [(x0 + t * np.cos(ang) + rng.normal(0, 6), y0 + t * np.sin(ang) + rng.normal(0, 6)) for t in np.linspace(0, L, 30)]
+        dc.line(pts, fill=150, width=3)
+        ds.line([(x + 4, y + 5) for x, y in pts], fill=90, width=5)
+    im.paste((252, 251, 248), (0, 0), cre.filter(ImageFilter.GaussianBlur(2.5)))
+    im.paste((205, 199, 188), (0, 0), sh.filter(ImageFilter.GaussianBlur(5)))
+    im = im.filter(ImageFilter.GaussianBlur(0.4))
+    im.save('public/img/plate_cream.png')
+
+
+cream()
+print('cream ok')

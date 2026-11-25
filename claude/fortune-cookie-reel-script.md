@@ -14,11 +14,11 @@ Target words: **MISCONCEPTION** (C1, noun: תפיסה מוטעית) and **ATTRIB
 9. שלחו את זה למי שבטוח שהוא מבין באוכל סיני,
 10. ותשאלו: מאיפה העוגיות?
 
-## Scene table (Reel v8, timings from mock-up v4)
+## Scene table (Reel v9, timings from mock-up v4; every non-full-frame still on the cream paper plate)
 | Seconds | On screen | Image type |
 |---|---|---|
-| 0.0–3.2 | Palace Chinese Restaurant storefront (her photo, full frame, slow zoom); a white "?" appears at 0.9 s, a yellow highlighter swipes behind it, it wobbles, then spins into the fortune cookie | Full-frame photo + animation |
-| 3.2–7.0 | MISCONCEPTION (match cut on the same cookie): a CHINA tag is slapped on, then peels off and falls; gloss תפיסה מוטעית | Magazine cutout, dark plate |
+| 0.0–3.2 | Palace Chinese Restaurant storefront (her photo, full frame, slow zoom); a white "?" appears at 0.9 s, wobbles, then spins into the broken fortune cookie, which stays on screen | Full-frame photo + animation |
+| 3.2–7.0 | MISCONCEPTION + gloss; “Fortune Cookie” in a big serif italic, "Made In China" crossed out with a red marker line while the cookie's "Made in China" tag falls off | Cream paper, magazine-cutout cookie |
 | 7.0–9.2 | Vox Atlas map, CHINA in red; cookies bounce off it | Map + cutouts |
 | 9.2–13.2 | 1878 Japanese print; timeline 1878 → today (right to left); tsujiura senbei sticker | Archival clipping, dark plate |
 | 13.2–15.4 | Pacific map: JAPAN in red, yellow arrow across the ocean, a cookie riding it | Map |

@@ -39,7 +39,8 @@ export const usePop = (delay: number, damping = 13) => {
 
 export const Plate: React.FC<{dark?: boolean}> = ({dark}) => (
   <AbsoluteFill>
-    <Img src={staticFile(`img/${dark ? 'plate_dark' : 'plate_light'}.png`)} style={{width: '100%', height: '100%'}} />
+    {/* v9: one cream recycled-paper plate for every non-full-frame still (Sharon's reference) */}
+    <Img src={staticFile('img/plate_cream.png')} style={{width: '100%', height: '100%'}} data-dark={dark ? 1 : 0} />
   </AbsoluteFill>
 );
 
