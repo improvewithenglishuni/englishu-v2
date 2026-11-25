@@ -2,6 +2,7 @@
 import sys, numpy as np, scipy.io.wavfile as w, subprocess
 wav, trim, outp = sys.argv[1], float(sys.argv[2]), sys.argv[3]
 sr,x=w.read(wav); x=x.astype(np.float32)/32768
+SPD=1.1655  # 1.11 x 1.05
 L=60/(240/2.3625)/2
 cuts=[3.12,7.30,10.82,22.68,26.70,32.32,34.74,41.59,52.20]
 n=int(0.012*sr); Ls=int(round(L*sr))
@@ -22,5 +23,5 @@ segs=[];p=0
 for c in cuts: segs.append((p,c)); p=c+L
 segs.append((p,keep+len(cuts)*L))
 v=[f"[0:v]trim=start={a:.5f}:end={b:.5f},setpts=PTS-STARTPTS[v{i}]" for i,(a,b) in enumerate(segs)]
-fc=";".join(v)+";"+"".join(f"[v{i}]" for i in range(len(segs)))+f"concat=n={len(segs)}:v=1:a=0,setpts=PTS/1.11[v];[1:a]atempo=1.11[a]"
+fc=";".join(v)+";"+"".join(f"[v{i}]" for i in range(len(segs)))+f"concat=n={len(segs)}:v=1:a=0,setpts=PTS/{SPD}[v];[1:a]atempo={SPD}[a]"
 subprocess.run(["ffmpeg","-v","error","-y","-i","out/base.mp4","-i","out/cut.wav","-filter_complex",fc,"-map","[v]","-map","[a]","-r","30","-c:v","libx264","-preset","veryfast","-crf","16","-pix_fmt","yuv420p","-c:a","aac","-b:a","192k",outp],check=True)

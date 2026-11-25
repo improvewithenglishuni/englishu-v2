@@ -166,7 +166,7 @@ mus=mus+ib
 # ---- beat-aligned gap cuts applied to every stem BEFORE ducking, so the duck curve stays smooth ----
 CUTS=[3.12,7.30,10.82,22.68,26.70,32.32,34.74,41.59,52.20]; LC=BEAT/2
 def cut(x):
-    n=int(0.012*sr); Ls=int(round(LC*sr)); fo=np.linspace(1,0,n).astype(np.float32); fi=1-fo
+    n=int(0.03*sr); Ls=int(round(LC*sr)); fo=np.linspace(1,0,n).astype(np.float32); fi=1-fo
     out=[];prev=0
     for c in CUTS:
         i=int(round(c*sr)); out.append(x[prev:i]); out.append(x[i:i+n]*fo+x[i+Ls:i+Ls+n]*fi); prev=i+Ls+n
