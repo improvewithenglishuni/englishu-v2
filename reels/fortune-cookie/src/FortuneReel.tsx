@@ -10,34 +10,36 @@ import {geoPath} from 'd3-geo';
 import {BaseMap, MAP, MapArrow, MapLabel, chinaProj, country, pacificProj} from './maps';
 
 // ---- Timeline (frames @30fps), taken from mock-up v1. Retime to the voiceover.
-// v2: the hook is 1 s longer (restaurant + thinking time before the cookie), D shifts everything after it.
-const D = 30;
+// v8: timings and order from fortune-cookie-mockup-v4 (Sharon's fixed narration). Retime to the voiceover.
 export const SCENES = {
-  hook: [0, 96 + D],
-  china: [96 + D, 180 + D],
-  y1878: [180 + D, 285 + D],
-  attribute: [285 + D, 405 + D],
-  garden: [405 + D, 477 + D],
-  voyage: [477 + D, 540 + D],
-  war: [540 + D, 705 + D],
-  misconception: [705 + D, 840 + D],
-  crack: [840 + D, 936 + D],
-  slip: [936 + D, 1035 + D],
-  end: [1035 + D, 1116 + D],
+  hook: [0, 96],
+  misconception: [96, 210],
+  china: [210, 276],
+  y1878: [276, 396],
+  voyage: [396, 462],
+  attribute: [462, 588],
+  garden: [588, 648],
+  teahouse: [648, 702],
+  war: [702, 870],
+  crack: [870, 966],
+  slip: [966, 1065],
+  end: [1065, 1146],
 } as const;
-export const TOTAL = 1116 + D; // 38.2 s
+export const TOTAL = 1146; // 38.2 s
+const at = (k: keyof typeof SCENES, d = 0) => SCENES[k][0] + d;
 
-// ---- Recording script = subtitles (from the mock-up, unchanged)
+// ---- Recording script = subtitles (mock-up v4, unchanged wording)
 export const LINES: {from: number; to: number; text: string; ltr?: boolean; hl?: string}[] = [
-  {from: 0, to: 96 + D, text: 'מה הדבר הכי "סיני" במסעדה סינית, שבכלל לא סיני?'},
-  {from: 96 + D, to: 180 + D, text: 'עוגיות מזל, fortune cookies. בסין כמעט לא מכירים אותן.'},
-  {from: 180 + D, to: 285 + D, text: 'זה התחיל ביפן, לפני יותר ממאה שנה: קרקרים עם פתק בפנים.'},
-  {from: 285 + D, to: 405 + D, text: 'Historians attribute the fortune cookie to Japanese immigrants.', ltr: true, hl: 'attribute'},
-  {from: 405 + D, to: 540 + D, text: 'בסן פרנסיסקו הגישו אותה לצד תה, בגן תה יפני.'},
-  {from: 540 + D, to: 705 + D, text: 'ואז באה מלחמת העולם השנייה: מאפיות יפניות נסגרו, ויצרנים סיניים כנראה השתלטו על השוק.'},
-  {from: 705 + D, to: 840 + D, text: "It's a common misconception that the fortune cookie is Chinese.", ltr: true, hl: 'misconception'},
-  {from: 840 + D, to: 936 + D, text: 'שלחו את זה למי שבטוח שהוא מבין באוכל סיני.'},
-  {from: 936 + D, to: 1035 + D, text: 'ותשאלו אותו: מאיפה העוגייה?'},
+  {from: 0, to: 96, text: 'מה הדבר הכי "סיני" במסעדה סינית, שבכלל לא סיני?'},
+  {from: 96, to: 210, text: "It's a common misconception that fortune cookies are Chinese.", ltr: true, hl: 'misconception'},
+  {from: 210, to: 276, text: 'בסין עצמה כמעט לא מכירים אותן.'},
+  {from: 276, to: 396, text: 'השורשים שלהן ביפן: קרקרים עם פתק בפנים, מלפני יותר ממאה שנה.'},
+  {from: 396, to: 462, text: 'משם הקרקרים יצאו למסע, מעבר לאוקיינוס.'},
+  {from: 462, to: 588, text: 'Historians attribute the fortune cookie to Japanese immigrants in California.', ltr: true, hl: 'attribute'},
+  {from: 588, to: 702, text: 'ואחד הראשונים להגיש אותן היה גן תה יפני בסן פרנסיסקו.'},
+  {from: 702, to: 870, text: 'אבל אז באה מלחמת העולם השנייה: מאפיות יפניות נסגרו, ויצרנים סיניים כנראה השתלטו על הייצור, ומאז רבים חושבים שהן סיניות.'},
+  {from: 870, to: 966, text: 'שלחו את זה למי שבטוח שהוא מבין באוכל סיני,'},
+  {from: 966, to: 1065, text: 'ותשאלו: מאיפה העוגיות?'},
 ];
 
 // Full-bleed real photo: the ONLY kind of image that gets a slow zoom (about 6% over the scene).
@@ -72,8 +74,8 @@ const Banner: React.FC<{text: string; x?: number; y: number; delay?: number}> = 
 // ======================================================================
 // 1. HOOK: the restaurant while the question lands; a "?" pops up, wobbles as if thinking,
 // then squashes, spins and turns into the fortune cookie.
-const COOKIE_IN = 66; // the morph lands here (~2.2 s)
-const Q_IN = 18;
+const COOKIE_IN = 86; // the morph lands here; MISCONCEPTION opens on the same cookie (match cut)
+const Q_IN = 28; // the ? appears at 0.93 s, as in mock-up v4
 const Hook: React.FC = () => {
   const f = useCurrentFrame();
   const {fps} = useVideoConfig();
@@ -89,8 +91,8 @@ const Hook: React.FC = () => {
   const live = prog(f, Q_IN + 22, Q_IN + 28);
   const wobble = 9 * Math.sin(think / 4.5) * live;
   const bob = 14 * Math.sin(think / 6) * live;
-  const squash = interpolate(f, [48, 54, 57], [0, 1, 0], clamp); // anticipation
-  const spin = interpolate(f, [56, COOKIE_IN], [0, 1], {...clamp, easing: Easing.in(Easing.cubic)});
+  const squash = interpolate(f, [COOKIE_IN - 20, COOKIE_IN - 14, COOKIE_IN - 11], [0, 1, 0], clamp); // anticipation
+  const spin = interpolate(f, [COOKIE_IN - 12, COOKIE_IN], [0, 1], {...clamp, easing: Easing.in(Easing.cubic)});
   const qScale = qPop * (1 - 0.75 * spin);
   const qRot = wobble * (1 - spin) + 360 * spin;
   // cookie arrives mid-spin and overshoots into place
@@ -100,13 +102,13 @@ const Hook: React.FC = () => {
   return (
     <AbsoluteFill>
       <FullPhoto src="full_restaurant.jpg" dur={SCENES.hook[1]} />
-      <AbsoluteFill style={{background: `rgba(25,22,28,${0.4 * dim})`}} />
+      <AbsoluteFill style={{background: `rgba(30,30,40,${0.55 * dim})`}} />
       {f >= Q_IN && f < COOKIE_IN && (
         <div
           style={{
             position: 'absolute',
             left: cx,
-            top: cy + bob * (1 - spin),
+            top: cy + (900 - cy) * spin + bob * (1 - spin),
             width: 0,
             height: 0,
             transform: `rotate(${qRot}deg) scale(${qScale * (1 + 0.18 * squash)}, ${qScale * (1 - 0.22 * squash)})`,
@@ -154,18 +156,18 @@ const Hook: React.FC = () => {
           return (
             <div
               key={k}
-              style={{position: 'absolute', left: cx + Math.cos(a) * r - 9, top: cy + Math.sin(a) * r - 9, width: 18, height: 18, borderRadius: '50%', background: '#F2C230', opacity: 1 - burst, transform: `scale(${1 - 0.6 * burst})`}}
+              style={{position: 'absolute', left: 540 + Math.cos(a) * r - 9, top: 900 + Math.sin(a) * r - 9, width: 18, height: 18, borderRadius: '50%', background: '#F2C230', opacity: 1 - burst, transform: `scale(${1 - 0.6 * burst})`}}
             />
           );
         })}
       {f >= COOKIE_IN - 2 && (
         <Img
-          src={staticFile('img/broken.png')}
+          src={staticFile('img/cookie.png')}
           style={{
             position: 'absolute',
-            left: cx - 430,
-            top: cy - 395,
-            width: 860,
+            left: 540 - 310,
+            top: 900 - 287,
+            width: 620,
             transform: `rotate(${cRot}deg) scale(${0.25 + 0.75 * cPop})`,
             filter: 'drop-shadow(0 14px 18px rgba(20,20,35,0.45))',
           }}
@@ -349,29 +351,36 @@ const Voyage: React.FC = () => {
   const jp = proj([139.7, 35.7]) as number[];
   const sf = proj([-122.4, 37.8]) as number[];
   const ctrl = [(jp[0] + sf[0]) / 2, jp[1] - 360];
-  const p = prog(f, 4, 30);
+  const p = prog(f, 6, 46);
   const pt = qPoint(p, jp, ctrl, sf);
   const l1 = usePop(0);
-  const l2 = usePop(26);
   return (
     <AbsoluteFill>
-      <BaseMap proj={proj} fills={{'392': MAP.red, '840': MAP.blue}} />
+      <BaseMap proj={proj} fills={{'392': MAP.red}} />
       <MapArrow from={[jp[0] + 30, jp[1] - 20]} ctrl={ctrl} to={[sf[0] - 34, sf[1] - 22]} p={p} />
       <Img
         src={staticFile('img/cookie.png')}
-        style={{position: 'absolute', left: pt.x - 60, top: pt.y - 58, width: 120, transform: `rotate(${pt.a}deg)`, opacity: p > 0 && p < 0.97 ? 1 : 0, filter: 'drop-shadow(0 6px 8px rgba(0,0,0,0.3))'}}
+        style={{position: 'absolute', left: pt.x - 70, top: pt.y - 66, width: 140, transform: `rotate(${pt.a}deg)`, opacity: p > 0 && p < 0.97 ? 1 : 0, filter: 'drop-shadow(0 6px 8px rgba(0,0,0,0.3))'}}
       />
-      <MapLabel x={jp[0] + 10} y={jp[1] + 120} text="יפן" size={88} o={Math.min(1, l1 * 1.5)} />
-      <MapLabel x={sf[0] - 150} y={sf[1] + 120} text="סן פרנסיסקו" size={72} o={Math.min(1, l2 * 1.5)} />
-      <Sticker src="tg_postcard.png" x={560} y={1230} w={680} rot={2.5} delay={30} from="up" />
+      <MapLabel x={Math.max(200, jp[0] + 60)} y={jp[1] + 130} text="JAPAN" size={84} ltr o={Math.min(1, l1 * 1.5)} />
     </AbsoluteFill>
   );
 };
 
+// 6b. TEAHOUSE: the old Japanese Tea Garden postcard, San Francisco banner, a cookie beside the tea
+const Teahouse: React.FC = () => (
+  <AbsoluteFill>
+    <Plate />
+    <Sticker src="tg_postcard.png" x={540} y={820} w={960} rot={-2} delay={0} />
+    <Sticker src="cookie.png" x={830} y={1180} w={260} rot={10} delay={10} />
+    <Banner text="San Francisco" y={420} delay={4} />
+  </AbsoluteFill>
+);
+
 // 7. WAR: two full-frame photos — Lange, Oakland 1942 -> a Chinatown fortune-cookie factory
 const War: React.FC = () => {
   const f = useCurrentFrame();
-  const cut = 78;
+  const cut = 73;
   return (
     <AbsoluteFill>
       {f < cut ? (
@@ -393,10 +402,11 @@ const Misconception: React.FC = () => {
   const f = useCurrentFrame();
   const word = usePop(10);
   const gloss = usePop(30);
-  const fall = Math.max(0, f - 44);
+  const fall = Math.max(0, f - 60);
+  const tagIn = interpolate(f, [2, 8, 11], [2.2, 0.92, 1], clamp); // slapped on after the cut
   const tagY = 860 + 0.9 * fall * fall;
   const tagRot = -12 + (fall > 0 ? Math.min(70, fall * 4) : 0) + Math.sin(f / 3) * (fall > 0 ? 6 : 0);
-  const wobble = f > 36 && f < 44 ? Math.sin((f - 36) * 2.2) * 5 : 0;
+  const wobble = f > 50 && f < 60 ? Math.sin((f - 50) * 2.2) * 5 : 0;
   return (
     <AbsoluteFill>
       <Plate dark />
@@ -409,14 +419,14 @@ const Misconception: React.FC = () => {
       >
         תפיסה מוטעית
       </div>
-      <Sticker src="cookie.png" x={540} y={900} w={620} rot={-3} delay={0} />
+      <Sticker src="cookie.png" x={540} y={900} w={620} rot={-3} delay={0} from="none" />
       {tagY < 2100 && (
         <div
           style={{
             position: 'absolute',
             left: 540,
             top: tagY,
-            transform: `translate(-50%, -50%) rotate(${tagRot + wobble}deg)`,
+            transform: `translate(-50%, -50%) rotate(${tagRot + wobble}deg) scale(${tagIn})`,
             background: C.coral,
             color: '#fff',
             fontFamily: FONT,
@@ -614,37 +624,36 @@ const EndCard: React.FC = () => {
 const SFX: {at: number; src: string; v: number}[] = [
   {at: Q_IN - 2, src: 'sfx/soft_thump_reveal_03.wav', v: 0.22}, // the question mark pops up
   {at: Q_IN + 7, src: 'sfx/marker_stroke_02.wav', v: 0.16}, // highlighter on the ?
-  {at: COOKIE_IN - 6, src: 'sfx/sparkle_soft_02.wav', v: 0.2}, // the ? spins into the cookie
+  {at: COOKIE_IN - 8, src: 'sfx/sparkle_soft_02.wav', v: 0.2}, // the ? spins into the cookie
   {at: COOKIE_IN - 1, src: 'sfx/soft_thump_reveal_01.wav', v: 0.3}, // the cookie lands
-  {at: 94 + D, src: 'sfx/paper_movement_01.wav', v: 0.2},
-  {at: 96 + 22 + D, src: 'sfx/book_slide_on_desk_01.wav', v: 0.1},
-  {at: 178 + D, src: 'sfx/page_turn_01.wav', v: 0.22},
-  {at: 180 + 12 + D, src: 'sfx/marker_stroke_01.wav', v: 0.14},
-  {at: 283 + D, src: 'sfx/book_slide_on_desk_02.wav', v: 0.2},
-  {at: 285 + 38 + D, src: 'sfx/tape_press_01.wav', v: 0.3},
-  {at: 403 + D, src: 'audio/pour_tea.wav', v: 0.12},
-  {at: 477 + 2 + D, src: 'sfx/marker_stroke_02.wav', v: 0.14},
-  {at: 477 + 28 + D, src: 'sfx/paper_movement_02.wav', v: 0.18},
-  {at: 538 + D, src: 'sfx/camera_shutter_mechanical_01.wav', v: 0.2},
-  {at: 540 + 76 + D, src: 'sfx/camera_shutter_mechanical_02.wav', v: 0.16},
-  {at: 703 + D, src: 'sfx/soft_thump_reveal_02.wav', v: 0.25},
-  {at: 705 + 42 + D, src: 'sfx/paper_movement_03.wav', v: 0.22},
-  {at: 840 + 22 + D, src: 'audio/crunch_a.wav', v: 0.55},
-  {at: 934 + D, src: 'sfx/paper_shuffle_01.wav', v: 0.14},
-  {at: 936 + 60 + D, src: 'sfx/marker_stroke_03.wav', v: 0.16},
-  {at: 1033 + D, src: 'sfx/soft_whoosh_02.wav', v: 0.16}, // whoosh 2 of 2 (end card)
-  {at: 1035 + 8 + D, src: 'sfx/stamp_thud_01.wav', v: 0.2},
+  {at: at('misconception', 4), src: 'sfx/tape_press_01.wav', v: 0.24}, // CHINA tag slapped on
+  {at: at('misconception', 56), src: 'sfx/paper_movement_03.wav', v: 0.22}, // CHINA tag peels off
+  {at: at('china', -2), src: 'sfx/paper_movement_01.wav', v: 0.2},
+  {at: at('china', 22), src: 'sfx/book_slide_on_desk_01.wav', v: 0.1},
+  {at: at('y1878', -2), src: 'sfx/page_turn_01.wav', v: 0.22},
+  {at: at('y1878', 12), src: 'sfx/marker_stroke_01.wav', v: 0.14},
+  {at: at('voyage', 4), src: 'sfx/marker_stroke_03.wav', v: 0.14},
+  {at: at('attribute', -2), src: 'sfx/book_slide_on_desk_02.wav', v: 0.2},
+  {at: at('attribute', 38), src: 'sfx/stamp_thud_01.wav', v: 0.22},
+  {at: at('garden', -2), src: 'audio/pour_tea.wav', v: 0.12},
+  {at: at('teahouse', -2), src: 'sfx/paper_movement_02.wav', v: 0.18},
+  {at: at('war', -2), src: 'sfx/camera_shutter_mechanical_01.wav', v: 0.2},
+  {at: at('war', 71), src: 'sfx/camera_shutter_mechanical_02.wav', v: 0.16},
+  {at: at('crack', 22), src: 'audio/crunch_a.wav', v: 0.55},
+  {at: at('slip', -2), src: 'sfx/paper_shuffle_01.wav', v: 0.14},
+  {at: at('end', -2), src: 'sfx/soft_whoosh_02.wav', v: 0.16}, // whoosh (end card)
+  {at: at('end', 8), src: 'sfx/stamp_thud_01.wav', v: 0.2},
 ];
-
 const SCENE_COMPONENTS: [keyof typeof SCENES, React.FC][] = [
   ['hook', Hook],
+  ['misconception', Misconception],
   ['china', China],
   ['y1878', Y1878],
+  ['voyage', Voyage],
   ['attribute', Attribute],
   ['garden', Garden],
-  ['voyage', Voyage],
+  ['teahouse', Teahouse],
   ['war', War],
-  ['misconception', Misconception],
   ['crack', Crack],
   ['slip', Slip],
   ['end', EndCard],
