@@ -30,7 +30,7 @@ export const SCENES = {
 export const TOTAL = 1146; // 38.2 s
 const at = (k: keyof typeof SCENES, d = 0) => SCENES[k][0] + d;
 
-// ---- Recording script = subtitles (mock-up v4, unchanged wording)
+// ---- Recording script = subtitles (Sharon's script of 25 Nov; line 10 is shown in two parts at the comma)
 export const LINES: {from: number; to: number; text: string; ltr?: boolean; hl?: string}[] = [
   {from: 0, to: 96, text: 'מה הדבר הכי "סיני" במסעדה סינית, שבכלל לא סיני?'},
   {from: 96, to: 210, text: "It's a common misconception that fortune cookies are Chinese.", ltr: true, hl: 'misconception'},
@@ -39,7 +39,8 @@ export const LINES: {from: number; to: number; text: string; ltr?: boolean; hl?:
   {from: 396, to: 462, text: 'משם הקרקרים יצאו למסע, מעבר לאוקיינוס.'},
   {from: 462, to: 588, text: 'Historians attribute the fortune cookie to Japanese immigrants in California.', ltr: true, hl: 'attribute'},
   {from: 588, to: 702, text: 'ואחד הראשונים להגיש אותן היה גן תה יפני בסן פרנסיסקו.'},
-  {from: 702, to: 870, text: 'אבל אז באה מלחמת העולם השנייה: מאפיות יפניות נסגרו, ויצרנים סיניים כנראה השתלטו על הייצור, ומאז רבים חושבים שהן סיניות.'},
+  {from: 702, to: 786, text: 'אבל אז באה מלחמת העולם השנייה, ומאפיות יפניות נסגרו.'},
+  {from: 786, to: 870, text: 'יצרנים סיניים מילאו את החלל, ומאז רבים חושבים שהעוגיות הן תוצר סיני.'},
   {from: 870, to: 966, text: 'שלחו את זה למי שבטוח שהוא מבין באוכל סיני,'},
   {from: 966, to: 1065, text: 'ותשאלו: מאיפה העוגיות?'},
 ];
@@ -365,7 +366,7 @@ const Teahouse: React.FC = () => (
 // 7. WAR: two full-frame photos — Lange, Oakland 1942 -> a Chinatown fortune-cookie factory
 const War: React.FC = () => {
   const f = useCurrentFrame();
-  const cut = 73;
+  const cut = 84; // 26.2 s: line 9 starts on the factory photo
   return (
     <AbsoluteFill>
       {f < cut ? (
@@ -639,7 +640,7 @@ const SFX: {at: number; src: string; v: number}[] = [
   {at: at('garden', -2), src: 'audio/pour_tea.wav', v: 0.12},
   {at: at('teahouse', -2), src: 'sfx/paper_movement_02.wav', v: 0.18},
   {at: at('war', -2), src: 'sfx/camera_shutter_mechanical_01.wav', v: 0.2},
-  {at: at('war', 71), src: 'sfx/camera_shutter_mechanical_02.wav', v: 0.16},
+  {at: at('war', 82), src: 'sfx/camera_shutter_mechanical_02.wav', v: 0.16},
   {at: at('crack', 22), src: 'audio/crunch_a.wav', v: 0.55},
   {at: at('slip', -2), src: 'sfx/paper_shuffle_01.wav', v: 0.14},
   {at: at('end', -2), src: 'sfx/soft_whoosh_02.wav', v: 0.16}, // whoosh (end card)
