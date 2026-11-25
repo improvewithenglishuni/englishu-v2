@@ -1,6 +1,6 @@
 import React from 'react';
 import {loadFont} from '@remotion/fonts';
-import {Audio, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Audio, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {
   ActionWord,
   Crowd,
@@ -62,6 +62,36 @@ const Hook = () => (
   />
 );
 
+/** Pustules that pop up one after another on the SMALLPOX banner (positions relative to the banner centre). */
+const BOILS: Array<[number, number, number]> = [
+  [-292, -38, 40], [-205, 52, 30], [-118, -62, 34], [-36, 58, 44], [48, -50, 30],
+  [128, 62, 36], [214, -30, 46], [296, 44, 32], [-250, 8, 22], [262, -86, 24], [-12, -88, 22],
+];
+const BannerBoils: React.FC<{x: number; y: number; rotate: number; at: number}> = ({x, y, rotate, at}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  return (
+    <div style={{position: 'absolute', left: x, top: y, width: 0, height: 0, transform: `rotate(${rotate}deg)`}}>
+      {BOILS.map(([bx, by, d], i) => {
+        const k = spring({frame: frame - at - i * 2.5, fps, config: {damping: 9, stiffness: 220, mass: 0.6}});
+        if (k <= 0.001) return null;
+        return (
+          <div
+            key={i}
+            style={{
+              position: 'absolute', left: bx - d / 2, top: by - d / 2, width: d, height: d, borderRadius: '50%',
+              transform: `scale(${k})`,
+              background: 'radial-gradient(circle at 35% 30%, #FFF6D6 0%, #F0DC9A 38%, #D98B5A 72%, #A8452F 100%)',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.45), inset 0 -3px 5px rgba(120,30,20,0.35)',
+              border: '2px solid #8E3424',
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
 /** 2. What smallpox looked like: a real historical photo, FULL FRAME. */
 const Patient = () => {
   const frame = useCurrentFrame();
@@ -69,7 +99,8 @@ const Patient = () => {
   return (
     <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
       <Img src={patient} style={{...cover, objectPosition: '43% 50%', transform: `scale(${z})`, transformOrigin: '43% 40%'}} />
-      <NameLabel x={540} y={1190} line1="SMALLPOX" dir="ltr" fontSize={120} rotate={-2} at={s(3.1)} />
+      <NameLabel x={540} y={1320} line1="SMALLPOX" dir="ltr" fontSize={120} rotate={-2} at={s(2.8)} />
+      <BannerBoils x={540} y={1320} rotate={-2} at={s(3.0)} />
     </div>
   );
 };
@@ -152,7 +183,7 @@ const Vaccination = () => {
   return (
     <>
       <ActionWord text="VACCINATION" mode="pop" color="slate" x={540} y={520} fontSize={146} heavy at={2} actAt={s(1.6)} hiFrom={0} hiTo={4} gloss="vacca = פרה (לטינית)" glossScale={0.5} glossGap={0.95} />
-      <SansHeading text="חיסון" x={540} y={560} fontSize={120} color="heading" dir="rtl" at={s(1.6)} />
+      <NameLabel x={540} y={552} line1="חיסון" fontSize={73} dir="rtl" rotate={-2} at={s(1.6)} />
       <Person x={PX} y={PY} size={560} tone="ink" glow={frame >= s(2.2) ? '#FDF551' : undefined} at={4} />
       <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#9A9DAA" liquid="#FDF551" plunge={plungeV} at={s(0.6)} />
       <Germs cx={PX} cy={PY + 10} rx={200} ry={330} n={12} at={s(2.5)} stagger={2} />
