@@ -190,6 +190,19 @@ const Vaccination = () => {
   );
 };
 
+/** WHO emblem + name (white version of the official logo) that pops in. */
+const WhoLogo: React.FC<{at: number}> = ({at}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const k = spring({frame: frame - at, fps, config: {damping: 14, stiffness: 160, mass: 0.7}});
+  return (
+    <Img
+      src={staticFile('assets/vox/who_logo_white.svg')}
+      style={{position: 'absolute', left: 540 - 330, top: 300 - 101, width: 660, opacity: Math.min(1, k * 1.4), transform: `scale(${0.88 + 0.12 * Math.min(1, k)})`, filter: 'drop-shadow(0 8px 14px rgba(0,0,0,0.35))'}}
+    />
+  );
+};
+
 /** 7. WHO 1967 + TARGET WORD 1: ERADICATE (yellow), then the whole word vanishes. */
 // tip of the needle rests on the top-left corner of the D in ERADICATE (word centred at 540,820, 150 px)
 const DTIP = {x: 418, y: 783};
@@ -203,7 +216,8 @@ const Eradicate = () => {
   const plunge = interpolate(frame, [s(1.9), s(2.5)], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
     <>
-      <NameLabel x={540} y={330} line1="ארגון הבריאות העולמי" line2="1967" fontSize={80} at={2} />
+      <WhoLogo at={2} />
+      <SansHeading text="1967" x={540} y={470} fontSize={84} color="white" dir="ltr" at={s(0.3)} />
       <ActionWord text="ERADICATE" mode="vanish" color="yellow" hollow x={540} y={820} fontSize={150} at={s(0.5)} fillAt={s(1.9)} fillFromX={DTIP.x + 40} actAt={s(3.85)} />
       <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#C9CBD6" liquid="#FDF551" plunge={plunge} at={s(1.35)} exitAt={s(3.75)} />
       <SansHeading text="למגר = לעקור מהשורש" x={540} y={1150} fontSize={84} color="white" dir="rtl" at={s(1.3)} />

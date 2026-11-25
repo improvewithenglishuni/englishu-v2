@@ -62,3 +62,5 @@ Older newsprint-version files (`gillray.jpg`, `ota.jpg`, `tem.jpg`, `vial*.jpg`)
 - v36: music bed rewritten as a sectioned, synthesized score (code, `tools/audio/smallpox_build_audio.py`); no third-party audio.
 - v38: voiceover rebuilt from Sharon's New Recording 26 (complete takes, room-tone joins, plosive + de-ess cleanup); build scripts in `tools/audio/`. Music/SFX synthesized in code.
 - v42: globe is drawn from the Natural Earth land data in the world-atlas package (same source as the map); no new sources.
+
+- WHO logo (emblem + "World Health Organization" wordmark), SVG supplied by Sharon (file h-logo-blue.svg); recoloured white for the ERADICATE slide (public/assets/vox/who_logo_white.svg). Trademark of WHO: used only to identify the organization named in the narration.
