@@ -1,7 +1,7 @@
 // Fortune cookies Reel (ATTRIBUTE, MISCONCEPTION) — rebuild of fortune-cookie-mockup-v1
 // with real photos, real footage, sound and the end card.
 import React from 'react';
-import {AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Audio, Easing, Img, OffthreadVideo, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import '@fontsource/tinos/hebrew-400.css';
 import '@fontsource/tinos/latin-400.css';
 import '@fontsource/oswald/latin-700.css';
@@ -70,16 +70,77 @@ const Banner: React.FC<{text: string; x?: number; y: number; delay?: number}> = 
 };
 
 // ======================================================================
-// 1. HOOK: a typical Chinese restaurant while the question lands; a beat to think; then the cookie
-const COOKIE_IN = 66; // ~2.2 s of restaurant alone (question + thinking time)
+// 1. HOOK: the restaurant while the question lands; a "?" pops up, wobbles as if thinking,
+// then squashes, spins and turns into the fortune cookie.
+const COOKIE_IN = 66; // the morph lands here (~2.2 s)
+const Q_IN = 18;
 const Hook: React.FC = () => {
   const f = useCurrentFrame();
-  const dim = prog(f, COOKIE_IN - 6, COOKIE_IN + 8);
+  const {fps} = useVideoConfig();
+  const dim = prog(f, COOKIE_IN - 10, COOKIE_IN + 6);
+  const cx = 540;
+  const cy = 1110;
+  // question mark
+  const qPop = spring({frame: f - Q_IN, fps, config: {damping: 9, stiffness: 180, mass: 0.7}});
+  const think = f - Q_IN;
+  const wobble = 9 * Math.sin(think / 4.5);
+  const bob = 14 * Math.sin(think / 6);
+  const squash = interpolate(f, [48, 54, 57], [0, 1, 0], clamp); // anticipation
+  const spin = interpolate(f, [56, COOKIE_IN], [0, 1], {...clamp, easing: Easing.in(Easing.cubic)});
+  const qScale = qPop * (1 - 0.75 * spin);
+  const qRot = wobble * (1 - spin) + 360 * spin;
+  // cookie arrives mid-spin and overshoots into place
+  const cPop = spring({frame: f - COOKIE_IN + 2, fps, config: {damping: 8, stiffness: 160, mass: 0.7}});
+  const cRot = interpolate(cPop, [0, 1], [-200, -3]);
+  const burst = f >= COOKIE_IN - 2 ? (f - COOKIE_IN + 2) / 16 : -1;
   return (
     <AbsoluteFill>
       <FullPhoto src="full_restaurant.jpg" dur={SCENES.hook[1]} />
-      <AbsoluteFill style={{background: `rgba(25,22,28,${0.38 * dim})`}} />
-      {f >= COOKIE_IN - 2 && <Sticker src="broken.png" x={540} y={820} w={860} rot={-3} delay={COOKIE_IN} />}
+      <AbsoluteFill style={{background: `rgba(25,22,28,${0.4 * dim})`}} />
+      {f >= Q_IN && f < COOKIE_IN && (
+        <div
+          style={{
+            position: 'absolute',
+            left: cx,
+            top: cy + bob * (1 - spin),
+            transform: `translate(-50%, -50%) rotate(${qRot}deg) scale(${qScale * (1 + 0.18 * squash)}, ${qScale * (1 - 0.22 * squash)})`,
+            fontFamily: FONT,
+            fontWeight: 700,
+            fontSize: 760,
+            lineHeight: 1,
+            color: '#F2C230',
+            WebkitTextStroke: "22px #1E1D1A",
+            paintOrder: 'stroke fill',
+            textShadow: '0 18px 24px rgba(0,0,0,0.45)',
+          }}
+        >
+          ?
+        </div>
+      )}
+      {burst >= 0 && burst < 1 &&
+        Array.from({length: 12}, (_, k) => {
+          const a = (k / 12) * Math.PI * 2;
+          const r = 120 + 330 * burst;
+          return (
+            <div
+              key={k}
+              style={{position: 'absolute', left: cx + Math.cos(a) * r - 9, top: cy + Math.sin(a) * r - 9, width: 18, height: 18, borderRadius: '50%', background: '#F2C230', opacity: 1 - burst, transform: `scale(${1 - 0.6 * burst})`}}
+            />
+          );
+        })}
+      {f >= COOKIE_IN - 2 && (
+        <Img
+          src={staticFile('img/broken.png')}
+          style={{
+            position: 'absolute',
+            left: cx - 430,
+            top: cy - 395,
+            width: 860,
+            transform: `rotate(${cRot}deg) scale(${0.25 + 0.75 * cPop})`,
+            filter: 'drop-shadow(0 14px 18px rgba(20,20,35,0.45))',
+          }}
+        />
+      )}
     </AbsoluteFill>
   );
 };
@@ -521,7 +582,9 @@ const EndCard: React.FC = () => {
 // ======================================================================
 // Sound design (VOX rules: sparse, J-cut 2 frames early, max two soft whooshes)
 const SFX: {at: number; src: string; v: number}[] = [
-  {at: COOKIE_IN - 2, src: 'sfx/soft_thump_reveal_01.wav', v: 0.3}, // the cookie lands
+  {at: Q_IN - 2, src: 'sfx/soft_thump_reveal_03.wav', v: 0.22}, // the question mark pops up
+  {at: COOKIE_IN - 6, src: 'sfx/sparkle_soft_02.wav', v: 0.2}, // the ? spins into the cookie
+  {at: COOKIE_IN - 1, src: 'sfx/soft_thump_reveal_01.wav', v: 0.3}, // the cookie lands
   {at: 94 + D, src: 'sfx/paper_movement_01.wav', v: 0.2},
   {at: 96 + 22 + D, src: 'sfx/book_slide_on_desk_01.wav', v: 0.1},
   {at: 178 + D, src: 'sfx/page_turn_01.wav', v: 0.22},
