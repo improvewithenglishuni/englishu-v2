@@ -1,0 +1,12 @@
+{
+  "name": "englishu-end-card",
+  "private": true,
+  "description": "Animated EnglishU Reel end card (HTML + Playwright frame render).",
+  "dependencies": {
+    "@fontsource/frank-ruhl-libre": "^5.0.0",
+    "@fontsource/ibm-plex-mono": "^5.0.0",
+    "@fontsource/permanent-marker": "^5.0.0",
+    "@fontsource/playpen-sans-hebrew": "^5.0.0",
+    "@fontsource/rubik": "^5.0.0"
+  }
+}
