@@ -198,7 +198,7 @@ const WhoLogo: React.FC<{at: number}> = ({at}) => {
   return (
     <Img
       src={staticFile('assets/vox/who_logo_white.svg')}
-      style={{position: 'absolute', left: 540 - 330, top: 300 - 101, width: 660, opacity: Math.min(1, k * 1.4), transform: `scale(${0.88 + 0.12 * Math.min(1, k)})`, filter: 'drop-shadow(0 8px 14px rgba(0,0,0,0.35))'}}
+      style={{position: 'absolute', left: 540 - 450, top: 290 - 138, width: 900, opacity: 0.5 * Math.min(1, k * 1.4), transform: `scale(${0.88 + 0.12 * Math.min(1, k)})`, filter: 'drop-shadow(0 8px 14px rgba(0,0,0,0.35))'}}
     />
   );
 };
@@ -217,7 +217,7 @@ const Eradicate = () => {
   return (
     <>
       <WhoLogo at={2} />
-      <SansHeading text="1967" x={540} y={470} fontSize={84} color="white" dir="ltr" at={s(0.3)} />
+      <SansHeading text="1967" x={540} y={500} fontSize={84} color="white" dir="ltr" at={s(0.3)} />
       <ActionWord text="ERADICATE" mode="vanish" color="yellow" hollow x={540} y={820} fontSize={150} at={s(0.5)} fillAt={s(1.9)} fillFromX={DTIP.x + 40} actAt={s(3.85)} />
       <Syringe x={tip.x - off.x} y={tip.y - off.y} size={SZ} rotate={30} color="#C9CBD6" liquid="#FDF551" plunge={plunge} at={s(1.35)} exitAt={s(3.75)} />
       <SansHeading text="למגר = לעקור מהשורש" x={540} y={1150} fontSize={84} color="white" dir="rtl" at={s(1.3)} />

@@ -6,10 +6,13 @@ L=60/(240/2.3625)/2
 cuts=[3.12,7.30,10.82,22.68,26.70,32.32,34.74,41.59,52.20]
 n=int(0.012*sr); Ls=int(round(L*sr))
 fo=np.linspace(1,0,n)[:,None] if x.ndim>1 else np.linspace(1,0,n); fi=1-fo
-out=[];prev=0
-for c in cuts:
-    i=int(round(c*sr)); out.append(x[prev:i]); out.append(x[i:i+n]*fo+x[i+Ls:i+Ls+n]*fi); prev=i+Ls+n
-out.append(x[prev:]); y=np.concatenate(out)
+PRECUT = len(sys.argv) > 4 and sys.argv[4] == 'precut'   # audio already cut before ducking (smooth music)
+if PRECUT: y=x
+else:
+    out=[];prev=0
+    for c in cuts:
+        i=int(round(c*sr)); out.append(x[prev:i]); out.append(x[i:i+n]*fo+x[i+Ls:i+Ls+n]*fi); prev=i+Ls+n
+    out.append(x[prev:]); y=np.concatenate(out)
 keep=59.6-len(cuts)*L-trim
 y=y[:int(keep*sr)]
 fl=int(0.7*sr); env=np.ones(len(y),np.float32); env[-fl:]=np.linspace(1,0,fl)**1.5

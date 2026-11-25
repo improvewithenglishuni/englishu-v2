@@ -163,8 +163,17 @@ ie=np.clip(tb/1.2,0,1)**1.5*np.clip((5.2-tb)/1.8,0,1)
 ib=lp(ib*ie,1400)
 ib*=0.8*rms(mus[int(3.8*sr):int(5.0*sr)])/(rms(ib[int(0.8*sr):int(2.8*sr)])+1e-9)
 mus=mus+ib
+# ---- beat-aligned gap cuts applied to every stem BEFORE ducking, so the duck curve stays smooth ----
+CUTS=[3.12,7.30,10.82,22.68,26.70,32.32,34.74,41.59,52.20]; LC=BEAT/2
+def cut(x):
+    n=int(0.012*sr); Ls=int(round(LC*sr)); fo=np.linspace(1,0,n).astype(np.float32); fi=1-fo
+    out=[];prev=0
+    for c in CUTS:
+        i=int(round(c*sr)); out.append(x[prev:i]); out.append(x[i:i+n]*fo+x[i+Ls:i+Ls+n]*fi); prev=i+Ls+n
+    out.append(x[prev:]); return np.concatenate(out)
+vo,sfx,mus,out,ch,spk=[cut(a) for a in (vo,sfx,mus,out,ch,spk)]
 ve=uniform_filter1d(np.abs(vo),int(0.05*sr)); duck=1-0.62*np.clip(ve/0.07,0,1); duck=uniform_filter1d(duck,int(0.25*sr))
 mix=vo+sfx+mus*duck+out+ch+spk
 mix/=max(1,np.abs(mix).max()/0.95)
-w.write('/home/claude/vo2/mix12.wav',sr,(mix*32767).astype(np.int16))
+w.write('/home/claude/vo2/mix13_cut.wav',sr,(mix*32767).astype(np.int16))
 print('music rms',rms(mus),'voice rms',rms(vo))
