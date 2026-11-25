@@ -172,7 +172,9 @@ def cut(x):
         i=int(round(c*sr)); out.append(x[prev:i]); out.append(x[i:i+n]*fo+x[i+Ls:i+Ls+n]*fi); prev=i+Ls+n
     out.append(x[prev:]); return np.concatenate(out)
 vo,sfx,mus,out,ch,spk=[cut(a) for a in (vo,sfx,mus,out,ch,spk)]
-ve=uniform_filter1d(np.abs(vo),int(0.05*sr)); duck=1-0.62*np.clip(ve/0.07,0,1); duck=uniform_filter1d(duck,int(0.25*sr))
+from scipy.ndimage import maximum_filter1d
+ve=uniform_filter1d(np.abs(vo),int(0.05*sr)); vh=maximum_filter1d(np.clip(ve/0.07,0,1).astype(np.float32),int(1.0*sr))  # hold the duck across scene-change pauses (no pumping)
+duck=1-0.6*vh; duck=uniform_filter1d(duck,int(0.35*sr))
 mix=vo+sfx+mus*duck+out+ch+spk
 mix/=max(1,np.abs(mix).max()/0.95)
 w.write('/home/claude/vo2/mix13_cut.wav',sr,(mix*32767).astype(np.int16))
