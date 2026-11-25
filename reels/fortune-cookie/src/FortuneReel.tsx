@@ -83,8 +83,12 @@ const Hook: React.FC = () => {
   // question mark
   const qPop = spring({frame: f - Q_IN, fps, config: {damping: 9, stiffness: 180, mass: 0.7}});
   const think = f - Q_IN;
-  const wobble = 9 * Math.sin(think / 4.5);
-  const bob = 14 * Math.sin(think / 6);
+  // it appears, gets highlighted, and only then starts to wobble as if thinking
+  const hl1 = prog(f, Q_IN + 8, Q_IN + 15);
+  const hl2 = prog(f, Q_IN + 15, Q_IN + 22);
+  const live = prog(f, Q_IN + 22, Q_IN + 28);
+  const wobble = 9 * Math.sin(think / 4.5) * live;
+  const bob = 14 * Math.sin(think / 6) * live;
   const squash = interpolate(f, [48, 54, 57], [0, 1, 0], clamp); // anticipation
   const spin = interpolate(f, [56, COOKIE_IN], [0, 1], {...clamp, easing: Easing.in(Easing.cubic)});
   const qScale = qPop * (1 - 0.75 * spin);
@@ -103,18 +107,44 @@ const Hook: React.FC = () => {
             position: 'absolute',
             left: cx,
             top: cy + bob * (1 - spin),
-            transform: `translate(-50%, -50%) rotate(${qRot}deg) scale(${qScale * (1 + 0.18 * squash)}, ${qScale * (1 - 0.22 * squash)})`,
-            fontFamily: FONT,
-            fontWeight: 700,
-            fontSize: 760,
-            lineHeight: 1,
-            color: '#F2C230',
-            WebkitTextStroke: "22px #1E1D1A",
-            paintOrder: 'stroke fill',
-            textShadow: '0 18px 24px rgba(0,0,0,0.45)',
+            width: 0,
+            height: 0,
+            transform: `rotate(${qRot}deg) scale(${qScale * (1 + 0.18 * squash)}, ${qScale * (1 - 0.22 * squash)})`,
           }}
         >
-          ?
+          {/* yellow highlighter, two passes drawn right to left behind the "?" */}
+          <svg width={700} height={760} style={{position: 'absolute', left: -350, top: -380, overflow: 'visible', opacity: 1 - spin}}>
+            {[
+              {d: 'M 535 290 C 440 280, 320 300, 175 286', p: hl1},
+              {d: 'M 528 470 C 420 482, 300 462, 168 478', p: hl2},
+            ].map((h, k) => (
+              <path key={k} d={h.d} stroke="#FDF551" strokeWidth={215} strokeLinecap="butt" strokeOpacity={0.88} fill="none" pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - h.p} style={{filter: 'url(#rough)'}} />
+            ))}
+            <defs>
+              <filter id="rough" filterUnits="userSpaceOnUse" x={-100} y={-100} width={900} height={960}>
+                <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves={2} seed={4} />
+                <feDisplacementMap in="SourceGraphic" scale={26} />
+              </filter>
+            </defs>
+          </svg>
+          <div
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              transform: 'translate(-50%, -50%)',
+              fontFamily: FONT,
+              fontWeight: 700,
+              fontSize: 760,
+              lineHeight: 1,
+              color: '#FFFFFF',
+              WebkitTextStroke: '22px #1E1D1A',
+              paintOrder: 'stroke fill',
+              textShadow: '0 18px 24px rgba(0,0,0,0.45)',
+            }}
+          >
+            ?
+          </div>
         </div>
       )}
       {burst >= 0 && burst < 1 &&
@@ -583,6 +613,7 @@ const EndCard: React.FC = () => {
 // Sound design (VOX rules: sparse, J-cut 2 frames early, max two soft whooshes)
 const SFX: {at: number; src: string; v: number}[] = [
   {at: Q_IN - 2, src: 'sfx/soft_thump_reveal_03.wav', v: 0.22}, // the question mark pops up
+  {at: Q_IN + 7, src: 'sfx/marker_stroke_02.wav', v: 0.16}, // highlighter on the ?
   {at: COOKIE_IN - 6, src: 'sfx/sparkle_soft_02.wav', v: 0.2}, // the ? spins into the cookie
   {at: COOKIE_IN - 1, src: 'sfx/soft_thump_reveal_01.wav', v: 0.3}, // the cookie lands
   {at: 94 + D, src: 'sfx/paper_movement_01.wav', v: 0.2},
