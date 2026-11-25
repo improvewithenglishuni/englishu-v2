@@ -100,7 +100,6 @@ const Patient = () => {
     <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
       <Img src={patient} style={{...cover, objectPosition: '43% 50%', transform: `scale(${z})`, transformOrigin: '43% 40%'}} />
       <NameLabel x={540} y={1320} line1="SMALLPOX" dir="ltr" fontSize={120} rotate={-2} at={s(2.8)} />
-      <BannerBoils x={540} y={1320} rotate={-2} at={s(3.0)} />
     </div>
   );
 };
@@ -294,7 +293,7 @@ const Victory = () => {
           dots={caseDots.dots}
           dotsAt={s(0.15)}
           dotsFade={[s(3.15), s(4.28)]}
-          dotsKeep={{count: 3, near: caseDots.somalia as [number, number], off: s(4.38)}}
+          // (three kept dots removed)
           lastCase={{x: caseDots.somalia[0], y: caseDots.somalia[1], at: s(5.04), off: s(6.74)}}
           greyAt={s(6.24)}
           at={4}
