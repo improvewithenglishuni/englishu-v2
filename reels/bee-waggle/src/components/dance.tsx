@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import {getLength, getPointAtLength, getTangentAtLength} from '@remotion/paths';
 import {C, DASH} from '../theme';
-import {BeeTop} from './bee';
+import {BeeTop, RobotBeeTop} from './bee';
 import {dancePathD} from './anim';
 
 /** Fraction of the figure-eight path that is the first straight waggle run (for syncing labels/buzz). */
@@ -18,11 +18,12 @@ export const DanceFigure: React.FC<{
   color?: string;
   stroke?: number;
   dashed?: boolean;
+  robot?: boolean; // the robot bee on a rod instead of a real bee
   pen?: boolean; // a glowing pen tip at the drawing head (for sketching over real footage)
   beeSize?: number;
   style?: React.CSSProperties;
   id?: string;
-}> = ({size = 760, draw, beeAt = null, color = C.amber, stroke = 16, dashed, pen, beeSize = 60, style, id = 'df'}) => {
+}> = ({size = 760, draw, beeAt = null, color = C.amber, stroke = 16, dashed, robot, pen, beeSize = 60, style, id = 'df'}) => {
   const d = useMemo(() => dancePathD(), []);
   const len = useMemo(() => getLength(d), [d]);
   let bee: React.ReactNode = null;
@@ -33,9 +34,19 @@ export const DanceFigure: React.FC<{
     const ang = (Math.atan2(t.y, t.x) * 180) / Math.PI + 90;
     const onRun = Math.abs(p.x) < 22; // straight middle section = waggle run
     bee = (
-      <g transform={`translate(${p.x} ${p.y}) rotate(${ang}) translate(${-beeSize / 2} ${-beeSize * 0.75})`}>
-        <BeeTop size={beeSize} id={`${id}-bee`} buzz={onRun} />
-      </g>
+      <>
+        {robot && (
+          // the rod that drives the model bee, from above the frame (it stays vertical while the bee turns)
+          <g>
+            <line x1={p.x + 6} y1={p.y} x2={p.x + 6} y2={-1600} stroke="#3E4449" strokeWidth={9} strokeLinecap="round" opacity={0.35} />
+            <line x1={p.x} y1={p.y} x2={p.x} y2={-1600} stroke="#7C838A" strokeWidth={7} strokeLinecap="round" />
+            <circle cx={p.x} cy={p.y} r={8} fill="#5E656C" />
+          </g>
+        )}
+        <g transform={`translate(${p.x} ${p.y}) rotate(${ang}) translate(${-beeSize / 2} ${-beeSize * 0.75})`}>
+          {robot ? <RobotBeeTop size={beeSize} id={`${id}-bee`} buzz={onRun} /> : <BeeTop size={beeSize} id={`${id}-bee`} buzz={onRun} />}
+        </g>
+      </>
     );
   }
   return (

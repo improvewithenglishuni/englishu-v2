@@ -4,7 +4,7 @@ set -e
 cd "$(dirname "$0")/.."
 mkdir -p out/chunks
 TOTAL=$(npx remotion compositions --log=error 2>/dev/null | awk '/BeeReel/{print $4}' || true)
-TOTAL=${TOTAL:-1179}
+TOTAL=${TOTAL:-1245}
 STEP=270
 : > out/chunks/list.txt
 for ((s=0; s<TOTAL; s+=STEP)); do

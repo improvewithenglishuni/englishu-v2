@@ -175,3 +175,69 @@ export const BeeTop: React.FC<{size?: number; id?: string; style?: React.CSSProp
     </svg>
   );
 };
+
+/**
+ * The robot bee (after Michelsen et al. 1992: a computer-driven model bee that danced in the hive).
+ * Top-down, heading up, same proportions as BeeTop: brushed-metal body with rivets and segment seams,
+ * stiff metal wing plates, a red sensor eye and wire antennae. viewBox 0 0 120 200.
+ */
+export const RobotBeeTop: React.FC<{size?: number; id?: string; style?: React.CSSProperties; buzz?: boolean}> = ({
+  size = 90,
+  id = 'rb',
+  style,
+  buzz,
+}) => {
+  const f = useCurrentFrame();
+  const wv = buzz ? Math.sin(f * 2.7) * 5 : 0;
+  return (
+    <svg width={size} height={(size * 200) / 120} viewBox="0 0 120 200" style={{overflow: 'visible', ...style}}>
+      <defs>
+        <linearGradient id={`${id}-metal`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#8D949B" />
+          <stop offset="0.45" stopColor="#E4E8EC" />
+          <stop offset="0.6" stopColor="#C3C9CF" />
+          <stop offset="1" stopColor="#7C838A" />
+        </linearGradient>
+      </defs>
+      <ellipse cx="68" cy="128" rx="40" ry="70" fill="#1A0F06" opacity="0.2" />
+      {/* jointed wire legs */}
+      <g stroke="#5E656C" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round" fill="none">
+        <polyline points="46,70 26,62 16,46" />
+        <polyline points="74,70 94,62 104,46" />
+        <polyline points="44,82 18,88 8,104" />
+        <polyline points="76,82 102,88 112,104" />
+        <polyline points="46,94 24,118 20,146" />
+        <polyline points="74,94 96,118 100,146" />
+      </g>
+      {/* abdomen: metal capsule with seams and rivets */}
+      <path d="M 60 92 C 92 92 96 140 84 168 C 76 186 66 194 60 196 C 54 194 44 186 36 168 C 24 140 28 92 60 92 Z" fill={`url(#${id}-metal)`} stroke="#5E656C" strokeWidth="2" />
+      {[118, 140, 162].map((y) => (
+        <path key={y} d={`M 30 ${y} Q 60 ${y + 9} 90 ${y}`} stroke="#5E656C" strokeWidth="2.5" fill="none" />
+      ))}
+      {[[42, 108], [78, 108], [40, 130], [80, 130], [44, 152], [76, 152]].map(([x, y]) => (
+        <circle key={`${x}-${y}`} cx={x} cy={y} r="2.4" fill="#5E656C" />
+      ))}
+      {/* thorax: a motor housing */}
+      <rect x="36" y="56" width="48" height="42" rx="12" fill={`url(#${id}-metal)`} stroke="#5E656C" strokeWidth="2" />
+      <circle cx="60" cy="77" r="9" fill="#5E656C" />
+      <circle cx="60" cy="77" r="4" fill="#C3C9CF" />
+      {/* head + sensor eye */}
+      <rect x="44" y="30" width="32" height="26" rx="9" fill={`url(#${id}-metal)`} stroke="#5E656C" strokeWidth="2" />
+      <circle cx="60" cy="42" r="5" fill="#E0412E" />
+      <circle cx="58.5" cy="40.5" r="1.6" fill="#fff" opacity="0.8" />
+      <g stroke="#5E656C" strokeWidth="2.5" fill="none" strokeLinecap="round">
+        <polyline points="52,30 46,16 34,6" />
+        <polyline points="68,30 74,16 86,6" />
+      </g>
+      <circle cx="34" cy="6" r="3" fill="#5E656C" />
+      <circle cx="86" cy="6" r="3" fill="#5E656C" />
+      {/* metal wing plates */}
+      <g transform={`rotate(${wv} 60 72)`}>
+        <path d="M 50 70 L 24 136 L 40 142 L 56 78 Z" fill="#DDE3E8" opacity="0.85" stroke="#7C838A" strokeWidth="2" />
+      </g>
+      <g transform={`rotate(${-wv} 60 72)`}>
+        <path d="M 70 70 L 96 136 L 80 142 L 64 78 Z" fill="#DDE3E8" opacity="0.85" stroke="#7C838A" strokeWidth="2" />
+      </g>
+    </svg>
+  );
+};

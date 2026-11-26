@@ -128,8 +128,8 @@ export const S4Convey: React.FC<{dur: number}> = ({dur}) => {
   );
 };
 
-/** CONVEY waits for "כלומר," to finish: the first letter leaves the dancer on "Bees". */
-const LEAD = 30;
+/** The CONVEY line opens the scene: the first letter leaves the dancer right away. */
+const LEAD = 6;
 
 const bez2 = (t: number, p0: number, p1: number, p2: number) => (1 - t) ** 2 * p0 + 2 * (1 - t) * t * p1 + t ** 2 * p2;
 
@@ -202,7 +202,7 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
   const out = exitOut(f, dur);
   const push = 1.04 + 0.08 * prog(f, 0, dur);
   const dark = interpolate(f, [0, 20, 56], [0, 0.15, 0.62], {extrapolateRight: 'clamp'});
-  const LENS = 111; // the magnifier opens just before "הן קוראות את הריקוד"
+  const LENS = 108; // the magnifier opens just before "הן קוראות אותו עם המחושים"
   const stick = pop(f, LENS + 4, 12);
   const into = interpolate(f, [0, 8], [0, 1], {extrapolateRight: 'clamp'});
   return (

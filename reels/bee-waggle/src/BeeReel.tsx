@@ -7,7 +7,8 @@ import {Subtitles} from './components/props';
 import {S1Hook} from './scenes/S1Hook';
 import {S2Address, S3Diagram} from './scenes/S2S3';
 import {S4Convey, S5Dark} from './scenes/S4S5';
-import {EndCard, S6Decipher, S7Callback} from './scenes/S6S7End';
+import {EndCard, S6Decipher} from './scenes/S6S7End';
+import {S7Waze, S8Robot} from './scenes/S8S7';
 
 
 const scene = (key: keyof typeof SCENES, C: React.FC<{dur: number}>) => {
@@ -39,13 +40,15 @@ export const BeeReel: React.FC = () => {
       </svg>
       <Plate dim={dim} />
       <PlateDecor />
+      {/* on screen: s1, s4, s2, s3, s5, s6, s8, s7 (scene keys are names, see theme.ts) */}
       {scene('s1', S1Hook)}
+      {scene('s4', S4Convey)}
       {scene('s2', S2Address)}
       {scene('s3', S3Diagram)}
-      {scene('s4', S4Convey)}
       {scene('s5', S5Dark)}
       {scene('s6', S6Decipher)}
-      {scene('s7', S7Callback)}
+      {scene('s8', S8Robot)}
+      {scene('s7', S7Waze)}
       <Sequence from={0} durationInFrames={sec(SCENES.end[0])}>
         <Subtitles />
       </Sequence>

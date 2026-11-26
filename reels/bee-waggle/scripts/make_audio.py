@@ -24,35 +24,40 @@ import wave
 import numpy as np
 
 SR = 48000
-DUR = 39.3
-# Scene starts before (placeholder timing, which the event times below were written against) and after
-# re-timing to the voiceover. M(t) maps an old absolute time to the same moment in the re-timed scene.
-OLD = [0, 3, 6, 13, 17, 24, 28, 32.4, 35.1]
-NEW = [0, 3.95, 8.7, 15.25, 20.3, 26.85, 30.95, 36.6, 39.3]
 FPS = 30
-S2_DRAW = (4, 70)   # S2: figure-eight draw-on frames (src/scenes/S2S3.tsx)
-S3_SPLIT = 85       # S3: part A (angle) -> part B (distance); part A plays 105 designed frames in SPLIT frames
-S4_LEAD = 30        # S4: CONVEY letters wait for "כלומר,"
-S5_LENS = 111       # S5: magnifier opens
+
+
+def read_scenes():
+    """Scene timings straight from src/theme.ts, so picture and sound can never drift apart."""
+    import re
+    src = open(os.path.join(os.path.dirname(__file__), '..', 'src', 'theme.ts'), encoding='utf-8').read()
+    block = src[src.index('export const SCENES'):src.index('} as const')]
+    return {k: (float(a), float(b)) for k, a, b in re.findall(r'(\w+):\s*\[([\d.]+),\s*([\d.]+)\]', block)}
+
+
+T = read_scenes()
+DUR = T['end'][1]
+st = lambda k: T[k][0]
+dur_f = lambda k: round((T[k][1] - T[k][0]) * FPS)
+# in-scene cues (mirror the constants in the scene files)
+S2_DRAW = (4, min(70, dur_f('s2') - 16))   # S2Address: figure-eight draw-on frames
+S3_SPLIT = 100                             # S3Diagram: angle -> distance; part A plays 105 designed frames in SPLIT
+S4_LEAD = 6                                # S4Convey: letters leave the dancer
+S5_LENS = 108                              # S5Dark: magnifier opens
+S8_SPLIT = round(dur_f('s8') * 0.5)        # S8Robot: comb -> park
+S7_HALF = round(dur_f('s7') * 0.48)        # S7Waze: satellite -> magnifier
 
 
 def s2(frame):
-    return NEW[1] + frame / FPS
+    return st('s2') + frame / FPS
 
 
 def s3a(designed_frame):
-    return NEW[2] + designed_frame * S3_SPLIT / 105 / FPS
+    return st('s3') + designed_frame * S3_SPLIT / 105 / FPS
 
 
 def s3b(frames_after_split):
-    return NEW[2] + (S3_SPLIT + frames_after_split) / FPS
-
-
-def M(t):
-    for i in range(len(OLD) - 1):
-        if OLD[i] <= t < OLD[i + 1]:
-            return NEW[i] + (t - OLD[i])
-    return t + (NEW[-1] - OLD[-1])
+    return st('s3') + (S3_SPLIT + frames_after_split) / FPS
 
 
 N = int(SR * DUR)
@@ -167,12 +172,14 @@ muff = onepole_lp(h5, 500)
 _o = 0.3 + S5_LENS / FPS  # lens opens, relative to the hum's start
 mix5 = muff * env_lin(len(h5), [(0, 1), (_o - 0.25, 1), (_o + 0.35, 0.3), (7.6, 0.3)]) + h5 * env_lin(len(h5), [(0, 0), (_o - 0.25, 0), (_o + 0.35, 0.9), (7.6, 0.9)])
 mix5 *= env_lin(len(h5), [(0, 0), (0.6, 1.0), (6.8, 1.0), (7.6, 0)])
-add(amb, mix5, NEW[4] - 0.3, 0.95)
-# Callback (beat 7): meadow with the hive faintly underneath (the lens), out on the end card
-m7 = segment(meadow, 6, 5.6, fade=0.5)
-add(amb, m7, NEW[6] - 0.15, 0.5)  # J-cut back into the park
-h7 = segment(hum, 12, 4.7, fade=0.6)
-add(amb, h7, NEW[6] + 0.1, 0.22)
+add(amb, mix5, st('s5') - 0.3, 0.95)
+# Robot beat, part B (park): meadow as the real bees fly out
+add(amb, segment(meadow, 3, T['s8'][1] - st('s8') - S8_SPLIT / FPS + 0.3, fade=0.3), st('s8') + S8_SPLIT / FPS - 0.15, 0.5)
+# Waze beat: meadow, the hive faintly underneath once the magnifier opens, out on the end card
+m7 = segment(meadow, 6, T['s7'][1] - st('s7') + 1.0, fade=0.5)
+add(amb, m7, st('s7') - 0.15, 0.5)
+h7 = segment(hum, 12, T['s7'][1] - st('s7') - S7_HALF / FPS + 0.6, fade=0.6)
+add(amb, h7, st('s7') + S7_HALF / FPS - 0.2, 0.3)
 
 # ---------------- the forager flies in (beat 1) ----------------
 fb = segment(flyby, 1.0, 1.45, fade=0.05)
@@ -191,13 +198,13 @@ def marker_line(start, dur):
     return segment(marker, start, dur, fade=0.05)
 
 
-add(sfx, paper_take(0), M(3.0) - JC, 0.55)              # beat 2: the hive frame arrives
-add(sfx, marker_line(0.4, 2.2), s2(S2_DRAW[0]) - JC, 0.45)      # beat 2: the figure-eight draws on (the hero)
+add(sfx, paper_take(0), st('s2') - JC, 0.55)              # beat 2: the hive frame arrives
+add(sfx, marker_line(0.4, (S2_DRAW[1] - S2_DRAW[0]) / FPS), s2(S2_DRAW[0]) - JC, 0.45)      # beat 2: the figure-eight draws on (the hero)
 add(sfx, marker_line(3.2, 0.75), s3a(8) - JC, 0.4)      # beat 3: sun + flower lines draw on
 add(sfx, paper_take(1), s3a(40) - JC, 0.5)               # beat 3: the comb frame arrives
 add(sfx, paper_take(2), s3b(4) - JC, 0.45)              # beat 3: short-waggle row
 add(sfx, paper_take(3, 1.08), s3b(40) - JC, 0.45)       # beat 3: long-waggle row (pitched take)
-add(sfx, marker_line(6.3, 0.7), NEW[5] - JC, 0.4)       # beat 6: the scramble scribble
+add(sfx, marker_line(6.3, 0.7), st('s6') - JC, 0.4)       # beat 6: the scramble scribble
 
 # ---------------- waggle buzz: plays exactly while a bee waggles ----------------
 buzz_src = bandpass(segment(flyby, 2.0, 4.0, fade=0.0), 150, 2500)
@@ -230,15 +237,28 @@ for i in range(6):
     rate = 1.0 + 0.08 * i
     grain = np.interp(np.arange(n) * rate, np.arange(len(buzz_src)), buzz_src)[:n]
     grain *= np.sin(np.pi * t / t[-1]) ** 2
-    add(sfx, grain, M(arrive) + S4_LEAD / FPS - 0.02, 0.5)
-add(sfx, pluck(mtof(76), 1.6, 0.4) * 0.5 + pluck(mtof(81), 1.6, 0.4) * 0.4, M(15.17) + S4_LEAD / FPS, 0.35)  # word complete
+    add(sfx, grain, st('s4') + (arrive - 13.0) + S4_LEAD / FPS - 0.02, 0.5)
+add(sfx, pluck(mtof(76), 1.6, 0.4) * 0.5 + pluck(mtof(81), 1.6, 0.4) * 0.4, st('s4') + 2.17 + S4_LEAD / FPS, 0.35)  # word complete
 
 # ---------------- DECIPHER: scrambled flutter that settles into a resolved chord ----------------
 fl = np.resize(buzz_src, int(1.6 * SR)) * env_lin(int(1.6 * SR), [(0, 0), (0.2, 0.5), (1.3, 0.35), (1.6, 0)])
 fl *= 0.6 + 0.4 * rng.standard_normal(len(fl)).clip(-1, 1)
-add(sfx, onepole_lp(fl, 1800), M(24.55), 0.35)
+add(sfx, onepole_lp(fl, 1800), st('s6') + 0.55, 0.35)
 for k, m in enumerate([69, 73, 76]):
-    add(sfx, pluck(mtof(m), 2.0, 0.35), M(26.13) + k * 0.05, 0.3)
+    add(sfx, pluck(mtof(m), 2.0, 0.35), st('s6') + 2.13 + k * 0.05, 0.3)
+
+# ---------------- robot bee: a duller, motor-like buzz on its runs, then real bees fly out ----------------
+robo_src = onepole_lp(np.interp(np.arange(0, len(buzz_src), 0.8), np.arange(len(buzz_src)), buzz_src), 1400)  # pitched down, darker
+for k in range(int(S8_SPLIT / 64) + 1):
+    for frac in (0.0, 0.5):  # the two straight runs of each 64-frame figure-eight lap
+        t0 = st('s8') + (k * 64 + frac * 64) / FPS
+        if t0 < st('s8') + S8_SPLIT / FPS - 0.3:
+            seg = np.resize(robo_src, int(0.42 * SR))
+            seg *= (0.6 + 0.4 * np.sin(2 * np.pi * 13 * np.arange(len(seg)) / SR) ** 2) * env_lin(len(seg), [(0, 0), (0.03, 1), (0.37, 1), (0.42, 0)])
+            add(sfx, seg, t0, 0.45)
+add(sfx, paper_take(2), st('s8') - JC, 0.5)  # the comb frame arrives
+fo = segment(flyby, 3.0, 1.6, fade=0.1) * env_lin(int(1.6 * SR), [(0, 0.3), (0.5, 1.0), (1.2, 0.6), (1.6, 0)])
+add(sfx, fo, st('s8') + (S8_SPLIT + 10) / FPS, 0.75)  # the real bees fly the danced route
 
 # ---------------- music: OFF (Sharon didn't like the composed bed) ----------------
 # Set MUSIC = True to bring the plucked/bowed bed back, or better: drop in a licensed documentary track
@@ -250,11 +270,11 @@ music = load('music.mp3')
 bed_m = segment(music, 0.0, DUR, fade=0.0)
 t_m = np.arange(len(bed_m)) / SR
 bed_m *= np.interp(t_m,
-                   [0, 0.6, NEW[4] - 0.4, NEW[4] + 0.4, NEW[5] - 0.4, NEW[5] + 0.3, NEW[7], DUR - 1.6, DUR],
+                   [0, 0.6, st('s5') - 0.4, st('s5') + 0.4, T['s5'][1] - 0.4, T['s5'][1] + 0.3, st('end'), DUR - 1.6, DUR],
                    [0, 1.0, 1.0, 0.45, 0.45, 1.0, 1.0, 1.15, 0])  # softer in the dark hive, lifts on the end card
 
 # end card: the meadow carries on and fades out
-add(amb, segment(meadow, 11, 2.9, fade=1.2), NEW[7] - 0.1, 0.4)
+add(amb, segment(meadow, 11, 2.9, fade=1.2), st('end') - 0.1, 0.4)
 
 bpm = 92
 beat = 60 / bpm

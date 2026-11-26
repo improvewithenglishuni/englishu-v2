@@ -16,7 +16,7 @@ export const S2Address: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur);
   const frame = pop(f, 0, 14);
-  const DRAW_END = 70; // the figure-eight finishes just before "זו כתובת"
+  const DRAW_END = Math.min(70, dur - 16); // the figure-eight finishes, then the pin lands, before the cut
   const draw = prog(f, 4, DRAW_END, (t) => t);
   const pin = pop(f, DRAW_END + 3, 9); // the pin lands on "כתובת"
   const center = {x: 540, y: 720};
@@ -117,7 +117,7 @@ const DistanceRow: React.FC<{y: number; s: number; runLen: number; runP: number;
 export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur);
-  const SPLIT = 85; // part A (angle) -> part B (distance), on "וככל שהנענוע ארוך יותר"
+  const SPLIT = 100; // part A (angle) -> part B (distance), on "והמשך שלו"
   const aOut = interpolate(f, [SPLIT - 8, SPLIT], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 
   const g = (f * 105) / SPLIT; // part A was designed for 105 frames
