@@ -135,7 +135,8 @@ export const Lens: React.FC<{
   children: React.ReactNode;
   rim?: number;
   handle?: boolean; // draw a magnifying-glass handle (lower right)
-}> = ({cx, cy, r, s, px, py, children, rim = 14, handle = false}) => {
+  reveal?: number; // 0 = the hive's darkness, 1 = fully lit (close-ups open dark, then brighten)
+}> = ({cx, cy, r, s, px, py, children, rim = 14, handle = false, reveal = 1}) => {
   let wedge: React.ReactNode = null;
   if (px !== undefined && py !== undefined) {
     const a = Math.atan2(py - cy, px - cx);
@@ -179,6 +180,9 @@ export const Lens: React.FC<{
         }}
       >
         {children}
+        {reveal < 1 && (
+          <div style={{position: 'absolute', inset: 0, background: `radial-gradient(circle at 50% 50%, rgba(12,7,2,${0.9 * (1 - reveal)}) 30%, rgba(12,7,2,${Math.min(0.97, 1.05 * (1 - reveal))}) 100%)`}} />
+        )}
         {handle && (
           <div
             style={{

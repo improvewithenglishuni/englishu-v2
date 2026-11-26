@@ -201,7 +201,8 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur);
   const push = 1.04 + 0.08 * prog(f, 0, dur);
-  const dark = interpolate(f, [0, 20, 56], [0, 0.15, 0.62], {extrapolateRight: 'clamp'});
+  // "חושך מוחלט": the hive opens almost black, then slowly lifts so we can see what happens in the dark
+  const dark = interpolate(f, [0, 36, 100, 150], [0.95, 0.93, 0.6, 0.45], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const LENS = 108; // the magnifier opens just before "הן קוראות אותו עם המחושים"
   const stick = pop(f, LENS + 4, 12);
   const into = interpolate(f, [0, 8], [0, 1], {extrapolateRight: 'clamp'});
@@ -214,12 +215,12 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
           style={{width: '100%', height: '100%', objectFit: 'cover', filter: 'saturate(0.9) contrast(1.06)'}}
         />
         <AbsoluteFill
-          style={{background: `radial-gradient(ellipse at 50% 42%, rgba(20,12,5,${dark * 0.55}) 20%, rgba(20,12,5,${Math.min(0.95, dark * 1.4)}) 75%)`}}
+          style={{background: `radial-gradient(ellipse at 50% 45%, rgba(12,7,2,${dark * 0.88}) 25%, rgba(12,7,2,${Math.min(0.98, dark * 1.08 + 0.05)}) 80%)`}}
         />
       </AbsoluteFill>
       {f >= LENS && (
         <>
-          <Lens cx={540} cy={720} r={360} s={stick}>
+          <Lens cx={540} cy={720} r={360} s={stick} reveal={prog(f, LENS + 4, LENS + 44)}>
             <OffthreadVideo
               src={staticFile(MEDIA.dancer)}
               muted

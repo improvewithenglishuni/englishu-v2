@@ -155,7 +155,7 @@ export const S7Waze: React.FC<{dur: number}> = ({dur}) => {
         </div>
       </AbsoluteFill>
       {f >= HALF - 4 && (
-        <Lens cx={400} cy={1000} r={R} s={pop(f, HALF - 4, 13)} px={HIVE.entrance.x - 20} py={HIVE.y + 200} handle>
+        <Lens cx={400} cy={1000} r={R} s={pop(f, HALF - 4, 13)} px={HIVE.entrance.x - 20} py={HIVE.y + 200} handle reveal={prog(f, HALF, HALF + 30)}>
           <BeeLensContent f={f} r={R} dancing startDance={0} clipFrom={45} />
         </Lens>
       )}

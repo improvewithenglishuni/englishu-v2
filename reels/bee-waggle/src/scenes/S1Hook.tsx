@@ -87,7 +87,7 @@ export const S1Hook: React.FC<{dur: number}> = ({dur}) => {
         )}
       </AbsoluteFill>
       {f >= 38 && (
-        <Lens cx={lx} cy={ly} r={R} s={ls} handle>
+        <Lens cx={lx} cy={ly} r={R} s={ls} handle reveal={prog(f, 44, 76)}>
           <BeeLensContent f={f} r={R} dancing={f > 50} startDance={50} />
         </Lens>
       )}
