@@ -220,7 +220,7 @@ export const Subtitles: React.FC = () => {
           position: 'absolute',
           left: 90,
           width: 900,
-          top: 1300,
+          top: isEn ? 1430 : 1300, // the English sentence sits lower in the frame
           height: 200,
           display: 'flex',
           alignItems: 'flex-end',
@@ -230,16 +230,17 @@ export const Subtitles: React.FC = () => {
           fontWeight: 800,
           fontSize: isEn ? 60 : 66,
           lineHeight: 1.18,
-          color: '#fff',
-          WebkitTextStroke: '8px #1B120B',
+          // Hebrew subtitles: white with a dark outline; the English sentence: black letters on the white paper
+          color: isEn ? '#1B120B' : '#fff',
+          WebkitTextStroke: isEn ? '0px transparent' : '8px #1B120B',
           paintOrder: 'stroke fill',
-          textShadow: '0 4px 10px rgba(0,0,0,0.25)',
+          textShadow: isEn ? '0 0 10px rgba(255,255,255,0.9), 0 0 4px rgba(255,255,255,0.9)' : '0 4px 10px rgba(0,0,0,0.25)',
         }}
       >
         <span>
           {isEn
             ? words.map((w, k) => (
-                <span key={k} style={{color: s.key && w.toLowerCase().startsWith(s.key) ? '#FF8FA6' : '#fff'}}>
+                <span key={k} style={{color: s.key && w.toLowerCase().startsWith(s.key) ? C.key : '#1B120B'}}>
                   {w}
                   {k < words.length - 1 ? ' ' : ''}
                 </span>
