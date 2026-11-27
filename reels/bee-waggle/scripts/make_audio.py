@@ -341,7 +341,7 @@ def norm(x, peak):
 
 
 mix = norm(amb, 0.2) + norm(sfx, 0.24) + norm(music, 0.24) + (norm(mus, 0.17) if MUSIC else 0)
-add(mix, endcard / (np.max(np.abs(endcard)) + 1e-9) * 0.3, st('end'), 1.0)
+add(mix, endcard / (np.max(np.abs(endcard)) + 1e-9) * 0.75, st('end'), 1.0)
 mix = np.tanh(mix * 1.2) / 1.2
 st = np.stack([mix, mix], 1)
 os.makedirs(os.path.join(ROOT, 'public', 'audio'), exist_ok=True)
