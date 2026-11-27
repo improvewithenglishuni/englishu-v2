@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Img, interpolate, random, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Img, OffthreadVideo, interpolate, random, staticFile, useCurrentFrame} from 'remotion';
 import {C, FONT_HE, FONT_KEY, MEDIA} from '../theme';
 import {DanceFigure} from '../components/dance';
 import {Branch, Label, Pin, keyWordStyle} from '../components/props';
@@ -95,91 +95,13 @@ export const S7Callback: React.FC<{dur: number}> = ({dur}) => {
   );
 };
 
-/** Brand end card (brand navy/red only here). */
-export const EndCard: React.FC<{dur: number}> = () => {
-  const f = useCurrentFrame();
-  const page = interpolate(f, [0, 10], [1920, 0], {extrapolateRight: 'clamp', easing: (t) => 1 - (1 - t) ** 3});
-  const logo = pop(f, 8, 10);
-  const h1 = pop(f, 14, 13);
-  const bar = prog(f, 24, 34);
-  const cta = pop(f, 38, 11);
-  const push = 1 + 0.04 * prog(f, 0, 81);
-  return (
-    <AbsoluteFill style={{background: '#0E1430'}}>
-      <AbsoluteFill
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,0.05) 2px, transparent 2px)',
-          backgroundSize: '60px 60px',
-        }}
-      />
-      <AbsoluteFill style={{transform: `translateY(${page}px) scale(${push})`}}>
-        <TornStrip w={980} h={1500} x={50} y={200} rot={-1.5} color={C.brandCream} seed="endpage" stipple={false} />
-        <div
-          style={{
-            position: 'absolute',
-            left: 540,
-            top: 380,
-            transform: `translateX(-50%) scale(${logo}) rotate(${(1 - logo) * -12 + 2}deg)`,
-            background: '#fff',
-            padding: 26,
-            borderRadius: 18,
-            boxShadow: '0 16px 26px rgba(0,0,0,0.25)',
-          }}
-        >
-          <Img src={staticFile('logo-cut.png')} style={{width: 480, display: 'block'}} />
-          <div style={{position: 'absolute', left: 150, top: -18, width: 170, height: 46, background: 'rgba(230,220,190,0.8)', transform: 'rotate(-4deg)'}} />
-        </div>
-        <div
-          dir="rtl"
-          style={{position: 'absolute', width: 1080, top: 900, textAlign: 'center', fontFamily: FONT_HE, fontWeight: 900, fontSize: 92, color: C.navy, transform: `scale(${h1})`}}
-        >
-          עוד עובדה מעניינת.
-        </div>
-        <div style={{position: 'absolute', left: 120, top: 1040, width: 840, height: 130, overflow: 'hidden'}}>
-          <div
-            dir="rtl"
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: C.navy,
-              color: C.brandCream,
-              fontFamily: FONT_HE,
-              fontWeight: 900,
-              fontSize: 76,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              clipPath: `inset(0 0 0 ${(1 - bar) * 100}%)`,
-            }}
-          >
-            עוד מילה באנגלית.
-          </div>
-        </div>
-        <div
-          style={{
-            position: 'absolute',
-            left: 540,
-            top: 1270,
-            transform: `translateX(-50%) rotate(-2deg) scale(${cta})`,
-            background: '#fff',
-            padding: '24px 46px',
-            boxShadow: '8px 10px 0 rgba(0,0,0,0.25)',
-            textAlign: 'center',
-            fontFamily: FONT_HE,
-          }}
-        >
-          <div dir="rtl" style={{fontWeight: 800, fontSize: 58, color: C.navy}}>
-            לעוד כאלה ← עקבו
-          </div>
-          <div dir="ltr" style={{fontWeight: 800, fontSize: 52, color: C.red, marginTop: 6}}>
-            @improve.with.englishu
-          </div>
-        </div>
-        <div style={{position: 'absolute', left: 160, top: 1500, transform: `rotate(30deg) scale(${cta})`}}>
-          <BeeTop size={90} id="endbee" />
-        </div>
-      </AbsoluteFill>
-    </AbsoluteFill>
-  );
-};
+/**
+ * The fixed EnglishU end card, used unchanged in every Reel: "Reel outro" v75
+ * (englishu-v2, branch claude/lucid-mendel-lnkgiw, end-card/final/englishu-end-card.mp4; 1080x1920, 30 fps, 4.2 s).
+ * Its own sound (paper crumple, marker swoops, pen scribble, click) is mixed in by scripts/make_audio.py.
+ */
+export const EndCard: React.FC<{dur: number}> = () => (
+  <AbsoluteFill style={{background: '#fff'}}>
+    <OffthreadVideo src={staticFile('media/endcard.mp4')} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+  </AbsoluteFill>
+);

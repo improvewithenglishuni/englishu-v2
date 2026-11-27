@@ -65,7 +65,7 @@ export const SCENES = {
   s6: [23.0, 26.85], // Scientists worked for years to decipher this dance.
   s8: [26.85, 33.35], // והפענוח עבד: דבורה רובוטית ...
   s7: [33.35, 38.2], // בקיצור, מה ש-Waze עושה עם לוויינים, הדבורים עושות עם ריקוד.
-  end: [38.2, 40.9],
+  end: [38.2, 42.4], // the fixed EnglishU end card (public/media/endcard.mp4, 4.2 s, with its own sound)
 } as const;
 
 export const TOTAL_SEC = SCENES.end[1];

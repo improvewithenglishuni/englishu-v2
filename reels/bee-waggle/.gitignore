@@ -3,3 +3,4 @@ out/
 *.log
 .cache/
 public/media/*.mp4
+!public/media/endcard.mp4

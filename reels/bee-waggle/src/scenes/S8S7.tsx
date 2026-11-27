@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
 import {C, DASH, PAPER_SHADOW} from '../theme';
 import {Bee, BeeTop} from '../components/bee';
 import {DanceFigure} from '../components/dance';
@@ -87,70 +87,144 @@ export const S8Robot: React.FC<{dur: number}> = ({dur}) => {
   );
 };
 
-/** A satellite, drawn flat in the collage style (gold body, blue-grey solar panels). */
-const Satellite: React.FC<{size?: number; style?: React.CSSProperties}> = ({size = 260, style}) => (
-  <svg width={size} height={size * 0.62} viewBox="0 0 260 160" style={{position: 'absolute', overflow: 'visible', ...style}}>
+/** A satellite as a paper cutout: gold body, blue-grey solar panels, white sticker border and soft shadow. */
+const Satellite: React.FC<{size?: number; style?: React.CSSProperties}> = ({size = 200, style}) => (
+  <svg
+    width={size}
+    height={size * 0.62}
+    viewBox="0 0 260 160"
+    style={{
+      position: 'absolute',
+      overflow: 'visible',
+      filter:
+        'drop-shadow(5px 0 0 #fff) drop-shadow(-5px 0 0 #fff) drop-shadow(0 5px 0 #fff) drop-shadow(0 -5px 0 #fff) drop-shadow(0 10px 12px rgba(30,40,60,0.35))',
+      ...style,
+    }}
+  >
     {[0, 1].map((side) => (
       <g key={side} transform={`translate(${side ? 165 : 5} 52)`}>
-        <rect width="90" height="56" rx="4" fill="#4D6A8A" stroke="#2B3E55" strokeWidth="3" />
+        <rect width="90" height="56" rx="3" fill="#3F5F82" />
         {[1, 2].map((k) => (
-          <line key={`v${k}`} x1={k * 30} y1="0" x2={k * 30} y2="56" stroke="#2B3E55" strokeWidth="2" />
+          <line key={`v${k}`} x1={k * 30} y1="0" x2={k * 30} y2="56" stroke="#24384F" strokeWidth="2.5" />
         ))}
-        <line x1="0" y1="28" x2="90" y2="28" stroke="#2B3E55" strokeWidth="2" />
-        <rect width="90" height="56" rx="4" fill="#fff" opacity="0.12" />
+        <line x1="0" y1="28" x2="90" y2="28" stroke="#24384F" strokeWidth="2.5" />
+        <path d="M 0 0 L 90 0 L 90 18 Z" fill="#fff" opacity="0.18" />
       </g>
     ))}
-    <line x1="95" y1="80" x2="165" y2="80" stroke="#7C838A" strokeWidth="5" />
-    <rect x="100" y="42" width="60" height="76" rx="6" fill="#D9A441" stroke="#9C7A30" strokeWidth="3" />
-    {[58, 74, 90, 106].map((y) => (
-      <line key={y} x1="104" y1={y} x2="156" y2={y} stroke="#B8862E" strokeWidth="2" />
+    <line x1="95" y1="80" x2="165" y2="80" stroke="#8A9199" strokeWidth="5" />
+    <rect x="100" y="40" width="60" height="80" rx="6" fill="#D9A441" />
+    {[56, 72, 88, 104].map((y) => (
+      <path key={y} d={`M 104 ${y} q 13 -5 26 0 t 26 0`} stroke="#B8862E" strokeWidth="2" fill="none" />
     ))}
-    <path d="M 130 42 L 130 22" stroke="#7C838A" strokeWidth="4" />
-    <path d="M 112 22 Q 130 2 148 22 Z" fill="#E4E8EC" stroke="#7C838A" strokeWidth="3" />
+    <rect x="100" y="40" width="60" height="80" rx="6" fill="url(#none)" stroke="#9C7A30" strokeWidth="3" />
+    <path d="M 130 40 L 130 20" stroke="#8A9199" strokeWidth="4" />
+    <path d="M 110 22 Q 130 0 150 22 Z" fill="#E7EAEE" stroke="#8A9199" strokeWidth="3" />
   </svg>
 );
 
+/** A folded paper city map (three panels with fold shading): blocks, roads, a park, a river and the route. */
+const FoldedMap: React.FC<{w: number; h: number; route: number; style?: React.CSSProperties}> = ({w, h, route, style}) => {
+  const routeD = `M ${w * 0.12} ${h * 0.86} L ${w * 0.12} ${h * 0.58} L ${w * 0.45} ${h * 0.58} L ${w * 0.45} ${h * 0.3} L ${w * 0.72} ${h * 0.3}`;
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{position: 'absolute', overflow: 'visible', ...style}}>
+      <defs>
+        <clipPath id="mapclip">
+          <rect width={w} height={h} rx="6" />
+        </clipPath>
+      </defs>
+      <g clipPath="url(#mapclip)">
+        <rect width={w} height={h} fill="#F4EEE2" />
+        {/* city blocks */}
+        {Array.from({length: 6}).map((_, i) =>
+          Array.from({length: 4}).map((__, j) => (
+            <rect key={`${i}-${j}`} x={18 + i * (w / 6)} y={16 + j * (h / 4)} width={w / 6 - 26} height={h / 4 - 24} rx="5" fill="#E6DCC8" />
+          )),
+        )}
+        {/* park and river */}
+        <rect x={w * 0.52} y={h * 0.55} width={w * 0.3} height={h * 0.3} rx="18" fill="#B9D9A6" />
+        <path d={`M -10 ${h * 0.2} C ${w * 0.25} ${h * 0.05}, ${w * 0.55} ${h * 0.45}, ${w + 10} ${h * 0.12}`} stroke="#9CC3E0" strokeWidth="22" fill="none" />
+        {/* main roads */}
+        {[0.3, 0.58].map((y) => (
+          <line key={y} x1="0" y1={h * y} x2={w} y2={h * y} stroke="#fff" strokeWidth="12" />
+        ))}
+        {[0.12, 0.45, 0.72].map((x) => (
+          <line key={x} x1={w * x} y1="0" x2={w * x} y2={h} stroke="#fff" strokeWidth="12" />
+        ))}
+        {/* the route, drawn on */}
+        <path d={routeD} stroke={C.amber} strokeWidth="11" fill="none" strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - route} />
+        <circle cx={w * 0.12} cy={h * 0.86} r="11" fill="#fff" stroke={C.amber} strokeWidth="6" />
+        {/* fold shading: three panels */}
+        <rect x="0" y="0" width={w / 3} height={h} fill="#000" opacity="0.05" />
+        <rect x={(w * 2) / 3} y="0" width={w / 3} height={h} fill="#000" opacity="0.05" />
+        <line x1={w / 3} y1="0" x2={w / 3} y2={h} stroke="#000" strokeOpacity="0.12" strokeWidth="2" />
+        <line x1={(w * 2) / 3} y1="0" x2={(w * 2) / 3} y2={h} stroke="#000" strokeOpacity="0.12" strokeWidth="2" />
+      </g>
+    </svg>
+  );
+};
+
 /**
  * Beat 7: "בקיצור, מה ש-Waze עושה עם לוויינים, הדבורים עושות עם ריקוד."
- * First half: a satellite beams position to a map pin over the park. Second half: the magnifier
- * opens on the hive and the real dancing bees take over (the callback to the opening).
+ * First half (how GPS finds you): three satellites on a dashed orbit each send a range ring; the rings meet
+ * at one point and the pin drops there on a folded paper map. Second half: the magnifier opens on the hive's
+ * real dancing bees (the callback to the opening).
  */
 export const S7Waze: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur, 8);
   const HALF = Math.round(dur * 0.53); // on "הדבורים עושות עם ריקוד"
   const cam = 0.4 + 0.6 * prog(f, 0, dur, (t) => t);
-  const sat = pop(f, 0, 14);
-  const card = pop(f, 8, 13);
-  const away = prog(f, HALF - 6, HALF + 10); // the satellite half steps back
-  const satX = 120 + Math.sin(f / 40) * 12;
-  const satY = 190;
-  const pin = {x: 640, y: 560};
+  const away = prog(f, HALF - 6, HALF + 12); // the GPS half steps back
+  const pin = {x: 560, y: 700};
+  const sats = [
+    {x: 150, y: 330, d: 0},
+    {x: 540, y: 200, d: 4},
+    {x: 930, y: 330, d: 8},
+  ];
+  const drift = Math.sin(f / 50) * 10;
+  const mapIn = pop(f, 0, 14);
+  const pinDrop = pop(f, 40, 9);
   const R = 320;
   return (
     <AbsoluteFill style={{opacity: out}}>
       <ParkWorld cam={cam} hiveX={HIVE.x} hiveY={HIVE.y} hiveW={HIVE.w} />
-      <AbsoluteFill style={{opacity: 1 - 0.55 * away, transform: `translate(${away * 120}px, ${-away * 90}px) scale(${1 - 0.35 * away})`, transformOrigin: '80% 10%'}}>
-        <Satellite size={280} style={{left: satX, top: satY, transform: `scale(${sat}) rotate(-14deg)`}} />
-        {/* signal: dashed rings travelling from the satellite to the pin */}
+      <AbsoluteFill style={{opacity: 1 - 0.6 * away, transform: `translate(${away * 60}px, ${-away * 260}px) scale(${1 - 0.4 * away})`, transformOrigin: '50% 0%'}}>
+        {/* the folded paper map */}
+        <div style={{position: 'absolute', left: pin.x - 330, top: pin.y - 230, transform: `rotate(-4deg) scale(${mapIn})`, filter: 'drop-shadow(0 0 0 #fff) drop-shadow(0 16px 20px rgba(30,30,40,0.32))', border: '10px solid #fff', borderRadius: 8}}>
+          <div style={{position: 'relative', width: 600, height: 400}}>
+            <FoldedMap w={600} h={400} route={prog(f, 8, 40)} />
+          </div>
+        </div>
         <svg width={1080} height={1920} style={{position: 'absolute', filter: PAPER_SHADOW}}>
-          {[0, 1, 2].map((k) => {
-            const t = ((f + k * 12) % 36) / 36;
-            const x = interpolate(t, [0, 1], [satX + 140, pin.x]);
-            const y = interpolate(t, [0, 1], [satY + 110, pin.y - 40]);
+          {/* the orbit */}
+          <path d="M -60 420 Q 540 40 1140 420" fill="none" stroke={DASH.color} strokeWidth={DASH.width} strokeDasharray={DASH.array} strokeLinecap={DASH.cap} opacity={prog(f, 0, 10)} />
+          {/* range rings: each satellite measures its distance; the three rings meet at the pin */}
+          {sats.map((s, k) => {
+            const r = Math.hypot(pin.x - s.x, pin.y - s.y);
+            const p = prog(f, 10 + s.d, 38 + s.d);
             return (
-              <circle key={k} cx={x} cy={y} r={18 + t * 34} fill="none" stroke={DASH.color} strokeWidth={DASH.width} strokeDasharray="14 12" strokeLinecap="round" opacity={(1 - t) * sat * (f > 6 ? 1 : 0)} />
+              <circle
+                key={k}
+                cx={s.x}
+                cy={s.y + drift}
+                r={r}
+                fill="none"
+                stroke={DASH.color}
+                strokeWidth={DASH.width}
+                strokeDasharray={DASH.array}
+                strokeLinecap={DASH.cap}
+                opacity={p > 0 ? 0.9 : 0}
+                style={{clipPath: `circle(${p * 100}% at ${pin.x}px ${pin.y}px)`}}
+              />
             );
           })}
+          {/* the fix: a pulse where the rings cross */}
+          {f > 40 && <circle cx={pin.x} cy={pin.y} r={20 + ((f - 40) % 30) * 2.2} fill="none" stroke={C.stampRed} strokeWidth={4} opacity={1 - ((f - 40) % 30) / 30} />}
         </svg>
-        {/* a little paper map with the route, the pin on top */}
-        <div style={{position: 'absolute', left: pin.x - 170, top: pin.y - 60, width: 340, height: 220, transform: `rotate(6deg) scale(${card})`, boxShadow: '0 14px 22px rgba(30,20,10,0.3)', border: '9px solid #fff', overflow: 'hidden'}}>
-          <Img src={staticFile('squiggle.jpg')} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-          <svg width={340} height={220} style={{position: 'absolute', left: 0, top: 0}}>
-            <path d="M 30 180 C 90 150 110 90 170 100 S 260 60 300 40" fill="none" stroke={C.amber} strokeWidth={9} strokeLinecap="round" />
-          </svg>
-        </div>
-        <div style={{position: 'absolute', left: pin.x + 92, top: pin.y - 150, transform: `scale(${pop(f, 16, 9)})`}}>
+        {sats.map((s, k) => (
+          <Satellite key={k} size={170} style={{left: s.x - 85, top: s.y - 53 + drift, transform: `scale(${pop(f, s.d, 12)}) rotate(${(k - 1) * 12}deg)`}} />
+        ))}
+        <div style={{position: 'absolute', left: pin.x - 55, top: pin.y - 140, transform: `translateY(${(1 - pinDrop) * -120}px) scale(${Math.max(0, pinDrop)})`, transformOrigin: '50% 100%'}}>
           <Pin size={110} />
         </div>
       </AbsoluteFill>

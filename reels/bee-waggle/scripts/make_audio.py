@@ -257,17 +257,50 @@ add(sfx, fo, st('s8') + (S8_SPLIT + 10) / FPS, 0.75)  # the real bees fly the da
 # Set MUSIC = True to bring the plucked/bowed bed back, or better: drop in a licensed documentary track
 # (Musicbed / Artlist / Epidemic) or add music in the Instagram app at upload.
 MUSIC = False  # the old composed bed stays off
-# Licensed music bed: Epidemic Sound "Musical, Loop, Synth Sequence, Soft, Mellow" (via Higgsfield's Epidemic
-# catalog). Warm, low synth sequence with nothing above ~1 kHz: no hats or ticks, and it sits under her voice.
-music = load('music.mp3')
-bed_m = segment(music, 0.0, DUR, fade=0.0)
-t_m = np.arange(len(bed_m)) / SR
-bed_m *= np.interp(t_m,
-                   [0, 0.6, st('s5') - 0.4, st('s5') + 0.4, T['s5'][1] - 0.4, T['s5'][1] + 0.3, st('end'), DUR - 1.6, DUR],
-                   [0, 1.0, 1.0, 0.45, 0.45, 1.0, 1.0, 1.15, 0])  # softer in the dark hive, lifts on the end card
+# ---------------- music: a scored, dynamic bed (Vox-doc method; Epidemic Sound via Higgsfield) ----------------
+#  * no music under the opening question: the hook breathes, music enters right after it
+#  * a playful pizzicato bed carries the explanation ("Musical, Loop, Logo, Phrase, Pizzicato, Funny 04")
+#  * a hard musical DROPOUT on "ובכוורת יש חושך מוחלט": only the real hive hum, for dramatic timing
+#  * one sneaky orchestral phrase as the magnifier opens ("Cartoon, Musical, Orchestral, Ensemble, Vintage, Sneak")
+#  * a curious orchestral cue under DECIPHER ("Funny Orchestra, Short Musical Reaction, Curious, Mysterious")
+#  * a "Discovery, Idea, Smart" sting on "והפענוח עבד", sneak phrases between the robot's moves
+#  * the pizzicato returns (a later section) as the real bees fly out, lifts into the ending and fades into
+#    the end card, which brings its own sound
+m_pizz = load('m-pizz.mp3')
+m_sneak = load('m-sneak.mp3')  # phrases at (0.35-1.35) (2.65-4.3) (5.9-8.5) (11.45-12.45) (13.75-15.45) (17.0-19.65) ...
+m_disc = load('m-discovery.mp3')  # phrases at (0.1-1.15) (2.1-3.1) ...
+m_cur = load('m-curious.mp3')  # one 4.65 s phrase
+music = np.zeros(N)
+
+
+def clip(src, a, b, fin=0.03, fout=0.25):
+    return segment(src, a, b - a, fade=0.0) * env_lin(int((b - a) * SR), [(0, 0), (fin, 1), (b - a - fout, 1), (b - a, 0)])
+
+
+# A: explanation bed, from just after the question to the darkness dropout
+a0, a1 = st('s4') - 0.05, st('s5')
+add(music, clip(m_pizz, 0.0, a1 - a0, fin=0.02, fout=0.18), a0, 1.0)
+# the magnifier opens in the dark: one sneaky phrase
+add(music, clip(m_sneak, 5.9, 8.5), st('s5') + S5_LENS / FPS - 0.1, 0.8)
+# DECIPHER: curious orchestral cue under the scramble
+add(music, clip(m_cur, 0.0, 4.65, fout=0.6), st('s6') + 0.05, 0.85)
+# "והפענוח עבד": the discovery sting, then sneak phrases between the robot's moves
+add(music, clip(m_disc, 0.1, 1.15), st('s8') - 0.05, 1.0)
+add(music, clip(m_sneak, 2.65, 4.3), st('s8') + 1.2, 0.7)
+# B: the bees fly out -> the ending: pizzicato returns from a later section, lifts, fades into the end card
+b0 = st('s8') + S8_SPLIT / FPS - 0.1
+b1 = st('end') + 0.5
+seg_b = clip(m_pizz, 20.0, 20.0 + (b1 - b0), fin=0.05, fout=0.9)
+seg_b *= env_lin(len(seg_b), [(0, 0.9), ((st('s7') - b0), 1.0), ((st('end') - b0 - 0.4), 1.15), ((b1 - b0), 0.0)])
+add(music, seg_b, b0, 1.0)
+
+# the fixed end card brings its own sound (paper crumple, marker, pen, click)
+ec_raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', os.path.join(ROOT, 'public', 'media', 'endcard.mp4'), '-vn', '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'],
+                        capture_output=True, check=True).stdout
+endcard = np.frombuffer(ec_raw, np.float32).copy()
 
 # end card: the meadow carries on and fades out
-add(amb, segment(meadow, 11, 2.9, fade=1.2), st('end') - 0.1, 0.4)
+# (no ambience under the end card: it brings its own sound)
 
 bpm = 92
 beat = 60 / bpm
@@ -307,7 +340,8 @@ def norm(x, peak):
     return x / m * peak if m > 0 else x
 
 
-mix = norm(amb, 0.2) + norm(sfx, 0.24) + norm(bed_m, 0.2) + (norm(mus, 0.17) if MUSIC else 0)
+mix = norm(amb, 0.2) + norm(sfx, 0.24) + norm(music, 0.24) + (norm(mus, 0.17) if MUSIC else 0)
+add(mix, endcard / (np.max(np.abs(endcard)) + 1e-9) * 0.3, st('end'), 1.0)
 mix = np.tanh(mix * 1.2) / 1.2
 st = np.stack([mix, mix], 1)
 os.makedirs(os.path.join(ROOT, 'public', 'audio'), exist_ok=True)
