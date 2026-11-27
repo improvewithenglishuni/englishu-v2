@@ -6,6 +6,9 @@ The file `/mnt/project/Master_Word_Bank_Difficulty.csv` was not available in thi
 
 **DATA STATUS: the numbers are NOT filled in yet.** The CBS and Bank of Israel sites could not be reached from this session (blocked). Every number below is a marked slot (`[N]`, `[M]`, `[START]`, `[w]`, `[p]`) to be filled from the official CBS series once Sharon attaches it. Nothing has been estimated. Lines 3 and 6 also depend on what the data shows (see accuracy notes).
 
+## Look (v1.1, Sharon Nov 27)
+Grid paper much lighter: grid lines `#E8ECF2` on paper `#F7F6F0`. Inks look like ballpoint pens: blue `#1F3A8A` (salary line and its labels), red `#C8322B` (apartment price line and its labels); main writing in charcoal `#3E414C`; highlighter yellow `#FDF551` for highlights only. Still: `claude/apartment-font-check-v2.png` (v1 kept).
+
 ## 1. Recording script (= exact subtitle text), with delivery notes
 
 | # | Line | Delivery |
@@ -33,11 +36,11 @@ Why the hook changed: "ממוצעת" makes the question exact (the answer is the
 |---|---|---|---|
 | 0.0-2.8 | 1 | Full-frame photo of a Tel Aviv residential building, taped to the notebook page (white border, washi tape, slight tilt), slow 6% zoom. A yellow sticky note slapped on it with the hook question handwritten. | Real photo (taped print) + sticky note |
 | 2.8-4.2 | 2 | Hard cut to the grid page. The title is handwritten stroke by stroke: "The EXORBITANT Price of an Apartment". | Hand-drawn text |
-| 4.2-5.6 | 2 | On "exorbitant": a highlighter swipe over the whole word (one unit), gloss "מופקע, מופרז" written under it in coral. Soft sparkle. | Highlight |
+| 4.2-5.6 | 2 | On "exorbitant": a highlighter swipe over the whole word (one unit), gloss "מופקע, מופרז" written under it in red ballpoint. Soft sparkle. | Highlight |
 | 5.6-7.0 | 2 | A price-tag doodle draws on, "[N] שנות משכורת" written on it as the number is said. | Doodle |
-| 7.0-10.5 | 3 | The chart axes draw on under the title (title stays). Year axis runs right to left. Both lines sit on one dot at the right edge, "[START] = 100" handwritten. Legend in two inks: "מחיר דירה" coral, "שכר ממוצע" periwinkle. | Hand-drawn chart |
+| 7.0-10.5 | 3 | The chart axes draw on under the title (title stays). Year axis runs right to left. Both lines sit on one dot at the right edge, "[START] = 100" handwritten. Legend in two inks: "מחיר דירה" in red ballpoint, "שכר ממוצע" in blue ballpoint. | Hand-drawn chart |
 | 10.5-14.0 | 4 | Both lines draw themselves leftward like a stylus, with a slight wobble; a hand-drawn year marker slides along the axis. The salary line stays low. On "[w] אחוז", "+[w]%" is written at its end. | Hand-drawn chart (animated) |
-| 14.0-18.0 | 5 | **EXORBITANT acted out.** The coral price line climbs through the top edge of the page and tears it, carrying the price tag off frame; the highlighted title word jolts as the line passes. "+[p]%" is written with an arrow where the line exits. The salary line stays small on the page. Soft whoosh #1 as the tag leaves. | Hand-drawn chart + paper tear |
+| 14.0-18.0 | 5 | **EXORBITANT acted out.** The red price line climbs through the top edge of the page and tears it, carrying the price tag off frame; the highlighted title word jolts as the line passes. "+[p]%" is written with an arrow where the line exits. The salary line stays small on the page. Soft whoosh #1 as the tag leaves. | Hand-drawn chart + paper tear |
 | 18.0-21.6 | 6 | Hard cut. A taped photo of a "for sale" sign on a building (or a construction crane) with two sticky notes: "[START]: [M] שנים" and "2025: [N] שנים", and a hand-drawn arrow between them that draws on. Highlighter swipe on [N]. | Real photo (taped) + sticky notes |
 | 21.6-25.4 | 7 | Doodle page: a small piggy bank and a house with a price tag; the house doodle grows and floats up as the piggy bank stays the same size (a callback to the two lines). | Doodle |
 | 25.4-29.3 | 8 | Callback: the hook photo and sticky note return. The price tag that flew off drops back from the top and lands on the building; "EXORBITANT" is highlighted on it. Held about 3.5 s into the end card. Soft thump on landing (not on the spoken word). | Real photo + doodle |
