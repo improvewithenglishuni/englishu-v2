@@ -54,44 +54,44 @@ export const MEDIA = {
   dancer: 'media/dancer.mp4', // red-dot dancer with followers, antennae moment in beat 5
 };
 
-// Script v3 (Sharon, 26 Nov). Timing is ESTIMATED until she records it; then re-time to vo/clean/voice.wav.
-// Scene keys are names, not order: on screen the order is s1, s4, s2, s3, s5, s6, s8, s7, end.
+// Script v3, timed to Sharon's voiceover (vo/clean/voice.wav from "New Recording 34" + "33").
+// Scene keys are names, not order: on screen the order is s1, s4, s3, s5, s6, s8, s7, end.
+// (s2, the stand-alone figure-eight, is no longer used: the angle frame now shows the figure-eight itself.)
 export const SCENES = {
-  s1: [0, 3.3], //  איך דבורות מתקשרות בלי מילים ובלי Waze?
-  s4: [3.3, 8.0], // Bees convey precise directions to a food source by dancing.
-  s2: [8.0, 10.4], // אבל זה לא סתם ריקוד:
-  s3: [10.4, 17.4], // הזווית של הנענוע ... והמשך שלו ...
-  s5: [17.4, 25.0], // ובכוורת יש חושך מוחלט ... כמו קוד סודי.
-  s6: [25.0, 28.8], // Scientists worked for years to decipher this dance.
-  s8: [28.8, 34.4], // והפענוח עבד: דבורה רובוטית ...
-  s7: [34.4, 38.8], // בקיצור, מה ש-Waze עושה עם לוויינים, הדבורים עושות עם ריקוד.
-  end: [38.8, 41.5],
+  s1: [0, 4.0], //  איך דבורות מתקשרות בלי מילים ובלי Waze?
+  s4: [4.0, 8.45], // Bees convey precise directions to a food source by dancing.
+  s3: [8.45, 15.75], // אבל זה לא סתם ריקוד: הזווית ... והמשך שלו ...
+  s5: [15.75, 23.0], // ובכוורת יש חושך מוחלט ... כמו קוד סודי.
+  s6: [23.0, 26.85], // Scientists worked for years to decipher this dance.
+  s8: [26.85, 33.35], // והפענוח עבד: דבורה רובוטית ...
+  s7: [33.35, 38.2], // בקיצור, מה ש-Waze עושה עם לוויינים, הדבורים עושות עם ריקוד.
+  end: [38.2, 40.9],
 } as const;
 
 export const TOTAL_SEC = SCENES.end[1];
 
 export type Sub = {from: number; to: number; text: string; lang?: 'he' | 'en'; key?: string};
 
-// Subtitle phrases (absolute seconds, estimated). English lines stay until the scene changes.
+// Subtitle phrases (absolute seconds), following what she actually says.
 export const SUBS: Sub[] = [
-  {from: 0.1, to: 1.7, text: 'איך דבורות מתקשרות'},
-  {from: 1.7, to: 3.3, text: 'בלי מילים ובלי Waze?'},
-  {from: 3.4, to: 8.0, text: 'Bees convey precise directions to a food source by dancing.', lang: 'en', key: 'convey'},
-  {from: 8.05, to: 10.4, text: 'אבל זה לא סתם ריקוד:'},
-  {from: 10.45, to: 12.2, text: 'הזווית של הנענוע'},
-  {from: 12.2, to: 13.8, text: 'אומרת לאיזה כיוון האוכל,'},
-  {from: 13.8, to: 15.6, text: 'והמשך שלו'},
-  {from: 15.6, to: 17.4, text: 'אומר כמה רחוק הוא נמצא.'},
-  {from: 17.5, to: 19.3, text: 'ובכוורת יש חושך מוחלט,'},
-  {from: 19.3, to: 21.0, text: 'אז הן לא רואות את הריקוד:'},
-  {from: 21.0, to: 23.2, text: 'הן קוראות אותו עם המחושים,'},
-  {from: 23.2, to: 25.0, text: 'כמו קוד סודי.'},
-  {from: 25.1, to: 28.8, text: 'Scientists worked for years to decipher this dance.', lang: 'en', key: 'decipher'},
-  {from: 28.9, to: 30.2, text: 'והפענוח עבד:'},
-  {from: 30.2, to: 32.0, text: 'דבורה רובוטית רקדה את הקוד,'},
-  {from: 32.0, to: 34.4, text: 'והדבורים האמיתיות כיוונו את הטיסה לפיו.'},
-  {from: 34.5, to: 36.6, text: 'בקיצור, מה ש-Waze עושה עם לוויינים,'},
-  {from: 36.6, to: 38.8, text: 'הדבורים עושות עם ריקוד.'},
+  {from: 0.1, to: 1.6, text: 'איך דבורות מתקשרות'},
+  {from: 1.6, to: 4.0, text: 'בלי מילים ובלי Waze?'},
+  {from: 4.0, to: 8.45, text: 'Bees convey precise directions to a food source by dancing.', lang: 'en', key: 'convey'},
+  {from: 8.45, to: 9.76, text: 'אבל זה לא סתם ריקוד:'},
+  {from: 9.76, to: 11.1, text: 'הזווית של הנענוע'},
+  {from: 11.1, to: 12.72, text: 'אומרת לאיזה כיוון האוכל,'},
+  {from: 12.72, to: 13.98, text: 'והמשך שלו'},
+  {from: 13.98, to: 15.75, text: 'אומר כמה רחוק הוא נמצא.'},
+  {from: 15.8, to: 17.68, text: 'ובכוורת יש חושך מוחלט,'},
+  {from: 17.68, to: 19.04, text: 'אז הן לא רואות את הריקוד:'},
+  {from: 19.04, to: 20.78, text: 'הן קוראות אותו עם המחושים,'},
+  {from: 20.78, to: 23.0, text: 'כמו קוד סודי.'},
+  {from: 23.1, to: 26.85, text: 'Scientists worked for years to decipher this dance.', lang: 'en', key: 'decipher'},
+  {from: 26.88, to: 28.22, text: 'והפענוח עבד:'},
+  {from: 28.22, to: 30.24, text: 'דבורה רובוטית רקדה את הקוד,'},
+  {from: 30.24, to: 33.35, text: 'והדבורים האמיתיות כיוונו את הטיסה לפיו.'},
+  {from: 33.6, to: 35.98, text: 'בקיצור, מה ש-Waze עושה עם לוויינים,'},
+  {from: 35.98, to: 38.2, text: 'הדבורים עושות עם ריקוד.'},
 ];
 
 export const sec = (s: number) => Math.round(s * FPS);

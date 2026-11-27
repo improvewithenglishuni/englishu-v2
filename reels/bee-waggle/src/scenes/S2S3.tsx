@@ -117,22 +117,21 @@ const DistanceRow: React.FC<{y: number; s: number; runLen: number; runP: number;
 export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur);
-  const SPLIT = 100; // part A (angle) -> part B (distance), on "והמשך שלו"
+  const SPLIT = 125; // part A (angle) -> part B (distance), on "והמשך שלו"
   const aOut = interpolate(f, [SPLIT - 8, SPLIT], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 
   const g = (f * 105) / SPLIT; // part A was designed for 105 frames
-  // ---- Part A: outside (top) and the same angle on the vertical comb (bottom)
-  const P = {x: 540, y: 640};
-  const sun = {x: 540, y: 200};
-  const flower = polar(P.x, P.y, ANG, 360);
-  const frameS = pop(g, 40, 14);
-  const comb = {x: 540, y: 1235};
-  const runEnd = polar(comb.x, comb.y, ANG, 300);
-  const beeP = prog(g, 62, 98);
-  const zz = zigzag(comb.x, comb.y, runEnd.x, runEnd.y, 12, 14);
-  const beeIdx = Math.min(zz.length - 1, Math.floor(beeP * (zz.length - 1)));
-  const lbl = polar(P.x, P.y, ANG / 2, 170);
-  const lbl2 = polar(comb.x, comb.y, ANG / 2, 150);
+  // ---- Part A: outside (top) and, at the same time, the same angle on the vertical comb (bottom):
+  // the figure-eight dance itself, tilted by the angle, next to an "up = sun" arrow.
+  const P = {x: 540, y: 600};
+  const sun = {x: 540, y: 170};
+  const flower = polar(P.x, P.y, ANG, 330);
+  const frameS = pop(g, 0, 14);
+  const comb = {x: 540, y: 1040}; // centre of the comb frame
+  const figDraw = prog(g, 4, 60, (t) => t);
+  const figBee = g < 60 ? figDraw : ((g - 60) / 48) % 1;
+  const lbl = polar(P.x, P.y - 40, ANG / 2, 170);
+  const lbl2 = polar(comb.x, comb.y, ANG / 2, 165);
 
   // ---- Part B
   const b1 = pop(f, SPLIT + 4, 13);
@@ -157,24 +156,32 @@ export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
           <Hand x={lbl.x} y={lbl.y - 40} size={76} lang="en" s={pop(g, 34, 10)} color={C.amberDeep}>
             40°
           </Hand>
-          <Arrow x1={P.x + 150} y1={P.y - 60} x2={comb.x + 150} y2={comb.y - 150} bend={-0.35} p={prog(g, 40, 56)} dash color={DASH.color} w={DASH.width} />
           {/* the comb, standing vertically inside the dark hive */}
-          <HiveFrame x={140} y={900} w={800} h={380} seed="s3frame" scale={frameS} r={30} />
-          <svg width={1080} height={1920} style={{position: 'absolute', opacity: frameS}}>
-            <Line x1={comb.x} y1={comb.y} x2={comb.x} y2={950} p={prog(g, 46, 58)} color="#fff" w={9} />
-            {f > 58 && <polyline points={`${comb.x - 16},${972} ${comb.x},${948} ${comb.x + 16},${972}`} stroke="#fff" strokeWidth={9} fill="none" strokeLinecap="round" strokeLinejoin="round" />}
-            <polyline points={zz.slice(0, beeIdx + 1).map(([x, y]) => `${x},${y}`).join(' ')} stroke="#fff" strokeWidth={9} fill="none" strokeLinejoin="round" strokeLinecap={DASH.cap} strokeDasharray={DASH.array} />
-            <Arc cx={comb.x} cy={comb.y} r={110} a={ANG} p={prog(g, 70, 84)} color="#fff" />
-          </svg>
-          <Sun size={74} style={{left: comb.x - 37, top: 912, transform: `scale(${pop(g, 56, 10)})`}} />
-          <Hand x={lbl2.x + 14} y={lbl2.y - 24} size={70} lang="en" s={pop(g, 82, 10)} color="#fff" halo={C.ink}>
-            40°
-          </Hand>
-          {beeP > 0 && (
-            <div style={{position: 'absolute', left: zz[beeIdx][0] - 30, top: zz[beeIdx][1] - 50, transform: `rotate(${ANG + (beeIdx % 2 ? 12 : -12)}deg)`}}>
-              <BeeTop size={60} id="s3bee" buzz />
-            </div>
-          )}
+          <HiveFrame x={140} y={770} w={800} h={530} seed="s3frame" scale={frameS} r={30} />
+          <AbsoluteFill style={{opacity: frameS}}>
+            {/* "up" on the comb stands for the sun */}
+            <svg width={1080} height={1920} style={{position: 'absolute'}}>
+              <Line x1={comb.x} y1={comb.y} x2={comb.x} y2={comb.y - 182} p={prog(g, 2, 16)} color="#fff" w={7} />
+              {g > 16 && <polyline points={`${comb.x - 15},${comb.y - 160} ${comb.x},${comb.y - 184} ${comb.x + 15},${comb.y - 160}`} stroke="#fff" strokeWidth={7} fill="none" strokeLinecap="round" strokeLinejoin="round" />}
+              <Arc cx={comb.x} cy={comb.y} r={125} a={ANG} p={prog(g, 26, 38)} color="#fff" />
+            </svg>
+            <Sun size={62} style={{left: comb.x - 31, top: comb.y - 244, transform: `scale(${pop(g, 10, 10)})`}} />
+            {/* the same figure-eight as before, tilted by the angle */}
+            <DanceFigure
+              size={760}
+              draw={figDraw}
+              beeAt={figBee}
+              dashed
+              color="#fff"
+              stroke={DASH.width}
+              beeSize={64}
+              id="s3fig"
+              style={{left: comb.x - 380, top: comb.y - 380, transform: `rotate(${ANG}deg) scale(0.72)`}}
+            />
+            <Hand x={lbl2.x + 18} y={lbl2.y - 20} size={70} lang="en" s={pop(g, 34, 10)} color="#fff" halo={C.ink}>
+              40°
+            </Hand>
+          </AbsoluteFill>
         </AbsoluteFill>
       )}
       {f >= SPLIT - 2 && (

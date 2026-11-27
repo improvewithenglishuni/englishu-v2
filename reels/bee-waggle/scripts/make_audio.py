@@ -40,16 +40,11 @@ DUR = T['end'][1]
 st = lambda k: T[k][0]
 dur_f = lambda k: round((T[k][1] - T[k][0]) * FPS)
 # in-scene cues (mirror the constants in the scene files)
-S2_DRAW = (4, min(70, dur_f('s2') - 16))   # S2Address: figure-eight draw-on frames
-S3_SPLIT = 100                             # S3Diagram: angle -> distance; part A plays 105 designed frames in SPLIT
+S3_SPLIT = 125                             # S3Diagram: angle -> distance; part A plays 105 designed frames in SPLIT
 S4_LEAD = 6                                # S4Convey: letters leave the dancer
-S5_LENS = 108                              # S5Dark: magnifier opens
-S8_SPLIT = round(dur_f('s8') * 0.5)        # S8Robot: comb -> park
-S7_HALF = round(dur_f('s7') * 0.48)        # S7Waze: satellite -> magnifier
-
-
-def s2(frame):
-    return st('s2') + frame / FPS
+S5_LENS = 93                               # S5Dark: magnifier opens
+S8_SPLIT = round(dur_f('s8') * 0.52)       # S8Robot: comb -> park
+S7_HALF = round(dur_f('s7') * 0.53)        # S7Waze: satellite -> magnifier
 
 
 def s3a(designed_frame):
@@ -198,10 +193,9 @@ def marker_line(start, dur):
     return segment(marker, start, dur, fade=0.05)
 
 
-add(sfx, paper_take(0), st('s2') - JC, 0.55)              # beat 2: the hive frame arrives
-add(sfx, marker_line(0.4, (S2_DRAW[1] - S2_DRAW[0]) / FPS), s2(S2_DRAW[0]) - JC, 0.45)      # beat 2: the figure-eight draws on (the hero)
+add(sfx, marker_line(0.4, s3a(60) - s3a(4)), s3a(4) - JC, 0.45)  # angle frame: the tilted figure-eight draws on (the hero)
 add(sfx, marker_line(3.2, 0.75), s3a(8) - JC, 0.4)      # beat 3: sun + flower lines draw on
-add(sfx, paper_take(1), s3a(40) - JC, 0.5)               # beat 3: the comb frame arrives
+add(sfx, paper_take(1), st('s3') - JC, 0.5)               # angle frame: top and comb frame arrive together
 add(sfx, paper_take(2), s3b(4) - JC, 0.45)              # beat 3: short-waggle row
 add(sfx, paper_take(3, 1.08), s3b(40) - JC, 0.45)       # beat 3: long-waggle row (pitched take)
 add(sfx, marker_line(6.3, 0.7), st('s6') - JC, 0.4)       # beat 6: the scramble scribble
@@ -219,11 +213,10 @@ def waggle_buzz(dur):
 
 
 # beat 2: the figure-eight bee's two waggle runs; beat 3: the angle run, then short vs long run
-_d = (S2_DRAW[1] - S2_DRAW[0]) / FPS
+_d = s3a(60) - s3a(4)
 for start, dur, g in [
-    (s2(S2_DRAW[0]), 0.2 * _d, 0.55),                 # S2: first waggle run of the figure-eight
-    (s2(S2_DRAW[0]) + 0.5 * _d, 0.2 * _d, 0.55),      # S2: second run
-    (s3a(62), s3a(98) - s3a(62), 0.6),                # S3: the angled run on the comb
+    (s3a(4), 0.2 * _d, 0.55),                         # angle frame: first (tilted) waggle run of the figure-eight
+    (s3a(4) + 0.5 * _d, 0.2 * _d, 0.55),              # angle frame: second run
     (s3b(12), (30 - 12) / FPS, 0.6),                  # S3: short waggle
     (s3b(48), (82 - 48) / FPS, 0.6),                  # S3: long waggle
 ]:

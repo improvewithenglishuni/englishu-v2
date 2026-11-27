@@ -203,7 +203,7 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
   const push = 1.04 + 0.08 * prog(f, 0, dur);
   // "חושך מוחלט": the hive opens almost black, then slowly lifts so we can see what happens in the dark
   const dark = interpolate(f, [0, 36, 100, 150], [0.95, 0.93, 0.6, 0.45], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  const LENS = 108; // the magnifier opens just before "הן קוראות אותו עם המחושים"
+  const LENS = 93; // the magnifier opens just before "הן קוראות אותו עם המחושים"
   const stick = pop(f, LENS + 4, 12);
   const into = interpolate(f, [0, 8], [0, 1], {extrapolateRight: 'clamp'});
   return (

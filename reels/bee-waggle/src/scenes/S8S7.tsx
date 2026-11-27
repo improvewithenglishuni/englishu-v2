@@ -19,7 +19,7 @@ const bez2 = (t: number, p0: number, p1: number, p2: number) => (1 - t) ** 2 * p
 export const S8Robot: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur);
-  const SPLIT = Math.round(dur * 0.5); // on "והדבורים האמיתיות"
+  const SPLIT = Math.round(dur * 0.52); // on "והדבורים האמיתיות"
   const frameS = pop(f, 0, 14);
   const beeAt = (f / 64) % 1;
   const draw = prog(f, 2, 50, (t) => t);
@@ -118,7 +118,7 @@ const Satellite: React.FC<{size?: number; style?: React.CSSProperties}> = ({size
 export const S7Waze: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur, 8);
-  const HALF = Math.round(dur * 0.48); // on "הדבורים עושות עם ריקוד"
+  const HALF = Math.round(dur * 0.53); // on "הדבורים עושות עם ריקוד"
   const cam = 0.4 + 0.6 * prog(f, 0, dur, (t) => t);
   const sat = pop(f, 0, 14);
   const card = pop(f, 8, 13);
