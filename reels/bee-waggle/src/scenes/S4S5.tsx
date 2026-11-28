@@ -6,7 +6,6 @@ import {DanceFigure} from '../components/dance';
 import {Comb, Label, keyWordStyle} from '../components/props';
 import {Hand, Lens} from '../components/explain';
 import {exitOut, pop, prog} from '../components/anim';
-import DANCER_TRACK from '../data/dancer-track.json';
 
 const bez = (t: number, p0: number, p1: number, p2: number, p3: number) =>
   (1 - t) ** 3 * p0 + 3 * (1 - t) ** 2 * t * p1 + 3 * (1 - t) * t ** 2 * p2 + t ** 3 * p3;
@@ -121,7 +120,8 @@ export const S4Convey: React.FC<{dur: number}> = ({dur}) => {
           </div>
         );
       })}
-      <Label size={50} rot={-2} dir="rtl" style={{left: 540, top: 590, transform: `translateX(-50%) rotate(-2deg) scale(${gloss})`}}>
+      {/* the translation chip: twice as large, directly under the word, popping in like the letters */}
+      <Label size={92} rot={-2} dir="rtl" style={{left: 540, top: 560, padding: '20px 48px', transform: `translateX(-50%) translateY(${(1 - gloss) * -40}px) rotate(${-2 + (1 - gloss) * 8}deg) scale(${gloss})`}}>
         <span dir="ltr" style={{fontFamily: FONT_KEY, fontWeight: 400, letterSpacing: 1, color: C.key}}>convey</span> = להעביר מסר
       </Label>
     </AbsoluteFill>
@@ -200,7 +200,6 @@ const AntennaeStandIn: React.FC<{f: number}> = ({f}) => {
 export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur);
-  const push = 1.04 + 0.08 * prog(f, 0, dur);
   // "חושך מוחלט": the hive opens almost black, then slowly lifts so we can see what happens in the dark
   const dark = interpolate(f, [0, 36, 100, 150], [0.95, 0.93, 0.6, 0.45], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const LENS = 93; // the magnifier opens just before "הן קוראות אותו עם המחושים"
@@ -208,46 +207,23 @@ export const S5Dark: React.FC<{dur: number}> = ({dur}) => {
   const into = interpolate(f, [0, 8], [0, 1], {extrapolateRight: 'clamp'});
   return (
     <AbsoluteFill style={{opacity: out}}>
-      <AbsoluteFill style={{transform: `scale(${push})`, clipPath: `circle(${into * 150}% at 50% 50%)`}}>
-        <OffthreadVideo
-          src={staticFile(MEDIA.hive)}
-          muted
-          style={{width: '100%', height: '100%', objectFit: 'cover', filter: 'saturate(0.9) contrast(1.06)'}}
-        />
+      {/* the hive at native resolution (a 1080x1080 crop of the 1920x1080 source, shown 1:1, never upscaled);
+          the darkness vignette fills the rest of the frame */}
+      <AbsoluteFill style={{background: '#0C0702', clipPath: `circle(${into * 150}% at 50% 50%)`}}>
+        <div style={{position: 'absolute', left: 0, top: 290, width: 1080, height: 1080, transform: `scale(${1 + 0.04 * prog(f, 0, dur)})`}}>
+          <OffthreadVideo src={staticFile(MEDIA.hiveSq)} muted style={{width: 1080, height: 1080, filter: 'saturate(0.92) contrast(1.05)'}} />
+          {/* soft top/bottom edges into the dark */}
+          <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg, #0C0702 0%, rgba(12,7,2,0) 18%, rgba(12,7,2,0) 82%, #0C0702 100%)'}} />
+        </div>
         <AbsoluteFill
           style={{background: `radial-gradient(ellipse at 50% 45%, rgba(12,7,2,${dark * 0.88}) 25%, rgba(12,7,2,${Math.min(0.98, dark * 1.08 + 0.05)}) 80%)`}}
         />
       </AbsoluteFill>
       {f >= LENS && (
-        <>
-          <Lens cx={540} cy={720} r={360} s={stick} reveal={prog(f, LENS + 4, LENS + 44)}>
-            <OffthreadVideo
-              src={staticFile(MEDIA.dancer)}
-              muted
-              style={{width: '100%', height: '100%', objectFit: 'cover', transform: 'scale(1.06)'}}
-            />
-            {/* the red-dot dancer, tracked frame by frame (src/data/dancer-track.json, from scripts/track_dancer.py) */}
-            {(() => {
-              const [tx, ty] = DANCER_TRACK[Math.min(DANCER_TRACK.length - 1, f)];
-              const x = 360 + (tx - 360) * 1.06, y = 360 + (ty - 360) * 1.06;
-              return (
-                <svg width={720} height={720} style={{position: 'absolute', left: 0, top: 0, filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.5))'}}>
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r={105 * pop(f, LENS + 12, 12)}
-                    fill="none"
-                    stroke={DASH.color}
-                    strokeWidth={DASH.width}
-                    strokeDasharray={DASH.array}
-                    strokeLinecap={DASH.cap}
-                    transform={`rotate(${f * 2} ${x} ${y})`}
-                  />
-                </svg>
-              );
-            })()}
-          </Lens>
-        </>
+        <Lens cx={540} cy={720} r={360} s={stick} reveal={prog(f, LENS + 4, LENS + 44)}>
+          {/* 720x720 native crop (1:1 pixels) of unmarked bees, antennae in view */}
+          <OffthreadVideo src={staticFile(MEDIA.lensNative)} muted style={{width: 720, height: 720}} />
+        </Lens>
       )}
     </AbsoluteFill>
   );

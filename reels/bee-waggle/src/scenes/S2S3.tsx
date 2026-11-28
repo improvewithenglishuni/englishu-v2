@@ -77,38 +77,42 @@ const Arc: React.FC<{cx: number; cy: number; r: number; a: number; p: number; co
 const ANG = 40;
 const polar = (cx: number, cy: number, a: number, r: number) => ({x: cx + Math.sin((a * Math.PI) / 180) * r, y: cy - Math.cos((a * Math.PI) / 180) * r});
 
-/** One row of the distance comparison: waggle run on comb -> how long it lasts -> how far the food is. */
-const DistanceRow: React.FC<{y: number; s: number; runLen: number; runP: number; dist: number; label: string; seed: string; f: number}> = ({
+/**
+ * One panel of the distance comparison, at the same scale as the angle diagram: a honeycomb frame where the
+ * waggle run grows in orange as the bee waggles, and under it the hive, the distance and the flower it points to.
+ */
+const DistancePanel: React.FC<{y: number; s: number; runLen: number; runP: number; dist: number; seed: string; f: number}> = ({
   y,
   s,
   runLen,
   runP,
   dist,
-  label,
   seed,
   f,
 }) => {
-  const pts = zigzag(0, 0, runLen, 0, Math.max(4, Math.round(runLen / 26)), 15);
-  const shown = pts.slice(0, Math.max(1, Math.ceil(runP * pts.length)));
-  const last = shown[shown.length - 1];
   const x0 = 170;
+  const cy = 190; // run's centre line inside the panel
+  const pts = zigzag(0, 0, runLen, 0, Math.max(4, Math.round(runLen / 34)), 22);
+  const n = Math.max(1, Math.ceil(runP * (pts.length - 1)) + 1);
+  const shown = pts.slice(0, n);
+  const last = shown[shown.length - 1];
   return (
-    <div style={{position: 'absolute', left: 0, top: y, width: 1080, height: 420, transform: `scale(${s})`, transformOrigin: '50% 30%'}}>
-      <HiveFrame x={110} y={0} w={860} h={170} seed={`${seed}c`} r={28} />
-      <svg width={1080} height={420} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
-        <polyline points={shown.map(([x, yy]) => `${x0 + x},${104 + yy}`).join(' ')} stroke="#fff" strokeWidth={9} fill="none" strokeLinejoin="round" strokeLinecap={DASH.cap} strokeDasharray={DASH.array} />
-        {/* duration bar: how long the waggle lasts */}
-        <rect x={x0} y={200} width={Math.max(0, runLen * runP)} height={22} rx={11} fill={C.amber} />
-        <circle cx={130} cy={211} r={22} fill="#fff" stroke={C.ink} strokeWidth={5} />
-        <line x1={130} y1={211} x2={130 + Math.sin(f / 3) * 14} y2={211 - Math.cos(f / 3) * 14} stroke={C.ink} strokeWidth={4} strokeLinecap="round" />
-        {/* distance to the food */}
-        <Line x1={210} y1={330} x2={210 + dist} y2={330} p={runP} color={DASH.color} w={DASH.width} dash />
+    <div style={{position: 'absolute', left: 0, top: y, width: 1080, height: 480, transform: `scale(${s})`, transformOrigin: '50% 40%'}}>
+      <HiveFrame x={90} y={0} w={900} h={330} seed={`${seed}c`} r={34} />
+      <svg width={1080} height={480} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
+        {/* the waggle run, highlighted in orange, growing as the bee waggles */}
+        <polyline points={shown.map(([x, yy]) => `${x0 + x},${cy + yy}`).join(' ')} stroke="#fff" strokeWidth={22} fill="none" strokeLinejoin="round" strokeLinecap="round" opacity={0.85} />
+        <polyline points={shown.map(([x, yy]) => `${x0 + x},${cy + yy}`).join(' ')} stroke={C.amber} strokeWidth={13} fill="none" strokeLinejoin="round" strokeLinecap="round" />
+        {/* the distance it encodes: hive -> flower */}
+        <g style={{filter: PAPER_SHADOW}}>
+          <line x1={215} y1={415} x2={215 + dist * runP} y2={415} stroke={DASH.color} strokeWidth={DASH.width} strokeDasharray={DASH.array} strokeLinecap={DASH.cap} />
+        </g>
       </svg>
-      <div style={{position: 'absolute', left: x0 + last[0] - 24, top: 104 + last[1] - 36, transform: 'rotate(90deg)'}}>
-        <BeeTop size={48} id={`${seed}b`} buzz={runP > 0 && runP < 1} />
+      <div style={{position: 'absolute', left: x0 + last[0] - 34, top: cy + last[1] - 52, transform: 'rotate(90deg)'}}>
+        <BeeTop size={68} id={`${seed}b`} buzz={runP > 0 && runP < 1} />
       </div>
-      <HiveBox w={92} style={{left: 100, top: 272}} />
-      <Flower size={86} style={{left: 210 + dist * Math.max(runP, 0.001) - 43, top: 287, opacity: runP > 0.05 ? 1 : 0}} />
+      <HiveBox w={96} style={{left: 105, top: 352}} />
+      <Flower size={104} style={{left: 215 + dist * Math.max(runP, 0.001) - 52, top: 363, opacity: runP > 0.02 ? 1 : 0, transform: `scale(${runP >= 1 ? 1 + 0.08 * Math.sin(f / 5) : 1})`}} />
     </div>
   );
 };
@@ -134,10 +138,11 @@ export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
   const lbl2 = polar(comb.x, comb.y, ANG / 2, 165);
 
   // ---- Part B
-  const b1 = pop(f, SPLIT + 4, 13);
-  const b2 = pop(f, SPLIT + 40, 13);
-  const shortRun = prog(f, SPLIT + 12, SPLIT + 30);
-  const longRun = prog(f, SPLIT + 48, SPLIT + 82);
+  // both panels arrive together; the short run grows first, then the long one on "כמה רחוק", then both hold
+  const b1 = pop(f, SPLIT + 2, 13);
+  const b2 = pop(f, SPLIT + 5, 13);
+  const shortRun = prog(f, SPLIT + 8, SPLIT + 24, (t) => t);
+  const longRun = prog(f, SPLIT + 26, SPLIT + 52, (t) => t);
 
   return (
     <AbsoluteFill style={{opacity: out}}>
@@ -186,8 +191,8 @@ export const S3Diagram: React.FC<{dur: number}> = ({dur}) => {
       )}
       {f >= SPLIT - 2 && (
         <AbsoluteFill>
-          <DistanceRow y={250} s={b1} runLen={150} runP={shortRun} dist={230} label="קרוב" seed="r1" f={f} />
-          <DistanceRow y={700} s={b2} runLen={620} runP={longRun} dist={640} label="רחוק" seed="r2" f={f} />
+          <DistancePanel y={190} s={b1} runLen={190} runP={shortRun} dist={240} seed="r1" f={f} />
+          <DistancePanel y={700} s={b2} runLen={700} runP={longRun} dist={700} seed="r2" f={f} />
         </AbsoluteFill>
       )}
     </AbsoluteFill>

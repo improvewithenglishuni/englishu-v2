@@ -20,7 +20,7 @@ export const S6Decipher: React.FC<{dur: number}> = ({dur}) => {
   const letterW = 102;
   const x0 = 540 - (letterW * word.length) / 2;
   const scribble = prog(f, 0, 18);
-  const lockAt = (i: number) => 22 + i * 6;
+  const lockAt = (i: number) => 18 + i * 5; // resolves a little faster so the translation can hold ~2 s
   const resolved = word.split('').filter((_, i) => f >= lockAt(i)).length / word.length;
   // scribble: a tangle of loops across the word area
   const pts = Array.from({length: 26}, (_, k) => {
@@ -28,7 +28,7 @@ export const S6Decipher: React.FC<{dur: number}> = ({dur}) => {
     const y = 640 + Math.sin(k * 1.7) * 90 + (random(`sc${k}`) - 0.5) * 120;
     return `${x.toFixed(0)},${y.toFixed(0)}`;
   });
-  const gloss = pop(f, 76, 12);
+  const gloss = pop(f, lockAt(7) + 4, 12);
   return (
     <AbsoluteFill style={{opacity: out}}>
       <svg width={1080} height={1920} style={{position: 'absolute'}}>
@@ -72,7 +72,8 @@ export const S6Decipher: React.FC<{dur: number}> = ({dur}) => {
           </div>
         );
       })}
-      <Label size={50} rot={2} style={{left: 540, top: 820, transform: `translateX(-50%) rotate(2deg) scale(${gloss})`}}>
+      {/* the translation chip: twice as large, directly under the word, popping in like the letters */}
+      <Label size={92} rot={2} style={{left: 540, top: 770, padding: '20px 48px', transform: `translateX(-50%) translateY(${(1 - gloss) * -40}px) rotate(${2 - (1 - gloss) * 8}deg) scale(${gloss})`}}>
         <span dir="ltr" style={{fontFamily: FONT_KEY, fontWeight: 400, letterSpacing: 1, color: C.key}}>decipher</span> = לפענח
       </Label>
     </AbsoluteFill>

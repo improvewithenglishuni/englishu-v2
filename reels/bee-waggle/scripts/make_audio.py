@@ -196,8 +196,8 @@ def marker_line(start, dur):
 add(sfx, marker_line(0.4, s3a(60) - s3a(4)), s3a(4) - JC, 0.45)  # angle frame: the tilted figure-eight draws on (the hero)
 add(sfx, marker_line(3.2, 0.75), s3a(8) - JC, 0.4)      # beat 3: sun + flower lines draw on
 add(sfx, paper_take(1), st('s3') - JC, 0.5)               # angle frame: top and comb frame arrive together
-add(sfx, paper_take(2), s3b(4) - JC, 0.45)              # beat 3: short-waggle row
-add(sfx, paper_take(3, 1.08), s3b(40) - JC, 0.45)       # beat 3: long-waggle row (pitched take)
+add(sfx, paper_take(2), s3b(2) - JC, 0.45)              # beat 3: short-waggle row
+add(sfx, paper_take(3, 1.08), s3b(5) + 0.15 - JC, 0.3)       # beat 3: long-waggle row (pitched take)
 add(sfx, marker_line(6.3, 0.7), st('s6') - JC, 0.4)       # beat 6: the scramble scribble
 
 # ---------------- waggle buzz: plays exactly while a bee waggles ----------------
@@ -217,8 +217,8 @@ _d = s3a(60) - s3a(4)
 for start, dur, g in [
     (s3a(4), 0.2 * _d, 0.55),                         # angle frame: first (tilted) waggle run of the figure-eight
     (s3a(4) + 0.5 * _d, 0.2 * _d, 0.55),              # angle frame: second run
-    (s3b(12), (30 - 12) / FPS, 0.6),                  # S3: short waggle
-    (s3b(48), (82 - 48) / FPS, 0.6),                  # S3: long waggle
+    (s3b(8), (24 - 8) / FPS, 0.6),                    # S3: short waggle
+    (s3b(26), (52 - 26) / FPS, 0.6),                  # S3: long waggle
 ]:
     add(sfx, waggle_buzz(dur), start, g)
 
@@ -238,7 +238,7 @@ fl = np.resize(buzz_src, int(1.6 * SR)) * env_lin(int(1.6 * SR), [(0, 0), (0.2, 
 fl *= 0.6 + 0.4 * rng.standard_normal(len(fl)).clip(-1, 1)
 add(sfx, onepole_lp(fl, 1800), st('s6') + 0.55, 0.35)
 for k, m in enumerate([69, 73, 76]):
-    add(sfx, pluck(mtof(m), 2.0, 0.35), st('s6') + 2.13 + k * 0.05, 0.3)
+    add(sfx, pluck(mtof(m), 2.0, 0.35), st('s6') + (18 + 7 * 5) / FPS + k * 0.05, 0.3)
 
 # ---------------- robot bee: a duller, motor-like buzz on its runs, then real bees fly out ----------------
 robo_src = onepole_lp(np.interp(np.arange(0, len(buzz_src), 0.8), np.arange(len(buzz_src)), buzz_src), 1400)  # pitched down, darker

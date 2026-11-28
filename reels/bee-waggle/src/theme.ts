@@ -51,7 +51,9 @@ export const FONT_HAND_HE = "'Amatic SC', 'Patrick Hand SC', sans-serif";
 export const MEDIA = {
   hive: 'media/hive.mp4', // full-frame hive interior, beat 5
   comb: 'media/comb.mp4', // square crop for the magnifier lens, beats 1 and 7
-  dancer: 'media/dancer.mp4', // red-dot dancer with followers, antennae moment in beat 5
+  dancer: 'media/dancer.mp4', // red-dot dancer (no longer used: the red mark was unexplained, and the clip is low-res)
+  hiveSq: 'media/hive_sq.mp4', // beat 5: 1080x1080 native crop of the hive, shown 1:1
+  lensNative: 'media/lens_native.mp4', // beat 5 magnifier: 720x720 native crop, unmarked bees
 };
 
 // Script v3, timed to Sharon's voiceover (vo/clean/voice.wav from "New Recording 34" + "33").

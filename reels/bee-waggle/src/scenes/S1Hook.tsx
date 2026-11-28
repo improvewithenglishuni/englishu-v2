@@ -59,36 +59,42 @@ export const BeeLensContent: React.FC<{f: number; r: number; dancing: boolean; s
 
 export const HIVE = {x: 600, y: 820, w: 400, entrance: {x: 760, y: 1282}};
 
+/**
+ * Beat 1 (hook): frame 0 is already a large magnifier full of real, moving bees (a strange, real image beats a
+ * calm scene in the first second). As the question begins, the magnifier shrinks down onto the hive while the
+ * forager flies in, revealing the park; the camera then pushes toward the entrance. The ending loops back to
+ * this same hive-and-magnifier shot.
+ */
 export const S1Hook: React.FC<{dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const out = exitOut(f, dur);
   const cam = prog(f, 0, dur, (t) => t);
-  // the forager flies in from the left and down to the hive entrance
-  const fly = prog(f, 0, 36);
+  // the magnifier: big and full at frame 0, held, then shrinks onto the hive entrance
+  const R = 470; // 940 px wide: most of the frame width
+  const shrink = prog(f, 16, 50, (t) => t * t * (3 - 2 * t));
+  const lx = interpolate(shrink, [0, 1], [540, HIVE.entrance.x]);
+  const ly = interpolate(shrink, [0, 1], [820, HIVE.entrance.y - 70]);
+  const ls = interpolate(shrink, [0, 1], [1, 0.06]);
+  // the forager flies in from the left to the hive entrance as the magnifier lands there
+  const fly = prog(f, 22, 60);
   const fx = interpolate(fly, [0, 0.5, 1], [-80, 520, HIVE.entrance.x]);
   const fy = interpolate(fly, [0, 0.5, 1], [520, 760, HIVE.entrance.y]) - Math.sin(fly * Math.PI) * 80;
   const fs = interpolate(fly, [0, 0.8, 1], [1, 0.55, 0.05]);
-  // camera pushes in toward the entrance as she goes inside...
-  const push = interpolate(f, [26, 46], [1, 1.35], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: (t) => t * t * (3 - 2 * t)});
-  // ...then a magnifying glass grows out of the entrance: we are looking inside the hive
-  const zoom = prog(f, 38, 54, (t) => 1 - (1 - t) ** 3);
-  const R = 330;
-  const lx = interpolate(zoom, [0, 1], [HIVE.entrance.x, 430]);
-  const ly = interpolate(zoom, [0, 1], [HIVE.entrance.y - 60, 700]);
-  const ls = interpolate(zoom, [0, 0.85, 1], [0.08, 1.04, 1]);
+  // then the camera pushes in toward the entrance
+  const push = interpolate(f, [56, dur], [1, 1.25], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: (t) => t * t * (3 - 2 * t)});
   return (
     <AbsoluteFill style={{opacity: out}}>
       <AbsoluteFill style={{transform: `scale(${push})`, transformOrigin: `${HIVE.entrance.x}px ${HIVE.entrance.y - 60}px`}}>
         <ParkWorld cam={cam} hiveX={HIVE.x} hiveY={HIVE.y} hiveW={HIVE.w} />
-        {fs > 0.06 && (
+        {f >= 22 && fs > 0.06 && (
           <div style={{position: 'absolute', left: fx - 100, top: fy - 70, transform: `scale(${fs}) rotate(${interpolate(fly, [0, 1], [8, 30])}deg)`}}>
             <Bee size={200} flap id="s1fly" />
           </div>
         )}
       </AbsoluteFill>
-      {f >= 38 && (
-        <Lens cx={lx} cy={ly} r={R} s={ls} handle reveal={prog(f, 44, 76)}>
-          <BeeLensContent f={f} r={R} dancing={f > 50} startDance={50} />
+      {ls > 0.07 && (
+        <Lens cx={lx} cy={ly} r={R} s={ls} handle>
+          <BeeLensContent f={f} r={R} dancing startDance={0} clipFrom={15} />
         </Lens>
       )}
     </AbsoluteFill>
