@@ -37,3 +37,13 @@ The 2002-2003 dip in wages is real (it is in the CBS data, during the 2002-2003 
 ## Open
 - On screen the sub-title says "Israel · growth since 1995 · CBS data". The linking is documented here and in
   SOURCES.md; say if you also want "wage series linked" written on screen.
+
+## Mock-up v8 (Sharon, Nov 28): v6 chart + v7 first frame
+- The chart part is exactly v6 again (1995 start at about 0.7 s per year, DISCREPANCY label from 3.8 s after the cut,
+  year slider, small EXORBITANT tag at the end). The v7 chart changes (fast-forward, DISPARITY, push-in, EXORBITANT
+  moment, share note) are reverted; they remain in `ReelV7.tsx` if wanted later.
+- First frame from v7: painted street, big Rubik hook on a torn paper strip with a highlighter swipe on "אף פעם",
+  the red price tag slamming in with the price counting up to ₪2,330,800 (CBS average 2025), now with a third palm
+  tree, and only the price on the tag (the Hebrew line under it is removed).
+- Sound: only the hook's tag thud and count tick, plus the end card's own sound.
+- Spoken lines: as in v6 (see above). Total 34.2 s.

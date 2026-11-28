@@ -7,9 +7,11 @@ import {ApartmentMockupV4, TOTAL_V4} from './ReelV4';
 import {ApartmentMockupV5, TOTAL_V5} from './ReelV5';
 import {ApartmentMockupV6, TOTAL_V6} from './ReelV6';
 import {ApartmentMockupV7, TOTAL_V7} from './ReelV7';
+import {ApartmentMockupV8, TOTAL_V8} from './ReelV8';
 
 export const Root: React.FC = () => (
   <>
+    <Composition id="ApartmentMockupV8" component={ApartmentMockupV8} durationInFrames={TOTAL_V8} fps={30} width={1080} height={1920} />
     <Composition id="ApartmentMockupV7" component={ApartmentMockupV7} durationInFrames={TOTAL_V7} fps={30} width={1080} height={1920} />
     <Composition id="ApartmentMockupV6" component={ApartmentMockupV6} durationInFrames={TOTAL_V6} fps={30} width={1080} height={1920} />
     <Composition id="ApartmentMockupV5" component={ApartmentMockupV5} durationInFrames={TOTAL_V5} fps={30} width={1080} height={1920} />
