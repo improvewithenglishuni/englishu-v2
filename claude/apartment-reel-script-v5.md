@@ -25,3 +25,10 @@ Not possible from official, consistent data in hand:
 Options: (A) keep 2011-2025 (clean); (B) start in the mid-1990s by linking the CBS wage pieces at their overlaps (a
 documented splice, flagged on screen); (C) a long-run ratio ("years of salary for one apartment") from a Bank of Israel
 or CBS long-term publication, if one exists back to the 1970s; Sharon would need to find or approve the source.
+
+## Mock-up v5 (Sharon, Nov 28, third round; same script)
+- The coral top band is gone. The hook question sits on a painted cloud floating in the sky.
+- The tag is a real hanging price tag: red card with clipped top corners, a metal eyelet, a white string loop tied to a
+  balcony railing of the right-hand building, a white "PRICE" header and, in the white box where the price would be,
+  EXORBITANT. It is already hanging at frame 0 and swings.
+- The callback at the end uses the same tag, smaller, hanging from the year slider above the chart.
