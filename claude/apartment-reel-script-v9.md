@@ -27,3 +27,14 @@ Based on v8 (v6 chart + v7 first frame). Changes from Sharon's Nov 28 notes:
 - The new hook asks *how many years of salary*, but the chart never answers it. The verified answer is 14.3 years
   (CBS, 2025: average price ₪2,330,800 ÷ 12 × ₪13,592). Suggest adding it as one short line or a note at 2025.
 - No Hebrew gloss under DISPARITY in this version (the v6 chart had none); the series rule asks for one (פער).
+
+## Mock-up v10 (Sharon, Nov 28; same script as v9)
+- The hook strip is taller (350 px image, text inside it) and tears on exactly like the outro's handle strip: a ragged
+  tear line rips across left to right in 12 frames while the free end lifts, then it bobs and settles and the tape
+  stretches on (ported from `end-card/src/card.html`, frames 40-58 there = 0-18 here).
+- Colours: while salaries lead, the bold y value and the hatched gap bar are **green** (#2E8B57); once prices lead, the
+  bold y value, the gap bar and the DISPARITY label are **crimson** (#D7153A). Line colours unchanged.
+- The slow-down around 7-8 s was the hard switch from fast to slow plus an ease-in that nearly stopped the counter. The
+  year now follows a speed curve that eases from fast to slow over about 1.3 s, so it never stalls.
+- The push-in (zoom) is removed completely; the shake and thud at 2021-2022 stay.
+- The tag's drop is damped so it no longer flashes at the bottom of the frame.
