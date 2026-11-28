@@ -38,3 +38,12 @@ Based on v8 (v6 chart + v7 first frame). Changes from Sharon's Nov 28 notes:
   year now follows a speed curve that eases from fast to slow over about 1.3 s, so it never stalls.
 - The push-in (zoom) is removed completely; the shake and thud at 2021-2022 stay.
 - The tag's drop is damped so it no longer flashes at the bottom of the frame.
+
+## Mock-up v11 (Sharon, Nov 28)
+- The hook is answered: when the chart reaches 2025 (25.2 s) a paper note pops in with a soft thump:
+  **14.3 שנות משכורת** (highlighted) / **לדירה ממוצעת (למ״ס, 2025)**. It stays through the share note.
+  Source: CBS Table 2.2 2025 average price ₪2,330,800 ÷ (12 × CBS 2025 average monthly wage ₪13,592) = 14.29 years,
+  gross wage per employee job.
+- Suggested spoken line at that moment: "התשובה: יותר מארבע עשרה שנות משכורת." (to record with the others).
+- DISPARITY label back to its v9 look (white paper, dark ink border and text, dark pointer).
+- The crimson gap bar now looks and moves like the green one: hatched, dashed outline, steady width (no pulsing).
