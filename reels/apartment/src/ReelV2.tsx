@@ -381,7 +381,7 @@ const EndCardV2: React.FC = () => {
   const sc = interpolate(f, [0, TOTAL_V2 - V2.end], [1, 1.05], clamp);
   return (
     <AbsoluteFill style={{opacity: o, background: '#F5F0E5', alignItems: 'center', justifyContent: 'center', transform: `scale(${sc})`}}>
-      <Img src={staticFile('logo.png')} style={{width: 520, mixBlendMode: 'multiply'}} />
+      <Img src={staticFile('brand/logo.png')} style={{width: 520, mixBlendMode: 'multiply'}} />
       <div style={{marginTop: 40, fontFamily: FONT, fontWeight: 700, fontSize: 58, color: '#0A2370'}}>@improve.with.englishu</div>
       <div style={{marginTop: 14, fontFamily: FONT, fontSize: 44, color: '#B01F25'}}>englishu.co.il</div>
     </AbsoluteFill>

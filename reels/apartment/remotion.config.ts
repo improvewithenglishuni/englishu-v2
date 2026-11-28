@@ -6,6 +6,8 @@ Config.setJpegQuality(92);
 Config.setOverwriteOutput(true);
 Config.setConcurrency(2);
 Config.setEntryPoint('src/index.ts');
+// Shared repo-level public folder: brand end card, sound library (sfx), photos.
+Config.setPublicDir('../../public');
 
 // In the cloud container Remotion cannot download its own headless shell; use the pre-installed one.
 const preinstalled =
