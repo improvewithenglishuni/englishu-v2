@@ -15,6 +15,9 @@ enc="-an -r 30 -c:v libx264 -crf 20 -pix_fmt yuv420p -movflags +faststart"
 ffmpeg -v error -y -ss 4 -t 9 -i .cache/waggle.webm -vf "crop=608:1080:656:0,scale=1080:1920:flags=lanczos,eq=saturation=0.95" $enc public/media/hive.mp4
 # square comb crop for the magnifier lens (beats 1 and 7)
 ffmpeg -v error -y -ss 10 -t 7 -i .cache/waggle.webm -vf "crop=1080:1080:420:0,scale=720:720:flags=lanczos" $enc public/media/comb.mp4
+# native-resolution crops (shown 1:1, never upscaled): the dark-hive shot and the antennae magnifier
+ffmpeg -v error -y -ss 0.8 -t 8 -i .cache/waggle.webm -vf "crop=1080:1080:420:0,eq=saturation=0.95" -an -r 30 -c:v libx264 -crf 17 -pix_fmt yuv420p -movflags +faststart public/media/hive_sq.mp4
+ffmpeg -v error -y -ss 1.5 -t 6.5 -i .cache/waggle.webm -vf "crop=720:720:160:180" -an -r 30 -c:v libx264 -crf 17 -pix_fmt yuv420p -movflags +faststart public/media/lens_native.mp4
 # red-dot dancer surrounded by followers (antennae beat)
 ffmpeg -v error -y -t 11.5 -i .cache/dancer.ogv -vf "crop=480:480:120:0,scale=720:720:flags=lanczos" $enc public/media/dancer.mp4
 # field recordings for the sound design (scripts/make_audio.py)
